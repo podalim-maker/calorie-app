@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目標カロリーの算出根拠</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Helvetica Neue', sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      padding-bottom: 40px;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a2980 0%, #0d1650 100%);
+      color: white;
+      padding: 20px 20px 24px;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,.7);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1B2A8A;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title .icon { font-size: 18px; }
+    .step-badge {
+      display: inline-block;
+      background: #1B2A8A;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-right: 6px;
+    }
+    p { font-size: 14px; line-height: 1.75; color: #444; }
+    .formula {
+      background: #f0f3ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #333;
+      font-family: 'Courier New', monospace;
+    }
+    .formula strong { color: #1B2A8A; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    th {
+      background: #f0f3ff;
+      color: #1B2A8A;
+      font-weight: 700;
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 12px;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f0;
+      color: #444;
+      line-height: 1.5;
+    }
+    tr:last-child td { border-bottom: none; }
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .badge {
+      flex: 1;
+      background: #f0f3ff;
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #444;
+      line-height: 1.6;
+    }
+    .badge .val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1B2A8A;
+      display: block;
+    }
+    .tip {
+      background: #FFF8E1;
+      border-left: 3px solid #F5A623;
+      border-radius: 0 10px 10px 0;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #555;
+    }
+    .ref {
+      font-size: 11px;
+      color: #AAA;
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">‹ 戻る</button>
+    <h1>目標カロリーの算出根拠</h1>
+    <p>エビデンスに基づく3ステップの計算</p>
+  </div>
+
+  <div class="content">
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🔢</span>計算の流れ</div>
+      <p>目標カロリーは、国際的に標準とされる3つのステップで算出しています。</p>
+      <div class="row">
+        <div class="badge"><span class="val">①</span>基礎代謝<br>（BMR）</div>
+        <div class="badge"><span class="val">②</span>総消費量<br>（TDEE）</div>
+        <div class="badge"><span class="val">③</span>目標<br>カロリー</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="step-badge">Step 1</span>基礎代謝（BMR）
+      </div>
+      <p>何もしなくても消費するカロリーを<strong>ハリス・ベネディクト改訂式</strong>で算出します。</p>
+      <div class="formula">
+        <strong>男性：</strong>88.362 + (13.397 × 体重kg)<br>
+        　　　+ (4.799 × 身長cm) − (5.677 × 年齢)<br><br>
+        <strong>女性：</strong>447.593 + (9.247 × 体重kg)<br>
+        　　　+ (3.098 × 身長cm) − (4.330 × 年齢)
+      </div>
+      <div class="tip">
+        例：40歳・男性・170cm・70kg の場合<br>
+        BMR = 88.362 + 938.79 + 815.83 − 226.08 = <strong>約 1,617 kcal/日</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="step-badge">Step 2</span>総消費カロリー（TDEE）
+      </div>
+      <p>BMR に<strong>活動係数</strong>を掛けることで、実際の生活での消費カロリーを推定します。</p>
+      <table>
+        <tr>
+          <th>活動レベル</th>
+          <th>係数</th>
+          <th>目安</th>
+        </tr>
+        <tr>
+          <td>座り仕事</td>
+          <td>× 1.2</td>
+          <td>デスクワーク中心、ほぼ運動しない</td>
+        </tr>
+        <tr>
+          <td>やや活動的</td>
+          <td>× 1.375</td>
+          <td>立ち仕事あり、週1〜2回運動</td>
+        </tr>
+        <tr>
+          <td>活動的</td>
+          <td>× 1.55</td>
+          <td>外回りあり、週3〜4回運動</td>
+        </tr>
+      </table>
+      <div class="tip">
+        上記の例（BMR 1,617 kcal）で「やや活動的」の場合<br>
+        TDEE = 1,617 × 1.375 = <strong>約 2,223 kcal/日</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="step-badge">Step 3</span>目標カロリーの設定
+      </div>
+      <p>脂肪1kgを消費するには約<strong>7,200 kcal</strong>の赤字が必要です。月の目標体重減少量から1日あたりの赤字を逆算します。</p>
+      <table>
+        <tr>
+          <th>月の目標</th>
+          <th>1日の赤字</th>
+          <th>目標カロリー</th>
+        </tr>
+        <tr><td>現状維持</td><td>± 0 kcal</td><td>TDEE</td></tr>
+        <tr><td>月 0.5 kg 減</td><td>− 120 kcal</td><td>TDEE − 120</td></tr>
+        <tr><td>月 1 kg 減</td><td>− 240 kcal</td><td>TDEE − 240</td></tr>
+        <tr><td>月 2 kg 減</td><td>− 480 kcal</td><td>TDEE − 480</td></tr>
+        <tr><td>月 3 kg 減</td><td>− 720 kcal</td><td>TDEE − 720</td></tr>
+      </table>
+      <div class="tip">
+        <strong>安全な減量ペースは月 0.5〜1 kg</strong> が推奨されています。急激な制限は筋肉量の低下や代謝の低下を招く可能性があります（WHO, 2000）。
+      </div>
+    </div>
+
+    <p class="ref">
+      Harris JA &amp; Benedict FG. A biometric study of human basal metabolism.<br>
+      <em>Proc Natl Acad Sci USA.</em> 1918;4(12):370–373.<br><br>
+      Roza AM &amp; Shizgal HM. The Harris Benedict equation reevaluated.<br>
+      <em>Am J Clin Nutr.</em> 1984;40(1):168–182.<br><br>
+      Hall KD et al. Quantification of the effect of energy imbalance on bodyweight.<br>
+      <em>Lancet.</em> 2011;378(9793):826–837.<br><br>
+      WHO. Obesity: Preventing and Managing the Global Epidemic. Geneva, 2000.<br><br>
+      脂肪 1 kg ≈ 7,200 kcal（Hall KD et al., 2011 に基づく推定値）
+    </p>
+
+  </div>
+</body>
+</html>
