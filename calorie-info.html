@@ -169,6 +169,14 @@
     .ref-item:last-child { border-bottom: none; }
     .ref-journal { color: #1B2A8A; font-style: italic; font-weight: 600; }
     .ref-if { display: inline-block; background: #f0f3ff; color: #1B2A8A; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+    /* Language toggle */
+    .lang-toggle { display: flex; gap: 6px; margin-top: 12px; }
+    .lang-btn { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.7); border-radius: 8px; padding: 5px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .lang-btn.active { background: white; color: #1B2A8A; border-color: white; }
+    .en { display: none; }
+    body.en-mode .ja { display: none !important; }
+    body.en-mode .en { display: revert !important; }
+    body.en-mode span.en { display: inline !important; }
   </style>
 </head>
 <body>
@@ -177,176 +185,229 @@
       <button class="back-btn" onclick="history.back()">‹ 戻る</button>
       <img src="data:image/png;base64,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" style="height:36px;width:auto;opacity:0.9;" alt="CVC">
     </div>
-    <h1>目標カロリーの算出根拠</h1>
-    <p>エビデンスに基づく3ステップの計算</p>
+    <h1><span class="ja">目標カロリーの算出根拠</span><span class="en">Calorie Target: The Science Behind the Numbers</span></h1>
+    <p><span class="ja">エビデンスに基づく3ステップの計算</span><span class="en">A 3-step calculation backed by evidence</span></p>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="ja" onclick="setLang('ja')">日本語</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
+    </div>
   </div>
 
   <div class="content">
 
     <div class="card">
-      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/><line x1="5" y1="8" x2="6.5" y2="8"/><line x1="9.5" y1="8" x2="11" y2="8"/></svg></span>計算の流れ</div>
-      <p>目標カロリーは、国際的に標準とされる3つのステップで算出しています。</p>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="3.5" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="12.5" cy="8" r="1.5"/><line x1="5" y1="8" x2="6.5" y2="8"/><line x1="9.5" y1="8" x2="11" y2="8"/></svg></span><span class="ja">計算の流れ</span><span class="en">How the Calculation Works</span></div>
+      <p class="ja">目標カロリーは、国際的に標準とされる3つのステップで算出しています。</p>
+      <p class="en">Your calorie target is calculated using three internationally standardized steps.</p>
       <div class="row">
-        <div class="badge"><span class="val">①</span>基礎代謝<br>（BMR）</div>
-        <div class="badge"><span class="val">②</span>総消費量<br>（TDEE）</div>
-        <div class="badge"><span class="val">③</span>目標<br>カロリー</div>
+        <div class="badge"><span class="val">①</span><span class="ja">基礎代謝<br>（BMR）</span><span class="en">Basal Metabolic<br>Rate (BMR)</span></div>
+        <div class="badge"><span class="val">②</span><span class="ja">総消費量<br>（TDEE）</span><span class="en">Total Daily<br>Expenditure (TDEE)</span></div>
+        <div class="badge"><span class="val">③</span><span class="ja">目標<br>カロリー</span><span class="en">Calorie<br>Target</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        <span class="step-badge">Step 1</span>基礎代謝（BMR）
+        <span class="step-badge">Step 1</span><span class="ja">基礎代謝（BMR）</span><span class="en">Basal Metabolic Rate (BMR)</span>
       </div>
-      <p>何もしなくても消費するカロリーを<strong>ハリス・ベネディクト改訂式</strong>で算出します。</p>
-      <div class="formula">
+      <p class="ja">何もしなくても消費するカロリーを<strong>ハリス・ベネディクト改訂式</strong>で算出します。</p>
+      <p class="en">Calories burned at complete rest are estimated using the <strong>revised Harris–Benedict equation</strong>.</p>
+      <div class="formula ja">
         <strong>男性：</strong>88.362 + (13.397 × 体重kg)<br>
         　　　+ (4.799 × 身長cm) − (5.677 × 年齢)<br><br>
         <strong>女性：</strong>447.593 + (9.247 × 体重kg)<br>
         　　　+ (3.098 × 身長cm) − (4.330 × 年齢)
       </div>
-      <div class="tip">
+      <div class="formula en">
+        <strong>Male:</strong> 88.362 + (13.397 × weight kg)<br>
+        　　　+ (4.799 × height cm) − (5.677 × age)<br><br>
+        <strong>Female:</strong> 447.593 + (9.247 × weight kg)<br>
+        　　　+ (3.098 × height cm) − (4.330 × age)
+      </div>
+      <div class="tip ja">
         例：40歳・男性・170cm・70kg の場合<br>
         BMR = 88.362 + 938.79 + 815.83 − 226.08 = <strong>約 1,617 kcal/日</strong>
       </div>
+      <div class="tip en">
+        Example: Male, age 40, 170 cm, 70 kg<br>
+        BMR = 88.362 + 938.79 + 815.83 − 226.08 = <strong>≈ 1,617 kcal/day</strong>
+      </div>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        Harris &amp; Benedict（1919）が提唱した原式をRoza &amp; Shizgal（1984）が大規模データで再検証・改訂。その後、Frankenfield ら（<span class="ref-journal">J Am Diet Assoc</span> 2005）が主要な5式を比較したメタ解析で、改訂ハリス・ベネディクト式は非肥満・肥満成人ともに誤差 10% 以内に収まる代表的な推定式と評価しています。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja">Harris &amp; Benedict（1919）が提唱した原式をRoza &amp; Shizgal（1984）が大規模データで再検証・改訂。その後、Frankenfield ら（<span class="ref-journal">J Am Diet Assoc</span> 2005）が主要な5式を比較したメタ解析で、改訂ハリス・ベネディクト式は非肥満・肥満成人ともに誤差 10% 以内に収まる代表的な推定式と評価しています。</span>
+        <span class="en">The original Harris &amp; Benedict (1919) equation was re-validated and revised by Roza &amp; Shizgal (1984) using large-scale data. A meta-analysis by Frankenfield et al. (<span class="ref-journal">J Am Diet Assoc</span> 2005) comparing five major equations confirmed that the revised Harris–Benedict equation remains within 10% error in both non-obese and obese adults.</span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        <span class="step-badge">Step 2</span>総消費カロリー（TDEE）
+        <span class="step-badge">Step 2</span><span class="ja">総消費カロリー（TDEE）</span><span class="en">Total Daily Energy Expenditure (TDEE)</span>
       </div>
-      <p>BMR に<strong>活動係数</strong>を掛けることで、実際の生活での消費カロリーを推定します。</p>
+      <p class="ja">BMR に<strong>活動係数</strong>を掛けることで、実際の生活での消費カロリーを推定します。</p>
+      <p class="en">Multiply your BMR by an <strong>activity factor</strong> to estimate total daily calorie expenditure in real life.</p>
       <table>
         <tr>
-          <th>活動レベル</th>
-          <th>係数</th>
-          <th>目安</th>
+          <th><span class="ja">活動レベル</span><span class="en">Activity Level</span></th>
+          <th><span class="ja">係数</span><span class="en">Factor</span></th>
+          <th><span class="ja">目安</span><span class="en">Description</span></th>
         </tr>
         <tr>
-          <td>座り仕事</td>
+          <td><span class="ja">座り仕事</span><span class="en">Sedentary</span></td>
           <td>× 1.2</td>
-          <td>その日ほぼ座って過ごした（歩数3,000以下）</td>
+          <td><span class="ja">その日ほぼ座って過ごした（歩数3,000以下）</span><span class="en">Almost entirely seated all day (fewer than 3,000 steps)</span></td>
         </tr>
         <tr>
-          <td>やや活動的</td>
+          <td><span class="ja">やや活動的</span><span class="en">Lightly active</span></td>
           <td>× 1.375</td>
-          <td>通勤・外出があり軽く動いた日（歩数5,000〜8,000）</td>
+          <td><span class="ja">通勤・外出があり軽く動いた日（歩数5,000〜8,000）</span><span class="en">Light movement from commuting or errands (5,000–8,000 steps)</span></td>
         </tr>
         <tr>
-          <td>活動的</td>
+          <td><span class="ja">活動的</span><span class="en">Active</span></td>
           <td>× 1.55</td>
-          <td>運動・立ち仕事などで活発に動いた日（歩数10,000以上）</td>
+          <td><span class="ja">運動・立ち仕事などで活発に動いた日（歩数10,000以上）</span><span class="en">Exercise or physically demanding work (10,000+ steps)</span></td>
         </tr>
       </table>
-      <div class="tip">
+      <div class="tip ja">
         上記の例（BMR 1,617 kcal）で「やや活動的」の場合<br>
         TDEE = 1,617 × 1.375 = <strong>約 2,223 kcal/日</strong>
       </div>
+      <div class="tip en">
+        Using the example above (BMR 1,617 kcal) at "lightly active":<br>
+        TDEE = 1,617 × 1.375 = <strong>≈ 2,223 kcal/day</strong>
+      </div>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        活動係数（Physical Activity Level; PAL）は、FAO/WHO/UNU 合同専門委員会が二重標識水（DLW）法による実測データをもとに策定（2004）。DLW 法は自由行動下の総エネルギー消費量を直接測定できる現在の「ゴールドスタンダード」です。Ainsworth ら（<span class="ref-journal">Med Sci Sports Exerc</span> 2011; IF ≈ 5.0）の身体活動メッツ（MET）コンペンディアムも係数算定の基盤となっています。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja">活動係数（Physical Activity Level; PAL）は、FAO/WHO/UNU 合同専門委員会が二重標識水（DLW）法による実測データをもとに策定（2004）。DLW 法は自由行動下の総エネルギー消費量を直接測定できる現在の「ゴールドスタンダード」です。Ainsworth ら（<span class="ref-journal">Med Sci Sports Exerc</span> 2011; IF ≈ 5.0）の身体活動メッツ（MET）コンペンディアムも係数算定の基盤となっています。</span>
+        <span class="en">Physical Activity Level (PAL) values were established by the joint FAO/WHO/UNU Expert Consultation (2004) using doubly labeled water (DLW) measurements. The DLW method is the current gold standard for directly measuring total energy expenditure under free-living conditions. The MET compendium by Ainsworth et al. (<span class="ref-journal">Med Sci Sports Exerc</span> 2011; IF ≈ 5.0) also underpins activity factor calculations.</span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-title">
-        <span class="step-badge">Step 3</span>目標カロリーの設定
+        <span class="step-badge">Step 3</span><span class="ja">目標カロリーの設定</span><span class="en">Setting Your Calorie Target</span>
       </div>
-      <p>脂肪1kgを消費するには約<strong>7,200 kcal</strong>の赤字が必要です。月の目標体重減少量から1日あたりの赤字を逆算します。</p>
+      <p class="ja">脂肪1kgを消費するには約<strong>7,200 kcal</strong>の赤字が必要です。月の目標体重減少量から1日あたりの赤字を逆算します。</p>
+      <p class="en">Burning 1 kg of fat requires a deficit of approximately <strong>7,200 kcal</strong>. Your daily calorie target is back-calculated from your monthly weight-loss goal.</p>
       <table>
         <tr>
-          <th>月の目標</th>
-          <th>1日の赤字</th>
-          <th>目標カロリー</th>
+          <th><span class="ja">月の目標</span><span class="en">Monthly Goal</span></th>
+          <th><span class="ja">1日の赤字</span><span class="en">Daily Deficit</span></th>
+          <th><span class="ja">目標カロリー</span><span class="en">Calorie Target</span></th>
         </tr>
-        <tr><td>現状維持</td><td>± 0 kcal</td><td>TDEE</td></tr>
-        <tr><td>月 0.5 kg 減</td><td>− 120 kcal</td><td>TDEE − 120</td></tr>
-        <tr><td>月 1 kg 減</td><td>− 240 kcal</td><td>TDEE − 240</td></tr>
-        <tr><td>月 2 kg 減</td><td>− 480 kcal</td><td>TDEE − 480</td></tr>
-        <tr><td>月 3 kg 減</td><td>− 720 kcal</td><td>TDEE − 720</td></tr>
+        <tr><td><span class="ja">現状維持</span><span class="en">Maintain weight</span></td><td>± 0 kcal</td><td>TDEE</td></tr>
+        <tr><td><span class="ja">月 0.5 kg 減</span><span class="en">−0.5 kg/month</span></td><td>− 120 kcal</td><td>TDEE − 120</td></tr>
+        <tr><td><span class="ja">月 1 kg 減</span><span class="en">−1 kg/month</span></td><td>− 240 kcal</td><td>TDEE − 240</td></tr>
+        <tr><td><span class="ja">月 2 kg 減</span><span class="en">−2 kg/month</span></td><td>− 480 kcal</td><td>TDEE − 480</td></tr>
+        <tr><td><span class="ja">月 3 kg 減</span><span class="en">−3 kg/month</span></td><td>− 720 kcal</td><td>TDEE − 720</td></tr>
       </table>
-      <div class="tip">
+      <div class="tip ja">
         <strong>安全な減量ペースは月 0.5〜1 kg</strong> が推奨されています。急激な制限は筋肉量の低下や代謝の低下を招く可能性があります（Jensen et al., <em>Circulation</em> 2014）。
       </div>
+      <div class="tip en">
+        <strong>A safe rate of loss is 0.5–1 kg per month.</strong> Rapid calorie restriction may cause loss of muscle mass and metabolic adaptation (Jensen et al., <em>Circulation</em> 2014).
+      </div>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        Hall ら（<span class="ref-journal">Lancet</span> 2011; IF ≈ 202）は数学的モデルで「500 kcal/日赤字＝週 1 ポンド減」という単純計算を否定し、体組成変化を反映した動的モデルが必要と示しました。Sacks ら（<span class="ref-journal">N Engl J Med</span> 2009; IF ≈ 91）は脂質・たんぱく質・炭水化物の比率を変えた 4 食事法を比較し、摂取カロリーの赤字量が最も体重変化に影響することを確認しています。AHA/ACC/TOS ガイドライン（<span class="ref-journal">Circulation</span> 2014; IF ≈ 37）は週 0.5〜1 kg（月 2〜4 kg まで）のペースを推奨しており、それ以上の急速減量は除脂肪体重の喪失と基礎代謝低下をまねくと勧告しています。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja">Hall ら（<span class="ref-journal">Lancet</span> 2011; IF ≈ 202）は数学的モデルで「500 kcal/日赤字＝週 1 ポンド減」という単純計算を否定し、体組成変化を反映した動的モデルが必要と示しました。Sacks ら（<span class="ref-journal">N Engl J Med</span> 2009; IF ≈ 91）は脂質・たんぱく質・炭水化物の比率を変えた 4 食事法を比較し、摂取カロリーの赤字量が最も体重変化に影響することを確認しています。AHA/ACC/TOS ガイドライン（<span class="ref-journal">Circulation</span> 2014; IF ≈ 37）は週 0.5〜1 kg（月 2〜4 kg まで）のペースを推奨しており、それ以上の急速減量は除脂肪体重の喪失と基礎代謝低下をまねくと勧告しています。</span>
+        <span class="en">Hall et al. (<span class="ref-journal">Lancet</span> 2011; IF ≈ 202) used a mathematical model to disprove the simple "500 kcal/day deficit = 1 lb/week loss" rule, showing that a dynamic model accounting for body composition changes is necessary. Sacks et al. (<span class="ref-journal">N Engl J Med</span> 2009; IF ≈ 91) compared four diets varying in fat, protein, and carbohydrate composition and confirmed that total calorie deficit is the primary driver of weight loss. The AHA/ACC/TOS guideline (<span class="ref-journal">Circulation</span> 2014; IF ≈ 37) recommends a pace of 0.5–1 kg/week and warns that faster weight loss leads to loss of lean mass and decreased basal metabolism.</span>
       </div>
     </div>
 
     <div class="ref-section">
-      <div class="ref-section-title">参考文献</div>
+      <div class="ref-section-title"><span class="ja">参考文献</span><span class="en">References</span></div>
 
-      <div style="font-size:11px;color:#999;margin-bottom:10px;">IF = 引用時点でのおよその Impact Factor</div>
+      <div style="font-size:11px;color:#999;margin-bottom:10px;"><span class="ja">IF = 引用時点でのおよその Impact Factor</span><span class="en">IF = approximate Impact Factor at time of citation</span></div>
 
       <div class="ref-item">
         Harris JA &amp; Benedict FG. A biometric study of human basal metabolism. <span class="ref-journal">Proc Natl Acad Sci USA.</span> 1918;4(12):370–373.<br>
-        <span style="font-size:11px;color:#888;">ハリス・ベネディクト式の原典。安静時エネルギー消費量の予測式を初めて定式化。</span>
+        <span class="ja" style="font-size:11px;color:#888;">ハリス・ベネディクト式の原典。安静時エネルギー消費量の予測式を初めて定式化。</span>
+        <span class="en" style="font-size:11px;color:#888;">Original Harris–Benedict paper. First formulation of a predictive equation for resting energy expenditure.</span>
       </div>
 
       <div class="ref-item">
         Roza AM &amp; Shizgal HM. The Harris Benedict equation reevaluated: resting energy requirements and the body cell mass. <span class="ref-journal">Am J Clin Nutr.</span> 1984;40(1):168–182. <span class="ref-if">IF ≈ 7.1</span><br>
-        <span style="font-size:11px;color:#888;">改訂ハリス・ベネディクト式の確立。現在広く使われている係数の根拠論文。</span>
+        <span class="ja" style="font-size:11px;color:#888;">改訂ハリス・ベネディクト式の確立。現在広く使われている係数の根拠論文。</span>
+        <span class="en" style="font-size:11px;color:#888;">Established the revised Harris–Benedict equation. The foundational paper for the coefficients in current widespread use.</span>
       </div>
 
       <div class="ref-item">
         Mifflin MD et al. A new predictive equation for resting energy expenditure in healthy individuals. <span class="ref-journal">Am J Clin Nutr.</span> 1990;51(2):241–247. <span class="ref-if">IF ≈ 7.1</span><br>
-        <span style="font-size:11px;color:#888;">Mifflin-St Jeor 式を提唱。改訂 HB 式と並んで精度が高いと評価される。</span>
+        <span class="ja" style="font-size:11px;color:#888;">Mifflin-St Jeor 式を提唱。改訂 HB 式と並んで精度が高いと評価される。</span>
+        <span class="en" style="font-size:11px;color:#888;">Proposed the Mifflin-St Jeor equation, rated alongside the revised HB equation for its high accuracy.</span>
       </div>
 
       <div class="ref-item">
         Frankenfield D et al. Comparison of predictive equations for resting metabolic rate in healthy nonobese and obese adults. <span class="ref-journal">J Am Diet Assoc.</span> 2005;105(5):775–789. <span class="ref-if">IF ≈ 4.8</span><br>
-        <span style="font-size:11px;color:#888;">主要5式を比較したメタ解析。改訂 HB 式は誤差 10% 以内で非肥満・肥満ともに有効と評価。</span>
+        <span class="ja" style="font-size:11px;color:#888;">主要5式を比較したメタ解析。改訂 HB 式は誤差 10% 以内で非肥満・肥満ともに有効と評価。</span>
+        <span class="en" style="font-size:11px;color:#888;">Meta-analysis comparing five major equations. The revised HB equation was found valid within 10% error for both non-obese and obese adults.</span>
       </div>
 
       <div class="ref-item">
         FAO/WHO/UNU. Human Energy Requirements. Report of a Joint Expert Consultation. <span class="ref-journal">WHO Technical Report.</span> Rome: FAO; 2004.<br>
-        <span style="font-size:11px;color:#888;">活動係数（PAL）の国際基準を二重標識水法データから策定した権威ある指針書。</span>
+        <span class="ja" style="font-size:11px;color:#888;">活動係数（PAL）の国際基準を二重標識水法データから策定した権威ある指針書。</span>
+        <span class="en" style="font-size:11px;color:#888;">Authoritative guideline establishing international standards for Physical Activity Level (PAL) based on doubly labeled water data.</span>
       </div>
 
       <div class="ref-item">
         Ainsworth BE et al. 2011 Compendium of Physical Activities: A second update of codes and MET values. <span class="ref-journal">Med Sci Sports Exerc.</span> 2011;43(8):1575–1581. <span class="ref-if">IF ≈ 5.0</span><br>
-        <span style="font-size:11px;color:#888;">800 種類以上の身体活動のMET値を収録した標準データベース。活動係数算定の基盤。</span>
+        <span class="ja" style="font-size:11px;color:#888;">800 種類以上の身体活動のMET値を収録した標準データベース。活動係数算定の基盤。</span>
+        <span class="en" style="font-size:11px;color:#888;">Standard database containing MET values for over 800 physical activities, underpinning activity factor calculation.</span>
       </div>
 
       <div class="ref-item">
         Westerterp KR. Physical activity and physical activity induced energy expenditure in humans. <span class="ref-journal">Front Physiol.</span> 2013;4:90. <span class="ref-if">IF ≈ 4.8</span><br>
-        <span style="font-size:11px;color:#888;">二重標識水法で計測した自由行動下エネルギー消費量と PAL 値の妥当性を包括的にレビュー。</span>
+        <span class="ja" style="font-size:11px;color:#888;">二重標識水法で計測した自由行動下エネルギー消費量と PAL 値の妥当性を包括的にレビュー。</span>
+        <span class="en" style="font-size:11px;color:#888;">Comprehensive review of free-living energy expenditure measured by doubly labeled water and the validity of PAL values.</span>
       </div>
 
       <div class="ref-item">
         Hall KD et al. Quantification of the effect of energy imbalance on bodyweight. <span class="ref-journal">Lancet.</span> 2011;378(9793):826–837. <span class="ref-if">IF ≈ 202</span><br>
-        <span style="font-size:11px;color:#888;">体重変化の数学的モデルを構築。「500 kcal/日赤字＝週 1 ポンド減」の単純計算を否定し、動的モデルの必要性を示した landmark paper。</span>
+        <span class="ja" style="font-size:11px;color:#888;">体重変化の数学的モデルを構築。「500 kcal/日赤字＝週 1 ポンド減」の単純計算を否定し、動的モデルの必要性を示した landmark paper。</span>
+        <span class="en" style="font-size:11px;color:#888;">Landmark paper constructing a mathematical model of body weight change, disproving the simple "500 kcal/day = 1 lb/week" rule and demonstrating the need for a dynamic model.</span>
       </div>
 
       <div class="ref-item">
         Sacks FM et al. Comparison of weight-loss diets with different compositions of fat, protein, and carbohydrates. <span class="ref-journal">N Engl J Med.</span> 2009;360(9):859–873. <span class="ref-if">IF ≈ 91</span><br>
-        <span style="font-size:11px;color:#888;">多施設 RCT（n=811）。マクロ栄養素の比率より総カロリー赤字量が体重減少の主規定因子であることを示した。</span>
+        <span class="ja" style="font-size:11px;color:#888;">多施設 RCT（n=811）。マクロ栄養素の比率より総カロリー赤字量が体重減少の主規定因子であることを示した。</span>
+        <span class="en" style="font-size:11px;color:#888;">Multi-center RCT (n=811) showing that total calorie deficit—not macronutrient composition—is the primary determinant of weight loss.</span>
       </div>
 
       <div class="ref-item">
         Thomas DM et al. Can a weight loss of one pound a week be achieved with a 3500-kcal deficit? <span class="ref-journal">Int J Obes.</span> 2013;37(12):1611–1613. <span class="ref-if">IF ≈ 9.0</span><br>
-        <span style="font-size:11px;color:#888;">動的モデルで実際の減量速度は時間経過とともに低下し、単純計算では過大評価されることを定量化。</span>
+        <span class="ja" style="font-size:11px;color:#888;">動的モデルで実際の減量速度は時間経過とともに低下し、単純計算では過大評価されることを定量化。</span>
+        <span class="en" style="font-size:11px;color:#888;">Dynamic model showing that actual weight loss rate diminishes over time and is overestimated by simple calorie calculations.</span>
       </div>
 
       <div class="ref-item">
         Jensen MD et al. 2013 AHA/ACC/TOS Guideline for the Management of Overweight and Obesity in Adults. <span class="ref-journal">Circulation.</span> 2014;129(25 Suppl 2):S102–138. <span class="ref-if">IF ≈ 37</span><br>
-        <span style="font-size:11px;color:#888;">米国心臓協会・米国心臓病学会・肥満学会の合同ガイドライン。週 0.5〜1 kg の段階的減量を推奨。</span>
+        <span class="ja" style="font-size:11px;color:#888;">米国心臓協会・米国心臓病学会・肥満学会の合同ガイドライン。週 0.5〜1 kg の段階的減量を推奨。</span>
+        <span class="en" style="font-size:11px;color:#888;">Joint AHA/ACC/TOS guideline recommending a gradual weight loss of 0.5–1 kg/week and warning against rapid reduction.</span>
       </div>
 
       <div class="ref-item">
         Leibel RL, Rosenbaum M &amp; Hirsch J. Changes in energy expenditure resulting from altered body weight. <span class="ref-journal">N Engl J Med.</span> 1995;332(10):621–628. <span class="ref-if">IF ≈ 91</span><br>
-        <span style="font-size:11px;color:#888;">体重減少時に安静時代謝が低下する「代謝適応」を実験的に実証。急速減量の代謝リスクを示す重要論文。</span>
+        <span class="ja" style="font-size:11px;color:#888;">体重減少時に安静時代謝が低下する「代謝適応」を実験的に実証。急速減量の代謝リスクを示す重要論文。</span>
+        <span class="en" style="font-size:11px;color:#888;">Experimental demonstration of "metabolic adaptation"—the reduction in resting metabolism during weight loss. Key paper on the metabolic risks of rapid weight reduction.</span>
       </div>
 
       <div style="font-size:11px;color:#AAA;margin-top:10px;line-height:1.8;">
-        脂肪 1 kg ≈ 7,200 kcal（Hall KD et al., Lancet 2011 に基づく推定値）
+        <span class="ja">脂肪 1 kg ≈ 7,200 kcal（Hall KD et al., Lancet 2011 に基づく推定値）</span>
+        <span class="en">1 kg of fat ≈ 7,200 kcal (estimated based on Hall KD et al., Lancet 2011)</span>
       </div>
     </div>
 
   </div>
+
+  <script>
+    function setLang(l) {
+      document.body.classList.toggle('en-mode', l === 'en');
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+      localStorage.setItem('calorie_app_lang', l);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const l = localStorage.getItem('calorie_app_lang') || 'ja';
+      setLang(l);
+    });
+  </script>
 </body>
 </html>

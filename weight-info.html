@@ -127,6 +127,14 @@
     .ref-item:last-child { border-bottom: none; }
     .ref-journal { color: #1B2A8A; font-style: italic; font-weight: 600; }
     .ref-if { display: inline-block; background: #f0f3ff; color: #1B2A8A; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+    /* Language toggle */
+    .lang-toggle { display: flex; gap: 6px; margin-top: 12px; }
+    .lang-btn { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35); color: rgba(255,255,255,.7); border-radius: 8px; padding: 5px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .lang-btn.active { background: white; color: #1B2A8A; border-color: white; }
+    .en { display: none; }
+    body.en-mode .ja { display: none !important; }
+    body.en-mode .en { display: revert !important; }
+    body.en-mode span.en { display: inline !important; }
   </style>
 </head>
 <body>
@@ -135,65 +143,95 @@
       <button class="back-btn" onclick="history.back()">‹ 戻る</button>
       <img src="data:image/png;base64,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" style="height:36px;width:auto;opacity:0.9;" alt="CVC">
     </div>
-    <h1>体重の変動について</h1>
-    <p>日々の増減を正しく理解するために</p>
+    <h1><span class="ja">体重の変動について</span><span class="en">Understanding Weight Fluctuations</span></h1>
+    <p><span class="ja">日々の増減を正しく理解するために</span><span class="en">A science-based guide to interpreting daily changes</span></p>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="ja" onclick="setLang('ja')">日本語</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">English</button>
+    </div>
   </div>
 
   <div class="content">
 
     <div class="card">
-      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 9c1.5-3.5 3-3.5 4.5 0s3 3.5 4.5 0 3-3.5 4.5 0"/></svg></span>体重は毎日変動します</div>
-      <p>体重は食事・水分・排泄などの影響を受けるため、同じ人でも1日のうちに1〜3kgの差が出ることがあります。これは体脂肪の増減ではなく、体内の水分量の変化です。</p>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 9c1.5-3.5 3-3.5 4.5 0s3 3.5 4.5 0 3-3.5 4.5 0"/></svg></span><span class="ja">体重は毎日変動します</span><span class="en">Daily Weight Fluctuations Are Normal</span></div>
+      <p class="ja">体重は食事・水分・排泄などの影響を受けるため、同じ人でも1日のうちに1〜3kgの差が出ることがあります。これは体脂肪の増減ではなく、体内の水分量の変化です。</p>
+      <p class="en">Body weight is influenced by food intake, fluid intake, and bowel movements. The same person can fluctuate by 1–3 kg within a single day. This reflects changes in body water content—not changes in body fat.</p>
       <div class="row">
-        <div class="badge"><span class="val">1〜3<small style="font-size:12px">kg</small></span>1日の自然な<br>変動幅</div>
-        <div class="badge"><span class="val">7,200<small style="font-size:11px">kcal</small></span>脂肪1kg分の<br>カロリー</div>
+        <div class="badge"><span class="val">1〜3<small style="font-size:12px">kg</small></span><span class="ja">1日の自然な<br>変動幅</span><span class="en">Natural daily<br>variation range</span></div>
+        <div class="badge"><span class="val">7,200<small style="font-size:11px">kcal</small></span><span class="ja">脂肪1kg分の<br>カロリー</span><span class="en">Energy in<br>1 kg of fat</span></div>
       </div>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        Racette ら（<span class="ref-journal">Obesity</span> 2008; IF ≈ 9）は成人の体重が週末ライフスタイルの変化だけで平日比 0.5〜1 kg 増加することを実測。Hall ら（<span class="ref-journal">Lancet</span> 2011; IF ≈ 202）の動的モデルでは、体脂肪 1 kg の増減には約 7,200 kcal の収支変化が必要と定量化されており、1〜2 kg 程度の日々の体重変動は水分・食物内容量の変化であることが示されています。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja">Racette ら（<span class="ref-journal">Obesity</span> 2008; IF ≈ 9）は成人の体重が週末ライフスタイルの変化だけで平日比 0.5〜1 kg 増加することを実測。Hall ら（<span class="ref-journal">Lancet</span> 2011; IF ≈ 202）の動的モデルでは、体脂肪 1 kg の増減には約 7,200 kcal の収支変化が必要と定量化されており、1〜2 kg 程度の日々の体重変動は水分・食物内容量の変化であることが示されています。</span>
+        <span class="en">Racette et al. (<span class="ref-journal">Obesity</span> 2008; IF ≈ 9) measured that body weight increases by 0.5–1 kg from weekdays to weekends due to lifestyle changes alone. Hall et al. (<span class="ref-journal">Lancet</span> 2011; IF ≈ 202) quantified that approximately 7,200 kcal are required to change body fat by 1 kg, confirming that daily fluctuations of 1–2 kg represent changes in fluid and food content.</span>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="5" x2="13" y2="5"/><line x1="7" y1="8.5" x2="13" y2="8.5"/><line x1="7" y1="12" x2="13" y2="12"/><circle cx="3.5" cy="5" r="1" fill="#1B2A8A" stroke="none"/><circle cx="3.5" cy="8.5" r="1" fill="#1B2A8A" stroke="none"/><circle cx="3.5" cy="12" r="1" fill="#1B2A8A" stroke="none"/></svg></span>主な変動の原因</div>
-      <ul>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="5" x2="13" y2="5"/><line x1="7" y1="8.5" x2="13" y2="8.5"/><line x1="7" y1="12" x2="13" y2="12"/><circle cx="3.5" cy="5" r="1" fill="#1B2A8A" stroke="none"/><circle cx="3.5" cy="8.5" r="1" fill="#1B2A8A" stroke="none"/><circle cx="3.5" cy="12" r="1" fill="#1B2A8A" stroke="none"/></svg></span><span class="ja">主な変動の原因</span><span class="en">Common Causes of Weight Fluctuation</span></div>
+      <ul class="ja">
         <li><strong>食事・水分</strong>：食後は食べた分だけ体重が増えます</li>
         <li><strong>排泄</strong>：排便・排尿で 0.5〜1kg 前後減ります</li>
         <li><strong>塩分</strong>：塩辛いものを食べると水分を多く保持します</li>
         <li><strong>運動</strong>：発汗で一時的に体重が減少します</li>
         <li><strong>ホルモン</strong>：女性は月経周期に伴い変動します</li>
       </ul>
+      <ul class="en">
+        <li><strong>Food &amp; fluids:</strong> Weight increases by the amount of food and fluid consumed</li>
+        <li><strong>Bowel movements:</strong> Urination and defecation can reduce weight by 0.5–1 kg</li>
+        <li><strong>Salt:</strong> High-sodium foods cause the body to retain more water</li>
+        <li><strong>Exercise:</strong> Sweating temporarily reduces body weight</li>
+        <li><strong>Hormones:</strong> In women, weight fluctuates with the menstrual cycle</li>
+      </ul>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        <strong>塩分と水分保持：</strong>Graudal ら（<span class="ref-journal">Am J Hypertens</span> 2012; IF ≈ 3.5）のメタ解析（n=6,250）で、高塩分食は腎臓でのナトリウム再吸収を促しアルドステロン分泌を抑制することで細胞外液量が増加することを確認。<strong>発汗と体重：</strong>Maughan &amp; Shirreffs（<span class="ref-journal">Scand J Med Sci Sports</span> 2010; IF ≈ 4.5）は運動 1 時間で体重の 1〜2% 相当（0.5〜1.5 kg）が発汗で失われることを報告。<strong>月経周期：</strong>Stachenfeld（<span class="ref-journal">Exerc Sport Sci Rev</span> 2008; IF ≈ 4.5）は、黄体期にプロゲステロンが腎臓の Na 再吸収を促進し体水分量が 1〜2 L 増加することを実証しています。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja"><strong>塩分と水分保持：</strong>Graudal ら（<span class="ref-journal">Am J Hypertens</span> 2012; IF ≈ 3.5）のメタ解析（n=6,250）で、高塩分食は腎臓でのナトリウム再吸収を促しアルドステロン分泌を抑制することで細胞外液量が増加することを確認。<strong>発汗と体重：</strong>Maughan &amp; Shirreffs（<span class="ref-journal">Scand J Med Sci Sports</span> 2010; IF ≈ 4.5）は運動 1 時間で体重の 1〜2% 相当（0.5〜1.5 kg）が発汗で失われることを報告。<strong>月経周期：</strong>Stachenfeld（<span class="ref-journal">Exerc Sport Sci Rev</span> 2008; IF ≈ 4.5）は、黄体期にプロゲステロンが腎臓の Na 再吸収を促進し体水分量が 1〜2 L 増加することを実証しています。</span>
+        <span class="en"><strong>Salt &amp; fluid retention:</strong> Graudal et al. (<span class="ref-journal">Am J Hypertens</span> 2012; IF ≈ 3.5) meta-analysis (n=6,250) found that high-sodium diets increase extracellular fluid volume by suppressing aldosterone and enhancing renal sodium reabsorption. <strong>Sweating:</strong> Maughan &amp; Shirreffs (<span class="ref-journal">Scand J Med Sci Sports</span> 2010; IF ≈ 4.5) reported that 0.5–1.5 kg (1–2% body weight) is lost through sweating during 1 hour of exercise. <strong>Menstrual cycle:</strong> Stachenfeld (<span class="ref-journal">Exerc Sport Sci Rev</span> 2008; IF ≈ 4.5) demonstrated that progesterone during the luteal phase promotes renal sodium reabsorption, increasing total body water by 1–2 L.</span>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><line x1="8" y1="6" x2="8" y2="9"/><line x1="8" y1="9" x2="10.5" y2="9"/><line x1="5.5" y1="1.5" x2="7" y2="3"/><line x1="10.5" y1="1.5" x2="9" y2="3"/></svg></span>正確に計測するコツ</div>
-      <ul>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="9" r="5.5"/><line x1="8" y1="6" x2="8" y2="9"/><line x1="8" y1="9" x2="10.5" y2="9"/><line x1="5.5" y1="1.5" x2="7" y2="3"/><line x1="10.5" y1="1.5" x2="9" y2="3"/></svg></span><span class="ja">正確に計測するコツ</span><span class="en">Tips for Accurate Measurement</span></div>
+      <ul class="ja">
         <li>毎朝、起床後・排泄後・食前に計測する</li>
         <li>同じ服装（できれば裸）で計測する</li>
         <li>同じ体重計を使う</li>
       </ul>
-      <div class="tip">
+      <ul class="en">
+        <li>Weigh every morning after waking, after using the toilet, and before eating</li>
+        <li>Wear the same clothing each time (ideally none)</li>
+        <li>Always use the same scale</li>
+      </ul>
+      <div class="tip ja">
         1回の数値に一喜一憂せず、<strong>1週間〜1ヶ月の傾向</strong>で判断することが大切です。グラフの点線帯（±0.5kg）や薄色帯（±1.5kg）は、この自然な変動幅を示しています。
       </div>
+      <div class="tip en">
+        Rather than reacting to individual readings, focus on the <strong>trend over 1 week to 1 month</strong>. The dotted band (±0.5 kg) and shaded area (±1.5 kg) on the graph represent this normal range of variation.
+      </div>
       <div class="evidence">
-        <span class="evidence-label">📄 エビデンス</span>
-        Steinberg ら（<span class="ref-journal">J Acad Nutr Diet</span> 2015; IF ≈ 4.5）のRCT（n=91）で、毎朝の体重測定習慣が6ヶ月で有意な体重減少と行動変容をもたらすことを証明。Wing ら（<span class="ref-journal">N Engl J Med</span> 2006; IF ≈ 91）の大規模試験でも、毎日の自己体重測定が体重維持の最も強力な予測因子のひとつであることが示されています。起床直後・排泄後・食前という測定条件は、日内変動の影響を最小化する標準プロトコルとして国際的に推奨されています（Linde et al., <span class="ref-journal">Ann Behav Med</span> 2005）。
+        <span class="evidence-label">📄 Evidence</span>
+        <span class="ja">Steinberg ら（<span class="ref-journal">J Acad Nutr Diet</span> 2015; IF ≈ 4.5）のRCT（n=91）で、毎朝の体重測定習慣が6ヶ月で有意な体重減少と行動変容をもたらすことを証明。Wing ら（<span class="ref-journal">N Engl J Med</span> 2006; IF ≈ 91）の大規模試験でも、毎日の自己体重測定が体重維持の最も強力な予測因子のひとつであることが示されています。起床直後・排泄後・食前という測定条件は、日内変動の影響を最小化する標準プロトコルとして国際的に推奨されています（Linde et al., <span class="ref-journal">Ann Behav Med</span> 2005）。</span>
+        <span class="en">Steinberg et al. (<span class="ref-journal">J Acad Nutr Diet</span> 2015; IF ≈ 4.5) RCT (n=91) confirmed that daily morning weighing led to significant weight loss and behavioral improvement over 6 months. Wing et al. (<span class="ref-journal">N Engl J Med</span> 2006; IF ≈ 91) showed that daily self-weighing is one of the strongest predictors of sustained weight maintenance. Weighing after waking, after toileting, and before eating minimizes intraday variation and is the internationally recommended standard protocol (Linde et al., <span class="ref-journal">Ann Behav Med</span> 2005).</span>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 5.5,8 9,6 14,11"/><polyline points="10.5,11 14,11 14,7.5"/></svg></span>このアプリのグラフの見方</div>
-      <p>グラフに表示されている帯・点線の意味：</p>
-      <ul style="margin-top:10px;">
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,4 5.5,8 9,6 14,11"/><polyline points="10.5,11 14,11 14,7.5"/></svg></span><span class="ja">このアプリのグラフの見方</span><span class="en">How to Read the Graph</span></div>
+      <p class="ja">グラフに表示されている帯・点線の意味：</p>
+      <p class="en">What the lines and bands on the graph mean:</p>
+      <ul class="ja" style="margin-top:10px;">
         <li><strong>実線</strong>：実際に記録した体重</li>
         <li><strong>点線（±0.5kg）</strong>：日常的な変動の目安</li>
         <li><strong>薄色の帯（±1.5kg）</strong>：水分・排泄を含む最大変動幅</li>
       </ul>
-      <p style="margin-top:10px;">トレンド（傾き）が下向きであれば、一時的な増加があっても減量は進んでいます。</p>
+      <ul class="en" style="margin-top:10px;">
+        <li><strong>Solid line:</strong> Recorded body weight</li>
+        <li><strong>Dotted lines (±0.5 kg):</strong> Typical daily variation range</li>
+        <li><strong>Shaded band (±1.5 kg):</strong> Maximum variation including fluid and bowel changes</li>
+      </ul>
+      <p class="ja" style="margin-top:10px;">トレンド（傾き）が下向きであれば、一時的な増加があっても減量は進んでいます。</p>
+      <p class="en" style="margin-top:10px;">If the overall trend is downward, weight loss is progressing even if there are temporary increases.</p>
     </div>
 
     <div class="ref-section">
@@ -202,50 +240,71 @@
 
       <div class="ref-item">
         Hall KD et al. Quantification of the effect of energy imbalance on bodyweight. <span class="ref-journal">Lancet.</span> 2011;378(9793):826–837. <span class="ref-if">IF ≈ 202</span><br>
-        <span style="font-size:11px;color:#888;">脂肪 1 kg ≈ 7,200 kcal の定量化。日々の体重変動が水分変化であることを数学的に示した landmark paper。</span>
+        <span class="ja" style="font-size:11px;color:#888;">脂肪 1 kg ≈ 7,200 kcal の定量化。日々の体重変動が水分変化であることを数学的に示した landmark paper。</span>
+        <span class="en" style="font-size:11px;color:#888;">Landmark paper quantifying that ~7,200 kcal are needed to change fat by 1 kg, demonstrating that daily fluctuations reflect fluid changes.</span>
       </div>
 
       <div class="ref-item">
         Wing RR et al. A self-regulation program for maintenance of weight loss. <span class="ref-journal">N Engl J Med.</span> 2006;355(15):1563–1571. <span class="ref-if">IF ≈ 91</span><br>
-        <span style="font-size:11px;color:#888;">大規模 RCT（n=314）。毎日の自己体重測定が体重再増加の抑制に有効であることを実証。</span>
+        <span class="ja" style="font-size:11px;color:#888;">大規模 RCT（n=314）。毎日の自己体重測定が体重再増加の抑制に有効であることを実証。</span>
+        <span class="en" style="font-size:11px;color:#888;">Large RCT (n=314) demonstrating that daily self-weighing is effective in preventing weight regain.</span>
       </div>
 
       <div class="ref-item">
         Racette SB et al. Influence of weekend lifestyle patterns on body weight. <span class="ref-journal">Obesity.</span> 2008;16(8):1826–1830. <span class="ref-if">IF ≈ 9.0</span><br>
-        <span style="font-size:11px;color:#888;">週末の食事・活動パターンだけで体重が 0.5〜1 kg 変動することを実測。日々のブレは正常であることを示す。</span>
+        <span class="ja" style="font-size:11px;color:#888;">週末の食事・活動パターンだけで体重が 0.5〜1 kg 変動することを実測。日々のブレは正常であることを示す。</span>
+        <span class="en" style="font-size:11px;color:#888;">Measured that body weight varies by 0.5–1 kg from weekdays to weekends due to lifestyle changes alone, confirming that daily fluctuations are normal.</span>
       </div>
 
       <div class="ref-item">
         Steinberg DM et al. Weighing every day matters: daily weighing improves weight loss and adoption of weight control behaviors. <span class="ref-journal">J Acad Nutr Diet.</span> 2015;115(4):511–518. <span class="ref-if">IF ≈ 4.5</span><br>
-        <span style="font-size:11px;color:#888;">RCT（n=91）。毎朝の体重測定で 6 ヶ月間に有意な体重減少と健康行動の改善を確認。</span>
+        <span class="ja" style="font-size:11px;color:#888;">RCT（n=91）。毎朝の体重測定で 6 ヶ月間に有意な体重減少と健康行動の改善を確認。</span>
+        <span class="en" style="font-size:11px;color:#888;">RCT (n=91) confirming that daily morning weighing led to significant weight loss and behavioral improvement over 6 months.</span>
       </div>
 
       <div class="ref-item">
         Linde JA et al. Self-weighing in weight gain prevention and weight loss trials. <span class="ref-journal">Ann Behav Med.</span> 2005;30(3):210–216. <span class="ref-if">IF ≈ 5.0</span><br>
-        <span style="font-size:11px;color:#888;">起床後・排泄後・食前という測定プロトコルの標準化と、頻繁な自己測定が行動変容を促すことをレビュー。</span>
+        <span class="ja" style="font-size:11px;color:#888;">起床後・排泄後・食前という測定プロトコルの標準化と、頻繁な自己測定が行動変容を促すことをレビュー。</span>
+        <span class="en" style="font-size:11px;color:#888;">Review establishing the standard measurement protocol (after waking, after toileting, before eating) and confirming that frequent self-weighing promotes behavioral change.</span>
       </div>
 
       <div class="ref-item">
         Graudal NA et al. Effects of low sodium diet versus high sodium diet on blood pressure, renin, aldosterone, catecholamines, cholesterol, and triglyceride. <span class="ref-journal">Am J Hypertens.</span> 2012;25(1):1–15. <span class="ref-if">IF ≈ 3.5</span><br>
-        <span style="font-size:11px;color:#888;">メタ解析（n=6,250）。高塩分食が細胞外液量を増加させ体重変動を引き起こすメカニズムを定量化。</span>
+        <span class="ja" style="font-size:11px;color:#888;">メタ解析（n=6,250）。高塩分食が細胞外液量を増加させ体重変動を引き起こすメカニズムを定量化。</span>
+        <span class="en" style="font-size:11px;color:#888;">Meta-analysis (n=6,250) quantifying the mechanism by which high-sodium diets increase extracellular fluid volume and cause weight fluctuations.</span>
       </div>
 
       <div class="ref-item">
         Stachenfeld NS. Sex hormone effects on body fluid regulation. <span class="ref-journal">Exerc Sport Sci Rev.</span> 2008;36(3):152–159. <span class="ref-if">IF ≈ 4.5</span><br>
-        <span style="font-size:11px;color:#888;">黄体期にプロゲステロンが Na 再吸収を促進し体水分量が 1〜2 L 増加することを実証。月経周期による体重変動の根拠。</span>
+        <span class="ja" style="font-size:11px;color:#888;">黄体期にプロゲステロンが Na 再吸収を促進し体水分量が 1〜2 L 増加することを実証。月経周期による体重変動の根拠。</span>
+        <span class="en" style="font-size:11px;color:#888;">Demonstrated that progesterone in the luteal phase promotes renal Na reabsorption, increasing total body water by 1–2 L—the basis for menstrual cycle weight fluctuations.</span>
       </div>
 
       <div class="ref-item">
         Maughan RJ &amp; Shirreffs SM. Dehydration and rehydration in competitive sport. <span class="ref-journal">Scand J Med Sci Sports.</span> 2010;20 Suppl 3:40–47. <span class="ref-if">IF ≈ 4.5</span><br>
-        <span style="font-size:11px;color:#888;">運動 1 時間で体重の 1〜2% 相当が発汗で失われること、脱水が体重に与える影響を定量化。</span>
+        <span class="ja" style="font-size:11px;color:#888;">運動 1 時間で体重の 1〜2% 相当が発汗で失われること、脱水が体重に与える影響を定量化。</span>
+        <span class="en" style="font-size:11px;color:#888;">Quantified that 0.5–1.5 kg (1–2% body weight) is lost through sweating during 1 hour of exercise and the impact of dehydration on body weight.</span>
       </div>
 
       <div class="ref-item">
         VanWormer JJ et al. The impact of regular self-weighing on weight management: a systematic literature review. <span class="ref-journal">J Nutr Educ Behav.</span> 2009;40(3):153–158. <span class="ref-if">IF ≈ 3.5</span><br>
-        <span style="font-size:11px;color:#888;">系統的レビュー。定期的な体重自己測定が体重管理において一貫してポジティブな効果を示すことを確認。</span>
+        <span class="ja" style="font-size:11px;color:#888;">系統的レビュー。定期的な体重自己測定が体重管理において一貫してポジティブな効果を示すことを確認。</span>
+        <span class="en" style="font-size:11px;color:#888;">Systematic review confirming that regular self-weighing consistently shows positive effects on weight management outcomes.</span>
       </div>
     </div>
 
   </div>
+
+  <script>
+    function setLang(l) {
+      document.body.classList.toggle('en-mode', l === 'en');
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+      localStorage.setItem('calorie_app_lang', l);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const l = localStorage.getItem('calorie_app_lang') || 'ja';
+      setLang(l);
+    });
+  </script>
 </body>
 </html>
