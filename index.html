@@ -38,50 +38,33 @@
         radial-gradient(ellipse 80% 55% at 50% 20%, rgba(30,55,180,.55) 0%, transparent 70%),
         radial-gradient(ellipse 60% 40% at 80% 80%, rgba(10,20,90,.4) 0%, transparent 60%);
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 40px 32px 48px;
+      align-items: center;
       transition: opacity .5s ease;
     }
     #splashScreen.fade-out { opacity: 0; pointer-events: none; }
+    .splash-top {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+    }
     .splash-logo {
-      width: 80vw; height: 80vw; max-width: 360px; max-height: 360px;
-      margin-bottom: 20px;
+      width: 80vw; height: 80vw; max-width: 340px; max-height: 340px;
       filter: brightness(0) invert(1);
       opacity: .95;
     }
-    .splash-app-name {
-      font-size: 10px; font-weight: 700; letter-spacing: .22em;
-      color: rgba(255,255,255,.35); text-transform: uppercase; margin-bottom: 10px;
+    .splash-bottom {
+      width: 100%; padding: 0 32px 52px;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
     }
     .splash-title {
-      font-size: 27px; font-weight: 800; color: white;
-      text-align: center; line-height: 1.35; margin-bottom: 8px;
+      font-size: 22px; font-weight: 800; color: white;
+      text-align: center; line-height: 1.35;
       text-shadow: 0 2px 20px rgba(80,120,255,.3);
     }
     .splash-clinic {
       font-size: 11px; color: rgba(255,255,255,.35); letter-spacing: .08em;
-      margin-bottom: 44px;
+      margin-bottom: 8px;
     }
-    .splash-features {
-      width: 100%; max-width: 280px;
-      display: flex; flex-direction: column; gap: 16px;
-      margin-bottom: 52px;
-    }
-    .splash-feature {
-      display: flex; align-items: center; gap: 14px;
-    }
-    .splash-feature-icon {
-      width: 40px; height: 40px; flex-shrink: 0;
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .splash-feature-text { color: rgba(255,255,255,.8); font-size: 14px; line-height: 1.4; }
-    .splash-feature-text strong { color: rgba(255,255,255,.95); font-weight: 700; display: block; font-size: 14px; }
-    .splash-feature-text span { font-size: 12px; color: rgba(255,255,255,.4); }
     .splash-start-btn {
-      width: 100%; max-width: 280px;
+      width: 100%;
       background: rgba(255,255,255,.95); color: #0d1650;
       border: none; border-radius: 14px;
       padding: 16px 0; font-size: 16px; font-weight: 800;
@@ -464,55 +447,19 @@
 
 <!-- ━━━ SPLASH SCREEN ━━━ -->
 <div id="splashScreen">
-  <img class="splash-logo" src="logo_transparent.png" alt="CVC">
-
-  <div class="splash-app-name">Calorie Management App</div>
-  <div class="splash-title">体重・カロリーを<br>記録する</div>
-  <div class="splash-clinic">木更津心臓血管クリニック</div>
-
-  <div class="splash-features">
-    <div class="splash-feature">
-      <div class="splash-feature-icon">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10 3 L10 17 M3 10 L17 10"/>
-        </svg>
-      </div>
-      <div class="splash-feature-text">
-        <strong>食事を記録する</strong>
-        <span>写真または手入力でカロリーを管理</span>
-      </div>
-    </div>
-    <div class="splash-feature">
-      <div class="splash-feature-icon">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="10" cy="10" r="7"/>
-          <path d="M10 6 L10 10 L13 12"/>
-        </svg>
-      </div>
-      <div class="splash-feature-text">
-        <strong>消費カロリーを把握する</strong>
-        <span>活動量から1日の収支を自動計算</span>
-      </div>
-    </div>
-    <div class="splash-feature">
-      <div class="splash-feature-icon">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3,14 7,10 11,12 17,6"/>
-        </svg>
-      </div>
-      <div class="splash-feature-text">
-        <strong>体重の変化を追う</strong>
-        <span>グラフで長期トレンドを可視化</span>
-      </div>
-    </div>
+  <div class="splash-top">
+    <img class="splash-logo" src="logo_transparent.png" alt="CVC">
   </div>
-
-  <button class="splash-start-btn" onclick="enterApp()">
-    始める
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="6,3 11,8 6,13"/>
-    </svg>
-  </button>
+  <div class="splash-bottom">
+    <div class="splash-title">体重・カロリーを<br>記録する</div>
+    <div class="splash-clinic">木更津心臓血管クリニック</div>
+    <button class="splash-start-btn" onclick="enterApp()">
+      始める
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0d1650" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6,3 11,8 6,13"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <!-- ━━━ SETUP SCREEN ━━━ -->
