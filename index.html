@@ -1630,8 +1630,8 @@ function renderCalChart(data, mode='week') {
   data.forEach((d,i) => {
     const dayTarget = d.target || fixedTarget;
     const x = pl+i*barW+barW*.1, bw = barW*.8, y = sy(d.total), bh = H-pb-y;
-    const color = d.total > dayTarget ? '#E74C3C' : '#1B2A8A';
-    out += `<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(bh,0)}" rx="3" fill="${color}" opacity="0.85"/>`;
+    const color = d.total > dayTarget ? '#C0392B' : '#1B2A8A';
+    out += `<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(bh,0)}" rx="3" fill="${color}"/>`;
     // 週・月モード: その日の目標ティックマーク（常に見えるオレンジ）
     if (mode !== 'year') {
       const ty = sy(dayTarget);
