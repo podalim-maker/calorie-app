@@ -671,7 +671,7 @@
       <button class="btn-main" id="analyzeBtn" style="display:none;" onclick="doAnalyze()">
         🤖 AIでカロリーを推定する
       </button>
-      <button class="btn-sub" id="manualBtn" style="display:none;" onclick="showStep('manual')">
+      <button class="btn-sub" id="manualBtn" onclick="showStep('manual')">
         ✏️ 手動で入力する
       </button>
       <button class="btn-sub" onclick="closeAdd()">キャンセル</button>
@@ -1056,7 +1056,6 @@ function clearToday() {
 function openAdd() {
   pendingPhoto = null;
   document.getElementById('analyzeBtn').style.display = 'none';
-  document.getElementById('manualBtn').style.display = 'none';
   document.getElementById('manualName').value = '';
   document.getElementById('manualKcal').value = '';
   document.getElementById('addModalTitle').textContent = addingForDate ? (() => {
