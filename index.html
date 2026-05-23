@@ -1367,7 +1367,7 @@ function renderHome() {
   }
   const bal = mIntake - mTdee;
   const fat = (bal/7200).toFixed(2);
-  const bColor = bal >= 0 ? '#FF8A80' : '#69F0AE';
+  const bColor = bal >= 0 ? '#FF8A80' : '#FFFFFF';
   const bSign  = bal >= 0 ? '+' : '';
   document.getElementById('hMonthBody').innerHTML = mDays === 0
     ? `<div style="color:rgba(255,255,255,.4);font-size:13px;">まだ記録がありません</div>`
