@@ -1717,14 +1717,14 @@ function renderWeightChartCurrent() {
     }
     if (label) label.textContent = `${year}年${month+1}月`;
     if (nextBtn) nextBtn.disabled = isCurrentMonth;
-    renderWeightChart(data, false, 'month');
+    renderWeightChart(data, 'month');
   } else if (weightChartMode === 'year') {
     const { year } = wcYear;
     const isCurrentYear = (year === now.getFullYear());
     const data = getYearWeightData(year);
     if (label) label.textContent = `${year}年`;
     if (nextBtn) nextBtn.disabled = isCurrentYear;
-    renderWeightChart(data, false, 'year');
+    renderWeightChart(data, 'year');
   } else {
     const { startYear } = wcFiveYear;
     const endYear = startYear + 4;
@@ -1732,7 +1732,7 @@ function renderWeightChartCurrent() {
     const data = getFiveYearWeightData(startYear);
     if (label) label.textContent = `${startYear}〜${endYear}年`;
     if (nextBtn) nextBtn.disabled = isCurrentPeriod;
-    renderWeightChart(data, false, '5year');
+    renderWeightChart(data, '5year');
   }
 }
 
@@ -1776,15 +1776,12 @@ function getFiveYearWeightData(startYear) {
   }
   return result;
 }
-function renderWeightChart(data, isSample=false, mode='month') {
+function renderWeightChart(data, mode='month') {
   const W=320, H=150, pt=20, pr=10, pb=36, pl=44;
   const ws = data.map(d=>d.w).filter(w=>w!==null);
   if (ws.length < 2) {
-    const base = cfg?.weight || 70;
-    const sampleDays = data.map((d,i) => ({
-      d: d.d, w: Math.round((base + Math.sin(i/3.5)*0.7 - i/data.length*0.8)*10)/10, label: d.label
-    }));
-    renderWeightChart(sampleDays, true, mode);
+    document.getElementById('weightChart').innerHTML =
+      `<div style="height:150px;display:flex;align-items:center;justify-content:center;color:#CCC;font-size:13px;">体重を記録するとグラフが表示されます</div>`;
     return;
   }
   const minW = Math.min(...ws)-1.8, maxW = Math.max(...ws)+1.8;
@@ -1832,8 +1829,7 @@ function renderWeightChart(data, isSample=false, mode='month') {
   const poly = pts.length>1 ? `<polyline points="${pts.join(' ')}" fill="none" stroke="#1A0E6E" stroke-width="2"/>` : '';
   xl += `<text x="${pl-4}" y="${pt-4}" text-anchor="end" font-size="8" fill="#BBB">kg</text>`;
   xl += `<text x="${W-pr}" y="${pt-4}" text-anchor="end" font-size="9" fill="#AAA" opacity=".6">― ±0.5  ··· ±1.5kg</text>`;
-  const sampleNote = isSample ? `<p style="text-align:center;font-size:11px;color:#BBB;margin-top:6px;">※ サンプル表示。体重を記録すると実データが表示されます</p>` : '';
-  document.getElementById('weightChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="opacity:${isSample?0.55:1}">${grid}${band15}${dash05up}${dash05dn}${poly}${dots}${xl}</svg>${sampleNote}`;
+  document.getElementById('weightChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}">${grid}${band15}${dash05up}${dash05dn}${poly}${dots}${xl}</svg>`;
 }
 function renderHistoryList(data) {
   const wdays=['日','月','火','水','木','金','土'];
