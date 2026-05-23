@@ -125,13 +125,50 @@
       line-height: 1.75;
       color: #555;
     }
-    .ref {
-      font-size: 12px;
-      color: #AAA;
-      text-align: center;
-      margin-top: 8px;
-      line-height: 1.8;
+    .evidence {
+      background: #f8f9ff;
+      border: 1px solid #dde3ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #444;
     }
+    .evidence-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1B2A8A;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .ref-section {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .ref-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1B2A8A;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #eef0f8;
+    }
+    .ref-item {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.75;
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-journal { color: #1B2A8A; font-style: italic; font-weight: 600; }
+    .ref-if { display: inline-block; background: #f0f3ff; color: #1B2A8A; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
   </style>
 </head>
 <body>
@@ -171,6 +208,10 @@
         例：40歳・男性・170cm・70kg の場合<br>
         BMR = 88.362 + 938.79 + 815.83 − 226.08 = <strong>約 1,617 kcal/日</strong>
       </div>
+      <div class="evidence">
+        <span class="evidence-label">📄 エビデンス</span>
+        Harris &amp; Benedict（1919）が提唱した原式をRoza &amp; Shizgal（1984）が大規模データで再検証・改訂。その後、Frankenfield ら（<span class="ref-journal">J Am Diet Assoc</span> 2005）が主要な5式を比較したメタ解析で、改訂ハリス・ベネディクト式は非肥満・肥満成人ともに誤差 10% 以内に収まる代表的な推定式と評価しています。
+      </div>
     </div>
 
     <div class="card">
@@ -204,6 +245,10 @@
         上記の例（BMR 1,617 kcal）で「やや活動的」の場合<br>
         TDEE = 1,617 × 1.375 = <strong>約 2,223 kcal/日</strong>
       </div>
+      <div class="evidence">
+        <span class="evidence-label">📄 エビデンス</span>
+        活動係数（Physical Activity Level; PAL）は、FAO/WHO/UNU 合同専門委員会が二重標識水（DLW）法による実測データをもとに策定（2004）。DLW 法は自由行動下の総エネルギー消費量を直接測定できる現在の「ゴールドスタンダード」です。Ainsworth ら（<span class="ref-journal">Med Sci Sports Exerc</span> 2011; IF ≈ 5.0）の身体活動メッツ（MET）コンペンディアムも係数算定の基盤となっています。
+      </div>
     </div>
 
     <div class="card">
@@ -224,20 +269,83 @@
         <tr><td>月 3 kg 減</td><td>− 720 kcal</td><td>TDEE − 720</td></tr>
       </table>
       <div class="tip">
-        <strong>安全な減量ペースは月 0.5〜1 kg</strong> が推奨されています。急激な制限は筋肉量の低下や代謝の低下を招く可能性があります（WHO, 2000）。
+        <strong>安全な減量ペースは月 0.5〜1 kg</strong> が推奨されています。急激な制限は筋肉量の低下や代謝の低下を招く可能性があります（Jensen et al., <em>Circulation</em> 2014）。
+      </div>
+      <div class="evidence">
+        <span class="evidence-label">📄 エビデンス</span>
+        Hall ら（<span class="ref-journal">Lancet</span> 2011; IF ≈ 202）は数学的モデルで「500 kcal/日赤字＝週 1 ポンド減」という単純計算を否定し、体組成変化を反映した動的モデルが必要と示しました。Sacks ら（<span class="ref-journal">N Engl J Med</span> 2009; IF ≈ 91）は脂質・たんぱく質・炭水化物の比率を変えた 4 食事法を比較し、摂取カロリーの赤字量が最も体重変化に影響することを確認しています。AHA/ACC/TOS ガイドライン（<span class="ref-journal">Circulation</span> 2014; IF ≈ 37）は週 0.5〜1 kg（月 2〜4 kg まで）のペースを推奨しており、それ以上の急速減量は除脂肪体重の喪失と基礎代謝低下をまねくと勧告しています。
       </div>
     </div>
 
-    <p class="ref">
-      Harris JA &amp; Benedict FG. A biometric study of human basal metabolism.<br>
-      <em>Proc Natl Acad Sci USA.</em> 1918;4(12):370–373.<br><br>
-      Roza AM &amp; Shizgal HM. The Harris Benedict equation reevaluated.<br>
-      <em>Am J Clin Nutr.</em> 1984;40(1):168–182.<br><br>
-      Hall KD et al. Quantification of the effect of energy imbalance on bodyweight.<br>
-      <em>Lancet.</em> 2011;378(9793):826–837.<br><br>
-      WHO. Obesity: Preventing and Managing the Global Epidemic. Geneva, 2000.<br><br>
-      脂肪 1 kg ≈ 7,200 kcal（Hall KD et al., 2011 に基づく推定値）
-    </p>
+    <div class="ref-section">
+      <div class="ref-section-title">参考文献</div>
+
+      <div style="font-size:11px;color:#999;margin-bottom:10px;">IF = 引用時点でのおよその Impact Factor</div>
+
+      <div class="ref-item">
+        Harris JA &amp; Benedict FG. A biometric study of human basal metabolism. <span class="ref-journal">Proc Natl Acad Sci USA.</span> 1918;4(12):370–373.<br>
+        <span style="font-size:11px;color:#888;">ハリス・ベネディクト式の原典。安静時エネルギー消費量の予測式を初めて定式化。</span>
+      </div>
+
+      <div class="ref-item">
+        Roza AM &amp; Shizgal HM. The Harris Benedict equation reevaluated: resting energy requirements and the body cell mass. <span class="ref-journal">Am J Clin Nutr.</span> 1984;40(1):168–182. <span class="ref-if">IF ≈ 7.1</span><br>
+        <span style="font-size:11px;color:#888;">改訂ハリス・ベネディクト式の確立。現在広く使われている係数の根拠論文。</span>
+      </div>
+
+      <div class="ref-item">
+        Mifflin MD et al. A new predictive equation for resting energy expenditure in healthy individuals. <span class="ref-journal">Am J Clin Nutr.</span> 1990;51(2):241–247. <span class="ref-if">IF ≈ 7.1</span><br>
+        <span style="font-size:11px;color:#888;">Mifflin-St Jeor 式を提唱。改訂 HB 式と並んで精度が高いと評価される。</span>
+      </div>
+
+      <div class="ref-item">
+        Frankenfield D et al. Comparison of predictive equations for resting metabolic rate in healthy nonobese and obese adults. <span class="ref-journal">J Am Diet Assoc.</span> 2005;105(5):775–789. <span class="ref-if">IF ≈ 4.8</span><br>
+        <span style="font-size:11px;color:#888;">主要5式を比較したメタ解析。改訂 HB 式は誤差 10% 以内で非肥満・肥満ともに有効と評価。</span>
+      </div>
+
+      <div class="ref-item">
+        FAO/WHO/UNU. Human Energy Requirements. Report of a Joint Expert Consultation. <span class="ref-journal">WHO Technical Report.</span> Rome: FAO; 2004.<br>
+        <span style="font-size:11px;color:#888;">活動係数（PAL）の国際基準を二重標識水法データから策定した権威ある指針書。</span>
+      </div>
+
+      <div class="ref-item">
+        Ainsworth BE et al. 2011 Compendium of Physical Activities: A second update of codes and MET values. <span class="ref-journal">Med Sci Sports Exerc.</span> 2011;43(8):1575–1581. <span class="ref-if">IF ≈ 5.0</span><br>
+        <span style="font-size:11px;color:#888;">800 種類以上の身体活動のMET値を収録した標準データベース。活動係数算定の基盤。</span>
+      </div>
+
+      <div class="ref-item">
+        Westerterp KR. Physical activity and physical activity induced energy expenditure in humans. <span class="ref-journal">Front Physiol.</span> 2013;4:90. <span class="ref-if">IF ≈ 4.8</span><br>
+        <span style="font-size:11px;color:#888;">二重標識水法で計測した自由行動下エネルギー消費量と PAL 値の妥当性を包括的にレビュー。</span>
+      </div>
+
+      <div class="ref-item">
+        Hall KD et al. Quantification of the effect of energy imbalance on bodyweight. <span class="ref-journal">Lancet.</span> 2011;378(9793):826–837. <span class="ref-if">IF ≈ 202</span><br>
+        <span style="font-size:11px;color:#888;">体重変化の数学的モデルを構築。「500 kcal/日赤字＝週 1 ポンド減」の単純計算を否定し、動的モデルの必要性を示した landmark paper。</span>
+      </div>
+
+      <div class="ref-item">
+        Sacks FM et al. Comparison of weight-loss diets with different compositions of fat, protein, and carbohydrates. <span class="ref-journal">N Engl J Med.</span> 2009;360(9):859–873. <span class="ref-if">IF ≈ 91</span><br>
+        <span style="font-size:11px;color:#888;">多施設 RCT（n=811）。マクロ栄養素の比率より総カロリー赤字量が体重減少の主規定因子であることを示した。</span>
+      </div>
+
+      <div class="ref-item">
+        Thomas DM et al. Can a weight loss of one pound a week be achieved with a 3500-kcal deficit? <span class="ref-journal">Int J Obes.</span> 2013;37(12):1611–1613. <span class="ref-if">IF ≈ 9.0</span><br>
+        <span style="font-size:11px;color:#888;">動的モデルで実際の減量速度は時間経過とともに低下し、単純計算では過大評価されることを定量化。</span>
+      </div>
+
+      <div class="ref-item">
+        Jensen MD et al. 2013 AHA/ACC/TOS Guideline for the Management of Overweight and Obesity in Adults. <span class="ref-journal">Circulation.</span> 2014;129(25 Suppl 2):S102–138. <span class="ref-if">IF ≈ 37</span><br>
+        <span style="font-size:11px;color:#888;">米国心臓協会・米国心臓病学会・肥満学会の合同ガイドライン。週 0.5〜1 kg の段階的減量を推奨。</span>
+      </div>
+
+      <div class="ref-item">
+        Leibel RL, Rosenbaum M &amp; Hirsch J. Changes in energy expenditure resulting from altered body weight. <span class="ref-journal">N Engl J Med.</span> 1995;332(10):621–628. <span class="ref-if">IF ≈ 91</span><br>
+        <span style="font-size:11px;color:#888;">体重減少時に安静時代謝が低下する「代謝適応」を実験的に実証。急速減量の代謝リスクを示す重要論文。</span>
+      </div>
+
+      <div style="font-size:11px;color:#AAA;margin-top:10px;line-height:1.8;">
+        脂肪 1 kg ≈ 7,200 kcal（Hall KD et al., Lancet 2011 に基づく推定値）
+      </div>
+    </div>
 
   </div>
 </body>
