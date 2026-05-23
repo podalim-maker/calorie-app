@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>カロリー管理</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -51,7 +51,7 @@
       opacity: .95;
     }
     .splash-bottom {
-      width: 100%; padding: 0 32px 52px;
+      width: 100%; padding: 0 32px calc(52px + env(safe-area-inset-bottom));
       display: flex; flex-direction: column; align-items: center; gap: 10px;
     }
     .splash-title {
@@ -359,10 +359,10 @@
     .bmr-chip { background: #FFF3E0; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #E65100; margin-bottom: 14px; }
 
     /* ── Bottom nav ── */
-    #mainApp { display: flex; flex-direction: column; height: calc(var(--real-vh, 1vh) * 100); }
+    #mainApp { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
     #mainApp .content { flex: 1; overflow-y: auto; padding-bottom: 8px; }
     .bottom-nav { display: flex; background: linear-gradient(180deg, rgba(200,205,215,0.55) 0%, rgba(160,165,175,0.65) 100%); -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.1); backdrop-filter: blur(24px) saturate(150%) brightness(1.1); border-top: 1px solid rgba(255,255,255,0.55); box-shadow: 0 -2px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7); flex-shrink: 0; }
-    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 18px; background: none; border: none; cursor: pointer; color: #AAA; gap: 4px; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 calc(18px + env(safe-area-inset-bottom)); background: none; border: none; cursor: pointer; color: #AAA; gap: 4px; }
     .nav-btn.active { color: var(--primary); }
     .nav-icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .nav-label { font-size: 10px; font-weight: 600; letter-spacing: .3px; }
