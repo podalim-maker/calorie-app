@@ -1477,7 +1477,7 @@ function renderCumulative() {
   const balance = totalIntake - totalTdee;
   const fat = (balance / 7200).toFixed(2);
   const isPlus = balance >= 0;
-  const color = isPlus ? '#E74C3C' : '#27AE60';
+  const color = isPlus ? '#E74C3C' : '#1B2A8A';
   const sign = isPlus ? '+' : '';
   const label = `${year}年${month+1}月の収支（${daysInMonth}日間）`;
   document.getElementById('cumulativeCard').innerHTML = `
