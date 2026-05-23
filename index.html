@@ -19,11 +19,13 @@
       --border: #E8ECF0;
     }
 
+    html { height: -webkit-fill-available; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: -webkit-fill-available;
       max-width: 430px;
       margin: 0 auto;
     }
@@ -373,7 +375,7 @@
     .bmr-chip { background: #FFF3E0; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #E65100; margin-bottom: 14px; }
 
     /* ── Bottom nav ── */
-    #mainApp { display: flex; flex-direction: column; height: 100vh; }
+    #mainApp { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
     #mainApp .content { flex: 1; overflow-y: auto; padding-bottom: 8px; }
     .bottom-nav { display: flex; background: linear-gradient(180deg, rgba(200,205,215,0.55) 0%, rgba(160,165,175,0.65) 100%); -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.1); backdrop-filter: blur(24px) saturate(150%) brightness(1.1); border-top: 1px solid rgba(255,255,255,0.55); box-shadow: 0 -2px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7); flex-shrink: 0; }
     .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 18px; background: none; border: none; cursor: pointer; color: #AAA; gap: 4px; }
