@@ -1819,17 +1819,17 @@ function renderWeightChart(data, isSample=false, mode='month') {
       ptsDn05.push(`${x},${sy(d.w-0.5)}`);
       ptsUp15.push(`${x},${sy(d.w+1.5)}`);
       ptsDn15.push(`${x},${sy(d.w-1.5)}`);
-      dots += `<circle cx="${x}" cy="${sy(d.w)}" r="${showLabel?4:2.5}" fill="#512DA8"/>`;
-      if (showLabel) dots += `<text x="${x}" y="${sy(d.w)-7}" text-anchor="middle" font-size="9" fill="#512DA8">${d.w}</text>`;
+      dots += `<circle cx="${x}" cy="${sy(d.w)}" r="${showLabel?4:2.5}" fill="#311B92"/>`;
+      if (showLabel) dots += `<text x="${x}" y="${sy(d.w)-7}" text-anchor="middle" font-size="9" fill="#311B92">${d.w}</text>`;
     }
   });
   const band15 = ptsUp15.length>1
-    ? `<polygon points="${ptsUp15.join(' ')} ${[...ptsDn15].reverse().join(' ')}" fill="#512DA8" opacity="0.07"/>` : '';
+    ? `<polygon points="${ptsUp15.join(' ')} ${[...ptsDn15].reverse().join(' ')}" fill="#311B92" opacity="0.07"/>` : '';
   const dash05up = ptsUp05.length>1
-    ? `<polyline points="${ptsUp05.join(' ')}" fill="none" stroke="#512DA8" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>` : '';
+    ? `<polyline points="${ptsUp05.join(' ')}" fill="none" stroke="#311B92" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>` : '';
   const dash05dn = ptsDn05.length>1
-    ? `<polyline points="${ptsDn05.join(' ')}" fill="none" stroke="#512DA8" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>` : '';
-  const poly = pts.length>1 ? `<polyline points="${pts.join(' ')}" fill="none" stroke="#512DA8" stroke-width="2"/>` : '';
+    ? `<polyline points="${ptsDn05.join(' ')}" fill="none" stroke="#311B92" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>` : '';
+  const poly = pts.length>1 ? `<polyline points="${pts.join(' ')}" fill="none" stroke="#311B92" stroke-width="2"/>` : '';
   xl += `<text x="${pl-4}" y="${pt-4}" text-anchor="end" font-size="8" fill="#BBB">kg</text>`;
   xl += `<text x="${W-pr}" y="${pt-4}" text-anchor="end" font-size="9" fill="#AAA" opacity=".6">― ±0.5  ··· ±1.5kg</text>`;
   const sampleNote = isSample ? `<p style="text-align:center;font-size:11px;color:#BBB;margin-top:6px;">※ サンプル表示。体重を記録すると実データが表示されます</p>` : '';
