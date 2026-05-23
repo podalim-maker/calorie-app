@@ -14,7 +14,7 @@
     .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
     .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
     .card-title { font-size: 14px; font-weight: 700; color: #1B2A8A; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    .card-title .icon { font-size: 18px; }
+    .card-title .icon { display: flex; align-items: center; }
     p { font-size: 14px; line-height: 1.75; color: #444; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
     th { background: #f0f3ff; color: #1B2A8A; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 12px; }
@@ -43,7 +43,7 @@
   <div class="content">
 
     <div class="card">
-      <div class="card-title"><span class="icon">🔥</span>活動度とは</div>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14c-3 0-5-2-5-5 0-2 1-3.5 2.5-4.5 0 1.5 1 2.5 2 2.5C7.5 5 8 2.5 10 1.5c0 2 1.5 3 1.5 4.5.5-.5.5-1.5.5-1.5C13 6 13.5 7.5 13.5 9c0 3-2.5 5-5.5 5z"/></svg></span>活動度とは</div>
       <p>基礎代謝（BMR）に<strong>活動係数</strong>を掛けることで、実際の生活での1日の総消費カロリー（TDEE）を推定します。活動度は日によって変えることができます。</p>
       <div class="badge-row">
         <div class="badge"><span class="val">BMR</span>安静時の消費量</div>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">📊</span>活動レベルの目安</div>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="13.5" x2="14" y2="13.5"/><line x1="4" y1="13.5" x2="4" y2="8"/><line x1="7" y1="13.5" x2="7" y2="5"/><line x1="10" y1="13.5" x2="10" y2="7"/><line x1="13" y1="13.5" x2="13" y2="3"/></svg></span>活動レベルの目安</div>
       <table>
         <tr>
           <th>レベル</th>
@@ -96,7 +96,7 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">📅</span>日ごとに変更できます</div>
+      <div class="card-title"><span class="icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#1B2A8A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="10.5" rx="1.5"/><line x1="2" y1="7" x2="14" y2="7"/><line x1="5.5" y1="2" x2="5.5" y2="5"/><line x1="10.5" y1="2" x2="10.5" y2="5"/><line x1="5.5" y1="9.5" x2="5.5" y2="9.5" stroke-width="2.5"/><line x1="8" y1="9.5" x2="8" y2="9.5" stroke-width="2.5"/><line x1="10.5" y1="9.5" x2="10.5" y2="9.5" stroke-width="2.5"/></svg></span>日ごとに変更できます</div>
       <p>このアプリでは<strong>その日の活動度を当日に変更</strong>できます。運動した日は「活動的」、在宅で動かなかった日は「座り仕事」に変えることで、より正確な収支計算ができます。</p>
     </div>
 
