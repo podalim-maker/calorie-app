@@ -22,9 +22,10 @@
     td p { margin: 0 0 4px; }
     td p:last-child { margin-bottom: 0; }
     tr:last-child td { border-bottom: none; }
-    .badge-row { display: flex; gap: 10px; margin-top: 12px; }
-    .badge { flex: 1; background: #f0f3ff; border-radius: 10px; padding: 12px 8px; text-align: center; font-size: 12px; color: #444; line-height: 1.6; }
+    .badge-row { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+    .badge { flex: 1; background: #f0f3ff; border-radius: 10px; padding: 12px 6px; text-align: center; font-size: 12px; color: #444; line-height: 1.6; }
     .badge .val { font-size: 20px; font-weight: 800; color: #1B2A8A; display: block; }
+    .badge-op { font-size: 20px; font-weight: 700; color: #1B2A8A; flex-shrink: 0; }
     .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.7; color: #555; }
     .ref { font-size: 11px; color: #AAA; text-align: center; margin-top: 8px; line-height: 1.8; }
   </style>
@@ -45,9 +46,11 @@
       <div class="card-title"><span class="icon">🔥</span>活動度とは</div>
       <p>基礎代謝（BMR）に<strong>活動係数</strong>を掛けることで、実際の生活での1日の総消費カロリー（TDEE）を推定します。活動度は日によって変えることができます。</p>
       <div class="badge-row">
-        <div class="badge"><span class="val">BMR</span>安静時の<br>消費量</div>
-        <div class="badge"><span class="val">×</span>活動<br>係数</div>
-        <div class="badge"><span class="val">TDEE</span>1日の<br>総消費量</div>
+        <div class="badge"><span class="val">BMR</span>安静時の消費量</div>
+        <span class="badge-op">×</span>
+        <div class="badge"><span class="val">活動係数</span>1.2〜1.55</div>
+        <span class="badge-op">=</span>
+        <div class="badge"><span class="val">TDEE</span>1日の総消費量</div>
       </div>
     </div>
 
