@@ -1248,14 +1248,14 @@ function onPhoto(e) {
   img.onload = () => {
     URL.revokeObjectURL(url);
 
-    // サムネ用（長辺100px以内、軽量）
+    // サムネ用（長辺400px以内、高品質）
     const thumbCanvas = document.createElement('canvas');
-    const maxThumb = 100;
+    const maxThumb = 400;
     const tRatio = Math.min(maxThumb / img.width, maxThumb / img.height, 1);
     thumbCanvas.width = Math.round(img.width * tRatio);
     thumbCanvas.height = Math.round(img.height * tRatio);
     thumbCanvas.getContext('2d').drawImage(img, 0, 0, thumbCanvas.width, thumbCanvas.height);
-    const thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.5);
+    const thumbDataUrl = thumbCanvas.toDataURL('image/jpeg', 0.85);
 
     // API用（長辺1000px以内）
     const apiCanvas = document.createElement('canvas');
