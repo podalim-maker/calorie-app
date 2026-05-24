@@ -1749,10 +1749,12 @@ function renderHistoryListWeek() {
   const nextBtn = document.getElementById('hl-next');
   if (label) label.textContent = `${sunday.getMonth()+1}/${sunday.getDate()}（日）〜${saturday.getMonth()+1}/${saturday.getDate()}（土）`;
   if (nextBtn) nextBtn.disabled = isCurrentWeek;
+  const todayStr = today();
   const listData = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(sunday); d.setDate(sunday.getDate() + i);
     const ds = dateStr(d);
+    if (ds > todayStr) break; // 未来の日付は表示しない
     const ms = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
     listData.push({ d, total: ms.reduce((s,m) => s+m.calories, 0), meals: ms });
   }
