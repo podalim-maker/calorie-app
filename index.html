@@ -780,10 +780,10 @@
     <!-- Step 1: Photo -->
     <div id="step-photo">
       <div class="photo-area" id="photoArea">
-        <input type="file" accept="image/*" capture="camera" id="photoInput" onchange="onPhoto(event)">
+        <input type="file" accept="image/*" id="photoInput" onchange="onPhoto(event)">
         <div class="pa-icon">📷</div>
-        <div class="pa-text">タップして写真を撮影</div>
-        <div class="pa-sub">またはカメラロールから選択</div>
+        <div class="pa-text">タップして写真を選択</div>
+        <div class="pa-sub">撮影 または カメラロールから選択</div>
       </div>
 
       <button class="btn-main" id="analyzeBtn" style="display:none;" onclick="doAnalyze()">
@@ -1215,10 +1215,10 @@ function closeAdd() {
 
 function resetPhotoArea() {
   document.getElementById('photoArea').innerHTML = `
-    <input type="file" accept="image/*" capture="camera" id="photoInput" onchange="onPhoto(event)">
+    <input type="file" accept="image/*" id="photoInput" onchange="onPhoto(event)">
     <div class="pa-icon">📷</div>
-    <div class="pa-text">タップして写真を撮影</div>
-    <div class="pa-sub">またはカメラロールから選択</div>`;
+    <div class="pa-text">タップして写真を選択</div>
+    <div class="pa-sub">撮影 または カメラロールから選択</div>`;
 }
 
 function showStep(s) {
