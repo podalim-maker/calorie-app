@@ -870,6 +870,32 @@
   </div>
 </div>
 
+<!-- ━━━ API KEY MODAL ━━━ -->
+<div class="overlay" id="apiKeyModal">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">🤖 AIカロリー推定の設定</div>
+
+    <div style="background:#F0F4FF;border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:#333;line-height:1.6;">
+      <div style="font-weight:700;margin-bottom:6px;color:#1B2A8A;">Anthropic APIキーとは？</div>
+      食事の写真をAIが解析してカロリーを自動推定する機能です。<br>
+      利用には Anthropic のAPIキーが必要です。<br><br>
+      <strong>費用：</strong>写真1枚あたり約0.3〜0.5円（従量制）<br>
+      <strong>登録：</strong><a href="https://console.anthropic.com" target="_blank" style="color:#1B2A8A;">console.anthropic.com</a> でアカウント作成後、APIキーを発行してください。
+    </div>
+
+    <div class="fg">
+      <label class="fl">APIキー（sk-ant-... で始まる文字列）</label>
+      <input class="fi" type="password" id="modal-apikey" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <div id="apiKeyStatus" style="font-size:12px;margin-bottom:8px;display:none;"></div>
+
+    <button class="btn-main" onclick="saveApiKey()">保存する ✓</button>
+    <button class="btn-sub" onclick="closeApiKeyModal()">キャンセル</button>
+  </div>
+</div>
+
 <!-- ━━━ SETTINGS MODAL ━━━ -->
 <div class="overlay" id="settingsModal">
   <div class="sheet">
@@ -943,8 +969,10 @@
     </div>
 
     <div class="fg">
-      <label class="fl">Anthropic API キー <span style="font-size:11px;color:var(--sub);">（任意）</span></label>
-      <input class="fi" type="password" id="st-apikey" placeholder="sk-ant-...">
+      <label class="fl">🤖 AIカロリー推定</label>
+      <button class="btn-sub" style="margin:0;" onclick="closeSettings();openApiKeyModal()">
+        <span id="apiKeyBtnLabel">APIキーを登録する</span>
+      </button>
     </div>
 
     <div class="bmr-chip">基礎代謝（BMR）: <strong id="bmrChip">--</strong> kcal</div>
@@ -1155,7 +1183,7 @@ function openSettings() {
   document.getElementById('st-age').value    = cfg.age;
   document.getElementById('st-height').value = cfg.height;
   document.getElementById('st-weight').value = cfg.weight;
-  document.getElementById('st-apikey').value = cfg.apiKey || '';
+  updateApiKeyBtnLabel();
   setGender('settings', cfg.gender);
   setStActivity(cfg.activity || 'low');
   setStGoal(cfg.goal || 'maintain');
@@ -1174,16 +1202,56 @@ function saveSettings() {
   const age = +document.getElementById('st-age').value;
   const h   = +document.getElementById('st-height').value;
   const w   = +document.getElementById('st-weight').value;
-  const key =  document.getElementById('st-apikey').value.trim();
   if (!age || !h || !w) { alert('年齢・身長・体重を入力してください'); return; }
   const bmr = calcBMR(stGender, age, h, w);
   const tdee = Math.round(bmr * ACTIVITY_FACTORS[stActivity]);
   const target = calcTarget(bmr, stActivity, stGoal);
-  cfg = { gender: stGender, age, height: h, weight: w, bmr, tdee, target, activity: stActivity, goal: stGoal, apiKey: key };
+  cfg = { gender: stGender, age, height: h, weight: w, bmr, tdee, target, activity: stActivity, goal: stGoal, apiKey: cfg.apiKey || '' };
   saveCfg();
   closeSettings();
   refreshUI();
 }
+function openApiKeyModal() {
+  const inp = document.getElementById('modal-apikey');
+  inp.value = cfg.apiKey || '';
+  const status = document.getElementById('apiKeyStatus');
+  if (cfg.apiKey) {
+    status.style.display = 'block';
+    status.style.color = '#1B8A3A';
+    status.textContent = '✓ APIキーが登録されています';
+  } else {
+    status.style.display = 'none';
+  }
+  document.getElementById('apiKeyModal').classList.add('show');
+}
+function closeApiKeyModal() {
+  document.getElementById('apiKeyModal').classList.remove('show');
+}
+function saveApiKey() {
+  const key = document.getElementById('modal-apikey').value.trim();
+  if (key && !key.startsWith('sk-ant-')) {
+    alert('APIキーの形式が正しくありません。\n「sk-ant-」で始まる文字列を入力してください。');
+    return;
+  }
+  cfg.apiKey = key;
+  saveCfg();
+  const status = document.getElementById('apiKeyStatus');
+  status.style.display = 'block';
+  if (key) {
+    status.style.color = '#1B8A3A';
+    status.textContent = '✓ 保存しました';
+  } else {
+    status.style.color = '#888';
+    status.textContent = 'APIキーを削除しました';
+  }
+  updateApiKeyBtnLabel();
+  setTimeout(() => closeApiKeyModal(), 1000);
+}
+function updateApiKeyBtnLabel() {
+  const el = document.getElementById('apiKeyBtnLabel');
+  if (el) el.textContent = cfg.apiKey ? '✓ APIキー登録済み（変更する）' : 'APIキーを登録する';
+}
+
 function resetToSetup() {
   if (!confirm('セットアップ画面に戻りますか？\n（記録したデータは保持されます）')) return;
   localStorage.removeItem('calorie_cfg');
@@ -1285,7 +1353,7 @@ function onPhoto(e) {
 async function doAnalyze() {
   if (!pendingPhoto) return;
   if (!cfg.apiKey) {
-    alert('AIカロリー推定にはAPIキーが必要です。\n設定画面（⚙️）からAnthropicのAPIキーを入力してください。');
+    openApiKeyModal();
     return;
   }
   showStep('analyzing');
@@ -1420,6 +1488,7 @@ function confirmDeleteMeal() {
 // ── Overlay dismiss ──
 document.getElementById('addModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAdd(); });
 document.getElementById('settingsModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeSettings(); });
+document.getElementById('apiKeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApiKeyModal(); });
 document.getElementById('editModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEditMeal(); });
 
 init();
