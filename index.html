@@ -779,11 +779,21 @@
 
     <!-- Step 1: Photo -->
     <div id="step-photo">
-      <div class="photo-area" id="photoArea">
-        <input type="file" accept="image/*" id="photoInput" onchange="onPhoto(event)">
-        <div class="pa-icon">📷</div>
-        <div class="pa-text">タップして写真を選択</div>
-        <div class="pa-sub">撮影 または カメラロールから選択</div>
+      <!-- hidden inputs -->
+      <input type="file" accept="image/*" capture="environment" id="photoInputCamera" onchange="onPhoto(event)" style="display:none;">
+      <input type="file" accept="image/*" id="photoInputLibrary" onchange="onPhoto(event)" style="display:none;">
+
+      <div id="photoArea">
+        <!-- preview shown after photo selected -->
+      </div>
+
+      <div id="photoPickerBtns">
+        <button class="btn-main" onclick="document.getElementById('photoInputCamera').click()">
+          📷 カメラで撮影
+        </button>
+        <button class="btn-main" style="background:var(--bg);color:var(--primary);border:2px solid var(--primary);" onclick="document.getElementById('photoInputLibrary').click()">
+          🖼️ フォトライブラリから選択
+        </button>
       </div>
 
       <button class="btn-main" id="analyzeBtn" style="display:none;" onclick="doAnalyze()">
@@ -1215,10 +1225,14 @@ function closeAdd() {
 
 function resetPhotoArea() {
   document.getElementById('photoArea').innerHTML = `
-    <input type="file" accept="image/*" id="photoInput" onchange="onPhoto(event)">
-    <div class="pa-icon">📷</div>
-    <div class="pa-text">タップして写真を選択</div>
-    <div class="pa-sub">撮影 または カメラロールから選択</div>`;
+`;
+  // reset file inputs so same file can be re-selected
+  ['photoInputCamera','photoInputLibrary'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const pb = document.getElementById('photoPickerBtns');
+  if (pb) pb.style.display = '';
 }
 
 function showStep(s) {
@@ -1255,7 +1269,9 @@ function onPhoto(e) {
 
     pendingPhoto = { base64: apiB64, mediaType: 'image/jpeg', dataUrl: apiDataUrl, thumb: thumbDataUrl };
     document.getElementById('photoArea').innerHTML =
-      `<img src="${thumbDataUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;">`;
+      `<img src="${thumbDataUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-bottom:8px;">`;
+    const pb = document.getElementById('photoPickerBtns');
+    if (pb) pb.style.display = 'none';
     const hasKey = !!cfg.apiKey;
     document.getElementById('analyzeBtn').style.display = hasKey ? 'block' : 'none';
     document.getElementById('manualBtn').style.display = 'block';
