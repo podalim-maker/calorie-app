@@ -405,6 +405,8 @@
     .hist-meal-name { flex: 1; font-size: 13px; font-weight: 600; }
     .hist-meal-kcal { font-size: 13px; font-weight: 700; color: var(--primary); }
     #historyScreen { overflow-y: auto; flex: 1; }
+    #editDayScreen { display: none; }
+    #editDayScreen.open { display: flex !important; }
 
     /* ── Home screen ── */
     #homeScreen { flex: 1; overflow-y: auto; overflow-x: hidden; background: linear-gradient(155deg, #1a2980 0%, #0d1650 42%, #8B1A1A 100%); min-height: 100%; }
@@ -657,6 +659,54 @@
     <!-- Meal list -->
     <div class="section-label" id="todayLabel">今日の食事</div>
     <div id="mealList"></div>
+  </div>
+
+  <!-- Past-day edit screen -->
+  <div id="editDayScreen" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 16px calc(16px + env(safe-area-inset-top));padding-top:calc(16px + env(safe-area-inset-top));background:white;border-bottom:1px solid #EEE;flex-shrink:0;">
+      <button onclick="closeEditDay()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#444;padding:4px 8px 4px 0;">‹</button>
+      <span id="editDayTitle" style="font-size:17px;font-weight:800;flex:1;"></span>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px;">
+      <!-- Calorie summary -->
+      <div style="background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,.05);">
+        <div style="font-size:12px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">カロリー</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div><span id="edTotal" style="font-size:32px;font-weight:900;color:#1B2A8A;">0</span><span style="font-size:13px;color:#999;"> kcal</span></div>
+          <div style="text-align:right;"><div style="font-size:12px;color:#999;">目標</div><div id="edTarget" style="font-size:18px;font-weight:800;">-- kcal</div></div>
+        </div>
+        <div style="height:6px;background:#F0F0F0;border-radius:3px;overflow:hidden;">
+          <div id="edBar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,#1B2A8A,#C0392B);transition:width .3s;width:0%;"></div>
+        </div>
+        <div id="edRemain" style="font-size:12px;color:#888;margin-top:6px;"></div>
+      </div>
+      <!-- Weight -->
+      <div class="weight-card" style="margin-bottom:12px;">
+        <span class="weight-label">この日の体重</span>
+        <div class="weight-input-row">
+          <input type="number" id="edWeightInput" class="weight-input" step="0.1" min="30" max="300" placeholder="--">
+          <span class="weight-unit">kg</span>
+          <button class="weight-btn" onclick="saveEditDayWeight()">記録</button>
+        </div>
+      </div>
+      <!-- Activity -->
+      <div class="activity-today-card" style="margin-bottom:12px;">
+        <div class="activity-today-header">
+          <span class="activity-today-label">この日の活動度</span>
+          <span id="edTdeeLabel" style="font-size:12px;color:#AAA;"></span>
+        </div>
+        <div class="activity-today-row">
+          <button class="act-today-btn" id="ed-low"  onclick="setEditDayActivity('low')">座り仕事</button>
+          <button class="act-today-btn" id="ed-mid"  onclick="setEditDayActivity('mid')">やや活動</button>
+          <button class="act-today-btn" id="ed-high" onclick="setEditDayActivity('high')">活動的</button>
+        </div>
+      </div>
+      <!-- Add meal button -->
+      <button class="add-btn" onclick="openAddForDate(editingDate)" style="margin-bottom:12px;">📷 食事を記録する</button>
+      <!-- Meal list -->
+      <div class="section-label">この日の食事</div>
+      <div id="edMealList"></div>
+    </div>
   </div>
 
   <!-- History screen -->
@@ -1301,7 +1351,7 @@ function saveMealToDate(meal) {
     const pastMeals = JSON.parse(localStorage.getItem('meals_' + targetDate) || '[]');
     pastMeals.push(meal);
     localStorage.setItem('meals_' + targetDate, JSON.stringify(pastMeals));
-    setTimeout(() => renderHistory(), 50);
+    setTimeout(() => { if (editingDate) refreshEditDay(); else renderHistory(); }, 50);
   } else {
     meals.push(meal);
     saveMeals();
@@ -1407,6 +1457,104 @@ function loadTodayWeight() {
   const prevW = localStorage.getItem('weight_' + dateStr(yday));
   if (prevW) { document.getElementById('weightInput').value = prevW; return; }
   if (cfg && cfg.weight) document.getElementById('weightInput').value = cfg.weight;
+}
+
+// ── Past-day edit screen ──
+let editingDate = null;
+
+function openEditDay(ds) {
+  editingDate = ds;
+  const d = new Date(ds + 'T00:00:00');
+  const wdays = ['日','月','火','水','木','金','土'];
+  document.getElementById('editDayTitle').textContent =
+    `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
+  document.getElementById('editDayScreen').classList.add('open');
+  refreshEditDay();
+}
+
+function closeEditDay() {
+  document.getElementById('editDayScreen').classList.remove('open');
+  editingDate = null;
+  renderHistory();
+}
+
+function refreshEditDay() {
+  if (!editingDate) return;
+  const ds = editingDate;
+  const dayMeals = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
+  const total = dayMeals.reduce((s, m) => s + m.calories, 0);
+  const act = getDayActivity(ds);
+  const tdee = Math.round(cfg.bmr * ACTIVITY_FACTORS[act]);
+  const target = Math.max(tdee - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
+  const pct = Math.min(total / target * 100, 100);
+  const remain = target - total;
+
+  document.getElementById('edTotal').textContent = total.toLocaleString();
+  document.getElementById('edTarget').textContent = target.toLocaleString() + ' kcal';
+  document.getElementById('edBar').style.width = pct + '%';
+  document.getElementById('edBar').style.background = total > target
+    ? '#FF3B30' : 'linear-gradient(90deg,#1B2A8A,#C0392B)';
+  document.getElementById('edRemain').textContent = remain >= 0
+    ? `残り ${remain.toLocaleString()} kcal`
+    : `${Math.abs(remain).toLocaleString()} kcal 超過`;
+  document.getElementById('edTdeeLabel').textContent = `消費 ${tdee.toLocaleString()} kcal`;
+
+  // Weight
+  const w = localStorage.getItem('weight_' + ds);
+  if (w) {
+    document.getElementById('edWeightInput').value = w;
+  } else {
+    // fallback: previous day → cfg.weight
+    const prev = new Date(ds + 'T00:00:00');
+    prev.setDate(prev.getDate() - 1);
+    const prevW = localStorage.getItem('weight_' + dateStr(prev));
+    document.getElementById('edWeightInput').value = prevW || (cfg && cfg.weight ? cfg.weight : '');
+  }
+
+  // Activity buttons
+  ['low','mid','high'].forEach(k =>
+    document.getElementById('ed-'+k).classList.toggle('active', k === act));
+
+  // Meal list
+  const list = document.getElementById('edMealList');
+  if (!dayMeals.length) {
+    list.innerHTML = `<div class="empty"><div class="e-emoji">🍽️</div><p>まだ記録がありません</p></div>`;
+  } else {
+    list.innerHTML = dayMeals.map((m, i) => `
+      <div class="meal-item">
+        ${m.photo ? `<img class="meal-thumb" src="${m.photo}" alt="">` : `<div class="meal-thumb-ph">🍽️</div>`}
+        <div class="meal-info">
+          <div class="meal-name">${esc(m.name)}</div>
+          <div class="meal-time">${m.time || ''}</div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-kcal">${m.calories.toLocaleString()}<span> kcal</span></div>
+          <button class="del-btn" onclick="deleteEditDayMeal(${i})">×</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function saveEditDayWeight() {
+  const w = parseFloat(document.getElementById('edWeightInput').value);
+  if (!w || w < 30 || w > 300) { alert('体重を入力してください（30〜300kg）'); return; }
+  localStorage.setItem('weight_' + editingDate, String(w));
+  const btn = event.target;
+  btn.textContent = '✓'; setTimeout(() => { btn.textContent = '記録'; }, 1500);
+  refreshEditDay();
+}
+
+function setEditDayActivity(a) {
+  localStorage.setItem('activity_' + editingDate, a);
+  refreshEditDay();
+}
+
+function deleteEditDayMeal(i) {
+  const ds = editingDate;
+  const dayMeals = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
+  dayMeals.splice(i, 1);
+  localStorage.setItem('meals_' + ds, JSON.stringify(dayMeals));
+  refreshEditDay();
 }
 
 function saveHomeWeight() {
@@ -1973,13 +2121,12 @@ function renderHistoryList(data) {
       </div>`).join('');
     const summary = d.total===0 ? '記録なし' : `${d.total.toLocaleString()} kcal`;
     return `<div class="hist-day">
-      <div class="hist-day-header" onclick="toggleHistDay(${idx})">
+      <div class="hist-day-header" onclick="openEditDay('${ds}')">
         <span class="hist-day-date">${lbl}</span>
-        <span class="hist-day-kcal">${summary}</span>
-      </div>
-      <div class="hist-day-meals" id="hist-meals-${idx}">
-        ${mealRows||'<p style="color:#AAA;font-size:13px;padding:8px 0;">記録なし</p>'}
-        <button onclick="openAddForDate('${ds}')" style="width:100%;margin-top:8px;padding:9px;background:#F4F6FB;border:1.5px dashed #CCC;border-radius:10px;font-size:13px;color:#888;cursor:pointer;">＋ 食事を追加</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="hist-day-kcal">${summary}</span>
+          <span style="font-size:11px;color:#AAA;font-weight:600;">編集 ›</span>
+        </div>
       </div>
     </div>`;
   }).join('');
