@@ -1502,6 +1502,37 @@ document.getElementById('settingsModal').addEventListener('click', e => { if(e.t
 document.getElementById('apiKeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApiKeyModal(); });
 document.getElementById('editModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEditMeal(); });
 
+// ── Swipe-down to close modals ──
+function addSwipeToClose(modalId, closeFn) {
+  const modal = document.getElementById(modalId);
+  const sheet = modal.querySelector('.sheet');
+  if (!sheet) return;
+  let startY = 0, currentY = 0, dragging = false;
+  sheet.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+    const dy = Math.max(0, currentY - startY);
+    sheet.style.transform = `translateY(${dy}px)`;
+  }, { passive: true });
+  sheet.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    const dy = currentY - startY;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    if (dy > 80) closeFn();
+  });
+}
+addSwipeToClose('settingsModal', closeSettings);
+addSwipeToClose('apiKeyModal',  closeApiKeyModal);
+addSwipeToClose('addModal',     closeAdd);
+addSwipeToClose('editModal',    closeEditMeal);
+
 init();
 
 // ── Today activity ──
