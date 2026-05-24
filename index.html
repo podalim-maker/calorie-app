@@ -618,7 +618,7 @@
       </div>
 
       <div class="ring-meta">
-        <div class="label">目標カロリー</div>
+        <div class="label">今日の推奨上限カロリー</div>
         <div class="bmr-val" id="bmrVal">-- kcal</div>
         <div class="remain">残り <strong id="remainVal">--</strong> kcal</div>
         <div class="mini-bar-wrap">
@@ -673,7 +673,7 @@
         <div style="font-size:12px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;">カロリー</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <div><span id="edTotal" style="font-size:32px;font-weight:900;color:#1B2A8A;">0</span><span style="font-size:13px;color:#999;"> kcal</span></div>
-          <div style="text-align:right;"><div style="font-size:12px;color:#999;">目標</div><div id="edTarget" style="font-size:18px;font-weight:800;">-- kcal</div></div>
+          <div style="text-align:right;"><div style="font-size:12px;color:#999;">推奨上限</div><div id="edTarget" style="font-size:18px;font-weight:800;">-- kcal</div></div>
         </div>
         <div style="height:6px;background:#F0F0F0;border-radius:3px;overflow:hidden;">
           <div id="edBar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,#1B2A8A,#C0392B);transition:width .3s;width:0%;"></div>
@@ -1639,7 +1639,7 @@ function renderHome() {
       <span class="home-hero-pct">${Math.round(pct)}%</span>
     </div>
     <div><span class="home-hero-num">${remainDisp}</span> <span class="home-hero-unit">kcal</span></div>
-    <div class="home-hero-target">目標 ${target.toLocaleString()} kcal　<a href="calorie-info.html" style="font-size:11px;color:rgba(255,255,255,.45);text-decoration:none;">算出根拠 ›</a></div>
+    <div class="home-hero-target">推奨上限 ${target.toLocaleString()} kcal　<a href="calorie-info.html" style="font-size:11px;color:rgba(255,255,255,.45);text-decoration:none;">算出根拠 ›</a></div>
     <div class="home-hero-bar-bg"><div class="home-hero-bar-fill" style="width:${pct}%"></div></div>
     <div class="home-hero-footer"><span>${document.getElementById('h-date').textContent}</span><span>${subText}</span></div>`;
 
