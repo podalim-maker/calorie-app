@@ -1528,10 +1528,17 @@ function addSwipeToClose(modalId, closeFn) {
     if (!dragging) return;
     dragging = false;
     const dy = currentY - startY;
-    sheet.style.transition = 'transform .25s ease';
-    sheet.style.transform = '';
-    setTimeout(() => { sheet.style.transition = ''; }, 260);
-    if (dy > 80) closeFn();
+    if (dy > 80) {
+      // 即座にリセットして閉じる（アニメーション中の横ズレを防ぐ）
+      sheet.style.transition = '';
+      sheet.style.transform = '';
+      closeFn();
+    } else {
+      // 元の位置に戻るアニメーション
+      sheet.style.transition = 'transform .25s ease';
+      sheet.style.transform = '';
+      setTimeout(() => { sheet.style.transition = ''; }, 260);
+    }
   });
 }
 addSwipeToClose('settingsModal', closeSettings);
