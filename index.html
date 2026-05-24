@@ -1400,7 +1400,11 @@ async function doAnalyze() {
         })
       });
     } catch(netErr) {
-      throw new Error('通信エラー: APIサーバーに接続できませんでした。\n\n考えられる原因:\n・ホーム画面アプリではなくSafari/Chromeブラウザで開いてください\n・ネットワーク接続を確認してください\n・APIキーが正しいか確認してください');
+      const isPWA = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+      if (isPWA) {
+        throw new Error('ホーム画面アプリではAI機能が使えません。\n\nブラウザ（Chrome/Safari）で直接開いてください:\nhttps://podalim-maker.github.io/calorie-app/');
+      }
+      throw new Error('APIサーバーに接続できませんでした。\nネットワーク接続を確認してください。');
     }
 
     if (!res.ok) {
@@ -1429,7 +1433,14 @@ async function doAnalyze() {
 
   } catch(err) {
     showStep('photo');
-    alert(err.message);
+    const isPWA = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    if (isPWA && err.message.includes('ホーム画面')) {
+      if (confirm(err.message + '\n\n「OK」でブラウザで開きます')) {
+        window.open('https://podalim-maker.github.io/calorie-app/', '_blank');
+      }
+    } else {
+      alert(err.message);
+    }
   }
 }
 
