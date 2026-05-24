@@ -1412,14 +1412,22 @@ function getTodayActivity() {
 function getDayActivity(ds) {
   return localStorage.getItem('activity_' + ds) || cfg?.activity || 'low';
 }
+// その日の体重（記録済み or 直近）を使ってBMRを返す
+function getBMRForDate(ds) {
+  if (!cfg) return 0;
+  const w = parseFloat(localStorage.getItem('weight_' + ds))
+         || (getLastWeight(ds) ? getLastWeight(ds).value : null)
+         || cfg.weight;
+  return calcBMR(cfg.gender, cfg.age, cfg.height, w);
+}
 function getDayTarget(ds) {
   if (!cfg) return 2000;
-  const tdee = Math.round(cfg.bmr * ACTIVITY_FACTORS[getDayActivity(ds)]);
+  const tdee = Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[getDayActivity(ds)]);
   return Math.max(tdee - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
 }
 function getTodayTdee() {
   if (!cfg) return 0;
-  return Math.round(cfg.bmr * ACTIVITY_FACTORS[getTodayActivity()]);
+  return Math.round(getBMRForDate(today()) * ACTIVITY_FACTORS[getTodayActivity()]);
 }
 function getTodayTarget() {
   if (!cfg) return 2000;
@@ -1493,7 +1501,7 @@ function refreshEditDay() {
   const dayMeals = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
   const total = dayMeals.reduce((s, m) => s + m.calories, 0);
   const act = getDayActivity(ds);
-  const tdee = Math.round(cfg.bmr * ACTIVITY_FACTORS[act]);
+  const tdee = Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[act]);
   const target = Math.max(tdee - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
   const pct = Math.min(total / target * 100, 100);
   const remain = target - total;
@@ -1628,7 +1636,7 @@ function renderHome() {
     const ms = JSON.parse(localStorage.getItem('meals_'+ds)||'[]');
     if (!ms.length) continue;
     mIntake += ms.reduce((s,m)=>s+m.calories,0);
-    mTdee   += Math.round(cfg.bmr * ACTIVITY_FACTORS[getDayActivity(ds)]);
+    mTdee   += Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[getDayActivity(ds)]);
     mDays++;
   }
   const bal = mIntake - mTdee;
@@ -1755,7 +1763,7 @@ function renderCumulative() {
     if (ms.length === 0) continue; // 記録なし日は±0扱い
     totalIntake += ms.reduce((s,m) => s+m.calories, 0);
     const act = getDayActivity(ds);
-    totalTdee += Math.round(cfg.bmr * ACTIVITY_FACTORS[act]);
+    totalTdee += Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[act]);
   }
   const balance = totalIntake - totalTdee;
   const fat = (balance / 7200).toFixed(2);
