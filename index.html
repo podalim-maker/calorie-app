@@ -1514,9 +1514,11 @@ function getDayActivity(ds) {
 // その日の体重（記録済み or 直近）を使ってBMRを返す
 function getBMRForDate(ds) {
   if (!cfg) return 0;
-  const w = parseFloat(localStorage.getItem('weight_' + ds))
-         || (getLastWeight(ds) ? getLastWeight(ds).value : null)
-         || cfg.weight;
+  let w = parseFloat(localStorage.getItem('weight_' + ds));
+  if (isNaN(w) || w < 1) {
+    const last = getLastWeight(ds);
+    w = (last && last.value > 0) ? last.value : (cfg.weight || 60);
+  }
   return calcBMR(cfg.gender, cfg.age, cfg.height, w);
 }
 function getDayTarget(ds) {
@@ -1559,10 +1561,13 @@ function saveWeight() {
 // 指定日より前の直近記録体重を返す（最大90日遡る）
 function getLastWeight(beforeDs) {
   const base = new Date(beforeDs + 'T00:00:00');
-  for (let i = 1; i <= 90; i++) {
+  for (let i = 1; i <= 365; i++) {
     const d = new Date(base); d.setDate(d.getDate() - i);
-    const w = localStorage.getItem('weight_' + dateStr(d));
-    if (w) return { value: parseFloat(w), daysAgo: i };
+    const raw = localStorage.getItem('weight_' + dateStr(d));
+    if (raw !== null) {
+      const v = parseFloat(raw);
+      if (!isNaN(v) && v > 0) return { value: v, daysAgo: i };
+    }
   }
   return null;
 }
