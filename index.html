@@ -2187,7 +2187,7 @@ function getFiveYearWeightData(startYear) {
 function renderWeightChart(data, mode='month') {
   const W=320, H=150, pt=20, pr=10, pb=36, pl=44;
   const ws = data.map(d=>d.w).filter(w=>w!==null);
-  if (ws.length < 2) {
+  if (ws.length === 0) {
     document.getElementById('weightChart').innerHTML =
       `<div style="height:150px;display:flex;align-items:center;justify-content:center;color:#CCC;font-size:13px;">体重を記録するとグラフが表示されます</div>`;
     return;
