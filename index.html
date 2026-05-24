@@ -2121,108 +2121,84 @@ function renderCalChart(data, mode='week') {
   document.getElementById('calChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}">${out}</svg>`;
 }
 let weightChartMode = 'month';
-let wcMonth   = { year: new Date().getFullYear(), month: new Date().getMonth() };
-let wcYear    = { year: new Date().getFullYear() };
-let wcFiveYear = { startYear: new Date().getFullYear() - 4 };
-
-let wcHalfYear = { endYear: new Date().getFullYear(), endMonth: new Date().getMonth() };
+let wcMonthOffset    = 0;  // 30日単位のオフセット（0=今日終わり）
+let wcHalfOffset     = 0;  // 6ヶ月単位のオフセット（0=今月終わり）
+let wcYearOffset     = 0;  // 12ヶ月単位のオフセット（0=今月終わり）
+let wcFiveYearOffset = 0;  // 5年単位のオフセット
 
 function toggleWeightChart(mode) {
   weightChartMode = mode;
+  wcMonthOffset = 0; wcHalfOffset = 0; wcYearOffset = 0; wcFiveYearOffset = 0;
   document.getElementById('wt-month').classList.toggle('active', mode==='month');
   document.getElementById('wt-halfyear').classList.toggle('active', mode==='halfyear');
   document.getElementById('wt-year').classList.toggle('active', mode==='year');
   document.getElementById('wt-5year').classList.toggle('active', mode==='5year');
-  const now = new Date();
-  if (mode === 'month') {
-    wcMonth = { year: now.getFullYear(), month: now.getMonth() };
-  } else if (mode === 'halfyear') {
-    wcHalfYear = { endYear: now.getFullYear(), endMonth: now.getMonth() };
-  } else if (mode === 'year') {
-    wcYear = { year: now.getFullYear() };
-  } else {
-    wcFiveYear = { startYear: now.getFullYear() - 4 };
-  }
   renderWeightChartCurrent();
 }
 
 function weightChartPrev() {
-  if (weightChartMode === 'month') {
-    wcMonth.month--;
-    if (wcMonth.month < 0) { wcMonth.month = 11; wcMonth.year--; }
-  } else if (weightChartMode === 'halfyear') {
-    wcHalfYear.endMonth -= 6;
-    if (wcHalfYear.endMonth < 0) { wcHalfYear.endMonth += 12; wcHalfYear.endYear--; }
-  } else if (weightChartMode === 'year') {
-    wcYear.year--;
-  } else {
-    wcFiveYear.startYear -= 5;
-  }
+  if (weightChartMode === 'month')    wcMonthOffset -= 30;
+  else if (weightChartMode === 'halfyear') wcHalfOffset -= 6;
+  else if (weightChartMode === 'year')     wcYearOffset -= 12;
+  else                                     wcFiveYearOffset -= 5;
   renderWeightChartCurrent();
 }
 
 function weightChartNext() {
-  if (weightChartMode === 'month') {
-    wcMonth.month++;
-    if (wcMonth.month > 11) { wcMonth.month = 0; wcMonth.year++; }
-  } else if (weightChartMode === 'halfyear') {
-    wcHalfYear.endMonth += 6;
-    if (wcHalfYear.endMonth > 11) { wcHalfYear.endMonth -= 12; wcHalfYear.endYear++; }
-  } else if (weightChartMode === 'year') {
-    wcYear.year++;
-  } else {
-    wcFiveYear.startYear += 5;
-  }
+  if (weightChartMode === 'month')    wcMonthOffset += 30;
+  else if (weightChartMode === 'halfyear') wcHalfOffset += 6;
+  else if (weightChartMode === 'year')     wcYearOffset += 12;
+  else                                     wcFiveYearOffset += 5;
   renderWeightChartCurrent();
 }
 
 function renderWeightChartCurrent() {
   const now = new Date();
+  const todayStr = dateStr(now);
   const nextBtn = document.getElementById('wt-next');
   const label   = document.getElementById('wt-label');
 
   if (weightChartMode === 'month') {
-    const { year, month } = wcMonth;
-    const isCurrentMonth = (year === now.getFullYear() && month === now.getMonth());
-    const todayStr = dateStr(now);
-    const lastDay = new Date(year, month+1, 0).getDate();
+    // 直近30日（右端=今日+offset、左端=30日前）
+    const endDate = new Date(now); endDate.setDate(endDate.getDate() + wcMonthOffset);
+    const startDate = new Date(endDate); startDate.setDate(startDate.getDate() - 29);
 
-    // 月初より前の直近記録体重を探す（最大90日）
+    // 開始日より前の直近体重を引き継ぐ
     let carry = null;
-    const monthStart = new Date(year, month, 1);
     for (let i = 1; i <= 90; i++) {
-      const d = new Date(monthStart); d.setDate(d.getDate() - i);
+      const d = new Date(startDate); d.setDate(d.getDate() - i);
       const w = parseFloat(localStorage.getItem('weight_'+dateStr(d)));
       if (!isNaN(w)) { carry = w; break; }
     }
 
     const data = [];
-    for (let d=1; d<=lastDay; d++) {
-      const date = new Date(year, month, d);
-      const ds = dateStr(date);
-      if (ds > todayStr) break; // 未来は表示しない
+    for (let i = 0; i < 30; i++) {
+      const d = new Date(startDate); d.setDate(d.getDate() + i);
+      const ds = dateStr(d);
+      if (ds > todayStr) break;
       const recorded = parseFloat(localStorage.getItem('weight_'+ds));
       if (!isNaN(recorded)) carry = recorded;
-      data.push({ d: date, w: carry }); // 記録なし日は前回値を継続
+      data.push({ d, w: carry });
     }
-    if (label) label.textContent = `${year}年${month+1}月`;
-    if (nextBtn) nextBtn.disabled = isCurrentMonth;
+    const sm = startDate.getMonth()+1, sd = startDate.getDate();
+    const em = endDate.getMonth()+1,   ed = endDate.getDate();
+    if (label) label.textContent = `${sm}/${sd}〜${em}/${ed}`;
+    if (nextBtn) nextBtn.disabled = (wcMonthOffset >= 0);
     renderWeightChart(data, 'month');
+
   } else if (weightChartMode === 'halfyear') {
-    const { endYear, endMonth } = wcHalfYear;
-    const nowYear = now.getFullYear(), nowMonth = now.getMonth();
-    const isCurrent = (endYear === nowYear && endMonth === nowMonth);
-    const todayStr = dateStr(now);
-    // 6ヶ月分のデータを月単位で集める（終了月を含む直近6ヶ月）
+    // 直近6ヶ月（右端=今月+offset、左端=6ヶ月前）
+    const endDate = new Date(now.getFullYear(), now.getMonth() + wcHalfOffset, 1);
     let carry = null;
     const data = [];
     for (let i = 5; i >= 0; i--) {
-      let m = endMonth - i, y = endYear;
-      if (m < 0) { m += 12; y--; }
-      const daysInMonth = (y === nowYear && m === nowMonth) ? now.getDate() : new Date(y, m+1, 0).getDate();
+      const d = new Date(endDate); d.setMonth(d.getMonth() - i);
+      const y = d.getFullYear(), m = d.getMonth();
+      const isCurMonth = (y === now.getFullYear() && m === now.getMonth());
+      const daysInMonth = isCurMonth ? now.getDate() : new Date(y, m+1, 0).getDate();
       const ws = [];
-      for (let d = 1; d <= daysInMonth; d++) {
-        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         if (ds > todayStr) break;
         const w = parseFloat(localStorage.getItem('weight_'+ds));
         if (!isNaN(w)) { ws.push(w); carry = w; }
@@ -2230,69 +2206,61 @@ function renderWeightChartCurrent() {
       const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : carry;
       if (avg !== null) data.push({ d: new Date(y, m, 15), w: avg, label: `${m+1}月` });
     }
-    const startM = ((endMonth - 5) % 12 + 12) % 12 + 1;
-    const startY = endMonth < 5 ? endYear - 1 : endYear;
-    if (label) label.textContent = `${startY}年${startM}月〜${endYear}年${endMonth+1}月`;
-    if (nextBtn) nextBtn.disabled = isCurrent;
+    const startDate = new Date(endDate); startDate.setMonth(startDate.getMonth() - 5);
+    if (label) label.textContent = `${startDate.getFullYear()}年${startDate.getMonth()+1}月〜${endDate.getFullYear()}年${endDate.getMonth()+1}月`;
+    if (nextBtn) nextBtn.disabled = (wcHalfOffset >= 0);
     renderWeightChart(data, 'year');
+
   } else if (weightChartMode === 'year') {
-    const { year } = wcYear;
-    const isCurrentYear = (year === now.getFullYear());
-    const data = getYearWeightData(year);
-    if (label) label.textContent = `${year}年`;
-    if (nextBtn) nextBtn.disabled = isCurrentYear;
+    // 直近12ヶ月（右端=今月+offset、左端=12ヶ月前）
+    const endDate = new Date(now.getFullYear(), now.getMonth() + wcYearOffset, 1);
+    let carry = null;
+    const data = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(endDate); d.setMonth(d.getMonth() - i);
+      const y = d.getFullYear(), m = d.getMonth();
+      const isCurMonth = (y === now.getFullYear() && m === now.getMonth());
+      const daysInMonth = isCurMonth ? now.getDate() : new Date(y, m+1, 0).getDate();
+      const ws = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        if (ds > todayStr) break;
+        const w = parseFloat(localStorage.getItem('weight_'+ds));
+        if (!isNaN(w)) { ws.push(w); carry = w; }
+      }
+      const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : carry;
+      if (avg !== null) data.push({ d: new Date(y, m, 15), w: avg, label: `${m+1}月` });
+    }
+    const startDate = new Date(endDate); startDate.setMonth(startDate.getMonth() - 11);
+    if (label) label.textContent = `${startDate.getFullYear()}年${startDate.getMonth()+1}月〜${endDate.getFullYear()}年${endDate.getMonth()+1}月`;
+    if (nextBtn) nextBtn.disabled = (wcYearOffset >= 0);
     renderWeightChart(data, 'year');
+
   } else {
-    const { startYear } = wcFiveYear;
+    // 5年（従来通りカレンダー年）
+    const startYear = now.getFullYear() - 4 + wcFiveYearOffset;
     const endYear = startYear + 4;
     const isCurrentPeriod = (endYear >= now.getFullYear());
-    const data = getFiveYearWeightData(startYear);
+    const result = [];
+    for (let y = startYear; y <= endYear; y++) {
+      if (y > now.getFullYear()) break;
+      const lastMonth = (y === now.getFullYear()) ? now.getMonth() : 11;
+      const ws = [];
+      for (let m = 0; m <= lastMonth; m++) {
+        const daysInMonth = (y === now.getFullYear() && m === now.getMonth()) ? now.getDate() : new Date(y, m+1, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+          const w = parseFloat(localStorage.getItem('weight_'+ds));
+          if (!isNaN(w)) ws.push(w);
+        }
+      }
+      const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : null;
+      result.push({ d: new Date(y, 6, 1), w: avg, label: `${y}年` });
+    }
     if (label) label.textContent = `${startYear}〜${endYear}年`;
     if (nextBtn) nextBtn.disabled = isCurrentPeriod;
-    renderWeightChart(data, '5year');
+    renderWeightChart(result, '5year');
   }
-}
-
-function getYearWeightData(year) {
-  const now = new Date();
-  const isCurrentYear = (year === now.getFullYear());
-  const result = [];
-  let carry = null;
-  for (let m=0; m<=11; m++) {
-    const isFuture = isCurrentYear && m > now.getMonth();
-    if (isFuture) break;
-    const daysInMonth = (isCurrentYear && m===now.getMonth()) ? now.getDate() : new Date(year, m+1, 0).getDate();
-    const ws = [];
-    for (let d=1; d<=daysInMonth; d++) {
-      const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const w = parseFloat(localStorage.getItem('weight_'+ds));
-      if (!isNaN(w)) ws.push(w);
-    }
-    const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : null;
-    if (avg !== null) carry = avg;
-    result.push({ d: new Date(year, m, 15), w: avg !== null ? avg : carry, label: `${m+1}月` });
-  }
-  return result;
-}
-function getFiveYearWeightData(startYear) {
-  const now = new Date();
-  const result = [];
-  for (let y = startYear; y <= startYear + 4; y++) {
-    if (y > now.getFullYear()) break;
-    const lastMonth = (y === now.getFullYear()) ? now.getMonth() : 11;
-    const ws = [];
-    for (let m = 0; m <= lastMonth; m++) {
-      const daysInMonth = (y === now.getFullYear() && m === now.getMonth()) ? now.getDate() : new Date(y, m+1, 0).getDate();
-      for (let d = 1; d <= daysInMonth; d++) {
-        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const w = parseFloat(localStorage.getItem('weight_'+ds));
-        if (!isNaN(w)) ws.push(w);
-      }
-    }
-    const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : null;
-    result.push({ d: new Date(y, 6, 1), w: avg, label: `${y}年` });
-  }
-  return result;
 }
 function renderWeightChart(data, mode='month') {
   const W=320, H=150, pt=20, pr=10, pb=36, pl=44;
