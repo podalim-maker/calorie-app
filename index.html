@@ -2101,11 +2101,26 @@ function renderWeightChartCurrent() {
   if (weightChartMode === 'month') {
     const { year, month } = wcMonth;
     const isCurrentMonth = (year === now.getFullYear() && month === now.getMonth());
-    const lastDay = new Date(year, month+1, 0).getDate(); // 常に月末まで
+    const todayStr = dateStr(now);
+    const lastDay = new Date(year, month+1, 0).getDate();
+
+    // 月初より前の直近記録体重を探す（最大90日）
+    let carry = null;
+    const monthStart = new Date(year, month, 1);
+    for (let i = 1; i <= 90; i++) {
+      const d = new Date(monthStart); d.setDate(d.getDate() - i);
+      const w = parseFloat(localStorage.getItem('weight_'+dateStr(d)));
+      if (!isNaN(w)) { carry = w; break; }
+    }
+
     const data = [];
     for (let d=1; d<=lastDay; d++) {
       const date = new Date(year, month, d);
-      data.push({ d: date, w: parseFloat(localStorage.getItem('weight_'+dateStr(date)))||null });
+      const ds = dateStr(date);
+      if (ds > todayStr) break; // 未来は表示しない
+      const recorded = parseFloat(localStorage.getItem('weight_'+ds));
+      if (!isNaN(recorded)) carry = recorded;
+      data.push({ d: date, w: carry }); // 記録なし日は前回値を継続
     }
     if (label) label.textContent = `${year}年${month+1}月`;
     if (nextBtn) nextBtn.disabled = isCurrentMonth;
@@ -2132,19 +2147,20 @@ function getYearWeightData(year) {
   const now = new Date();
   const isCurrentYear = (year === now.getFullYear());
   const result = [];
+  let carry = null;
   for (let m=0; m<=11; m++) {
     const isFuture = isCurrentYear && m > now.getMonth();
+    if (isFuture) break;
     const daysInMonth = (isCurrentYear && m===now.getMonth()) ? now.getDate() : new Date(year, m+1, 0).getDate();
     const ws = [];
-    if (!isFuture) {
-      for (let d=1; d<=daysInMonth; d++) {
-        const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const w = parseFloat(localStorage.getItem('weight_'+ds));
-        if (!isNaN(w)) ws.push(w);
-      }
+    for (let d=1; d<=daysInMonth; d++) {
+      const ds = `${year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const w = parseFloat(localStorage.getItem('weight_'+ds));
+      if (!isNaN(w)) ws.push(w);
     }
     const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : null;
-    result.push({ d: new Date(year, m, 15), w: avg, label: `${m+1}月` });
+    if (avg !== null) carry = avg;
+    result.push({ d: new Date(year, m, 15), w: avg !== null ? avg : carry, label: `${m+1}月` });
   }
   return result;
 }
