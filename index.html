@@ -1510,21 +1510,26 @@ function addSwipeToClose(modalId, closeFn) {
   let startY = 0, currentY = 0, dragging = false;
   sheet.addEventListener('touchstart', e => {
     startY = e.touches[0].clientY;
+    currentY = startY;
     dragging = true;
     sheet.style.transition = 'none';
   }, { passive: true });
   sheet.addEventListener('touchmove', e => {
     if (!dragging) return;
     currentY = e.touches[0].clientY;
-    const dy = Math.max(0, currentY - startY);
-    sheet.style.transform = `translateY(${dy}px)`;
-  }, { passive: true });
+    const dy = currentY - startY;
+    if (dy > 0) {
+      e.preventDefault(); // プルリフレッシュ・ページ再読み込みを防ぐ
+      sheet.style.transform = `translateY(${dy}px)`;
+    }
+  }, { passive: false }); // passive:false で preventDefault() を有効化
   sheet.addEventListener('touchend', () => {
     if (!dragging) return;
     dragging = false;
     const dy = currentY - startY;
-    sheet.style.transition = '';
+    sheet.style.transition = 'transform .25s ease';
     sheet.style.transform = '';
+    setTimeout(() => { sheet.style.transition = ''; }, 260);
     if (dy > 80) closeFn();
   });
 }
