@@ -1401,7 +1401,32 @@ function saveWeight() {
 }
 function loadTodayWeight() {
   const w = localStorage.getItem('weight_' + today());
-  if (w) document.getElementById('weightInput').value = w;
+  if (w) { document.getElementById('weightInput').value = w; return; }
+  // Pre-fill with yesterday or setup default
+  const yday = new Date(); yday.setDate(yday.getDate() - 1);
+  const prevW = localStorage.getItem('weight_' + dateStr(yday));
+  if (prevW) { document.getElementById('weightInput').value = prevW; return; }
+  if (cfg && cfg.weight) document.getElementById('weightInput').value = cfg.weight;
+}
+
+function saveHomeWeight() {
+  const inp = document.getElementById('homeWeightInput');
+  if (!inp) return;
+  const w = parseFloat(inp.value);
+  if (!w || w < 30 || w > 300) { alert('体重を入力してください（30〜300kg）'); return; }
+  localStorage.setItem('weight_' + today(), String(w));
+  // Sync Today tab input
+  const todayInp = document.getElementById('weightInput');
+  if (todayInp) todayInp.value = w;
+  renderHome();
+}
+function editHomeWeight(cur) {
+  localStorage.removeItem('weight_' + today());
+  renderHome();
+  setTimeout(() => {
+    const inp = document.getElementById('homeWeightInput');
+    if (inp) { inp.value = cur; inp.focus(); inp.select(); }
+  }, 30);
 }
 
 // ── Tab switching ──
@@ -1470,22 +1495,38 @@ function renderHome() {
       </div>`;
 
   // Weight
-  let w = parseFloat(localStorage.getItem('weight_' + today()));
-  let wLabel = '';
-  if (!w) {
-    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    const prevW = parseFloat(localStorage.getItem('weight_' + dateStr(yesterday)));
-    if (prevW) { w = prevW; wLabel = '（昨日の記録）'; }
+  const todayW = parseFloat(localStorage.getItem('weight_' + today()));
+  let prefill = todayW;
+  let prefillLabel = '';
+  if (!prefill) {
+    const yday = new Date(); yday.setDate(yday.getDate() - 1);
+    const prevW = parseFloat(localStorage.getItem('weight_' + dateStr(yday)));
+    if (prevW) { prefill = prevW; prefillLabel = '昨日の記録から'; }
+    else if (cfg && cfg.weight) { prefill = cfg.weight; prefillLabel = '初期設定から'; }
   }
-  document.getElementById('hWeightBody').innerHTML = w
-    ? `<div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px;">
-         <span class="home-weight-num">${(w-1).toFixed(1)}</span>
-         <span class="home-weight-unit">〜</span>
-         <span class="home-weight-num">${(w+1).toFixed(1)}</span>
-         <span class="home-weight-unit">kg</span>
+  if (todayW) {
+    document.getElementById('hWeightBody').innerHTML =
+      `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+         <div>
+           <div style="display:flex;align-items:baseline;gap:4px;">
+             <span class="home-weight-num">${todayW.toFixed(1)}</span>
+             <span class="home-weight-unit">kg</span>
+           </div>
+           <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">今日の記録済み</div>
+         </div>
+         <button onclick="editHomeWeight(${todayW})" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">修正</button>
+       </div>`;
+  } else {
+    document.getElementById('hWeightBody').innerHTML =
+      `<div style="display:flex;align-items:center;gap:8px;">
+         <input type="number" id="homeWeightInput" step="0.1" min="30" max="300"
+           value="${prefill || ''}" placeholder="--"
+           style="width:80px;border:none;border-radius:10px;padding:8px 10px;font-size:18px;font-weight:800;text-align:center;background:rgba(255,255,255,.15);color:white;outline:none;-webkit-appearance:none;">
+         <span style="color:rgba(255,255,255,.6);font-size:14px;">kg</span>
+         <button onclick="saveHomeWeight()" style="background:rgba(255,255,255,.95);color:#0d1650;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer;">記録</button>
        </div>
-       <div style="font-size:12px;color:rgba(255,255,255,.45);">記録値 ${w} kg（日内変動 ±1kg）${wLabel}</div>`
-    : `<div style="color:rgba(255,255,255,.4);font-size:13px;">体重が記録されていません</div>`;
+       ${prefillLabel ? `<div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:6px;">${prefillLabel}を参考に入力しました</div>` : ''}`;
+  }
 
   // Date in topbar
   const dateEl = document.getElementById('homeDate');
