@@ -882,7 +882,11 @@
       食事の写真をAIが解析してカロリーを自動推定する機能です。<br>
       利用には Anthropic のAPIキーが必要です。<br><br>
       <strong>費用：</strong>写真1枚あたり約0.3〜0.5円（従量制）<br>
-      <strong>登録：</strong><a href="https://console.anthropic.com" target="_blank" style="color:#1B2A8A;">console.anthropic.com</a> でアカウント作成後、APIキーを発行してください。
+      <strong>登録：</strong>以下のURLでアカウント作成・APIキーを発行してください。<br>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <code style="flex:1;background:#e8ecf8;padding:6px 10px;border-radius:8px;font-size:12px;word-break:break-all;">console.anthropic.com</code>
+        <button onclick="copyApiUrl()" id="copyUrlBtn" style="flex-shrink:0;background:#1B2A8A;color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;">コピー</button>
+      </div>
     </div>
 
     <div class="fg">
@@ -1227,6 +1231,13 @@ function openApiKeyModal() {
 }
 function closeApiKeyModal() {
   document.getElementById('apiKeyModal').classList.remove('show');
+}
+function copyApiUrl() {
+  navigator.clipboard.writeText('https://console.anthropic.com').then(() => {
+    const btn = document.getElementById('copyUrlBtn');
+    btn.textContent = '✓ コピー済';
+    setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+  });
 }
 function saveApiKey() {
   const key = document.getElementById('modal-apikey').value.trim();
