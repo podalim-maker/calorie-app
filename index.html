@@ -1449,13 +1449,22 @@ function saveWeight() {
   const btn = document.querySelector('.weight-btn');
   btn.textContent = '✓'; setTimeout(() => { btn.textContent = '記録'; }, 1500);
 }
+// 指定日より前の直近記録体重を返す（最大90日遡る）
+function getLastWeight(beforeDs) {
+  const base = new Date(beforeDs + 'T00:00:00');
+  for (let i = 1; i <= 90; i++) {
+    const d = new Date(base); d.setDate(d.getDate() - i);
+    const w = localStorage.getItem('weight_' + dateStr(d));
+    if (w) return { value: parseFloat(w), daysAgo: i };
+  }
+  return null;
+}
+
 function loadTodayWeight() {
   const w = localStorage.getItem('weight_' + today());
   if (w) { document.getElementById('weightInput').value = w; return; }
-  // Pre-fill with yesterday or setup default
-  const yday = new Date(); yday.setDate(yday.getDate() - 1);
-  const prevW = localStorage.getItem('weight_' + dateStr(yday));
-  if (prevW) { document.getElementById('weightInput').value = prevW; return; }
+  const last = getLastWeight(today());
+  if (last) { document.getElementById('weightInput').value = last.value; return; }
   if (cfg && cfg.weight) document.getElementById('weightInput').value = cfg.weight;
 }
 
@@ -1504,11 +1513,8 @@ function refreshEditDay() {
   if (w) {
     document.getElementById('edWeightInput').value = w;
   } else {
-    // fallback: previous day → cfg.weight
-    const prev = new Date(ds + 'T00:00:00');
-    prev.setDate(prev.getDate() - 1);
-    const prevW = localStorage.getItem('weight_' + dateStr(prev));
-    document.getElementById('edWeightInput').value = prevW || (cfg && cfg.weight ? cfg.weight : '');
+    const last = getLastWeight(ds);
+    document.getElementById('edWeightInput').value = last ? last.value : (cfg && cfg.weight ? cfg.weight : '');
   }
 
   // Activity buttons
@@ -1647,10 +1653,11 @@ function renderHome() {
   let prefill = todayW;
   let prefillLabel = '';
   if (!prefill) {
-    const yday = new Date(); yday.setDate(yday.getDate() - 1);
-    const prevW = parseFloat(localStorage.getItem('weight_' + dateStr(yday)));
-    if (prevW) { prefill = prevW; prefillLabel = '昨日の記録から'; }
-    else if (cfg && cfg.weight) { prefill = cfg.weight; prefillLabel = '初期設定から'; }
+    const last = getLastWeight(today());
+    if (last) {
+      prefill = last.value;
+      prefillLabel = last.daysAgo === 1 ? '昨日の記録から' : `${last.daysAgo}日前の記録から`;
+    } else if (cfg && cfg.weight) { prefill = cfg.weight; prefillLabel = '初期設定から'; }
   }
   if (todayW) {
     document.getElementById('hWeightBody').innerHTML =
