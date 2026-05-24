@@ -730,6 +730,7 @@
       <div class="chart-wrap">
         <div class="chart-toggle-bar">
           <button class="chart-toggle active" id="wt-month" onclick="toggleWeightChart('month')">1ヶ月</button>
+          <button class="chart-toggle" id="wt-halfyear" onclick="toggleWeightChart('halfyear')">半年</button>
           <button class="chart-toggle" id="wt-year" onclick="toggleWeightChart('year')">1年</button>
           <button class="chart-toggle" id="wt-5year" onclick="toggleWeightChart('5year')">5年</button>
         </div>
@@ -2094,14 +2095,19 @@ let wcMonth   = { year: new Date().getFullYear(), month: new Date().getMonth() }
 let wcYear    = { year: new Date().getFullYear() };
 let wcFiveYear = { startYear: new Date().getFullYear() - 4 };
 
+let wcHalfYear = { endYear: new Date().getFullYear(), endMonth: new Date().getMonth() };
+
 function toggleWeightChart(mode) {
   weightChartMode = mode;
   document.getElementById('wt-month').classList.toggle('active', mode==='month');
+  document.getElementById('wt-halfyear').classList.toggle('active', mode==='halfyear');
   document.getElementById('wt-year').classList.toggle('active', mode==='year');
   document.getElementById('wt-5year').classList.toggle('active', mode==='5year');
   const now = new Date();
   if (mode === 'month') {
     wcMonth = { year: now.getFullYear(), month: now.getMonth() };
+  } else if (mode === 'halfyear') {
+    wcHalfYear = { endYear: now.getFullYear(), endMonth: now.getMonth() };
   } else if (mode === 'year') {
     wcYear = { year: now.getFullYear() };
   } else {
@@ -2114,6 +2120,9 @@ function weightChartPrev() {
   if (weightChartMode === 'month') {
     wcMonth.month--;
     if (wcMonth.month < 0) { wcMonth.month = 11; wcMonth.year--; }
+  } else if (weightChartMode === 'halfyear') {
+    wcHalfYear.endMonth -= 6;
+    if (wcHalfYear.endMonth < 0) { wcHalfYear.endMonth += 12; wcHalfYear.endYear--; }
   } else if (weightChartMode === 'year') {
     wcYear.year--;
   } else {
@@ -2126,6 +2135,9 @@ function weightChartNext() {
   if (weightChartMode === 'month') {
     wcMonth.month++;
     if (wcMonth.month > 11) { wcMonth.month = 0; wcMonth.year++; }
+  } else if (weightChartMode === 'halfyear') {
+    wcHalfYear.endMonth += 6;
+    if (wcHalfYear.endMonth > 11) { wcHalfYear.endMonth -= 12; wcHalfYear.endYear++; }
   } else if (weightChartMode === 'year') {
     wcYear.year++;
   } else {
@@ -2166,6 +2178,33 @@ function renderWeightChartCurrent() {
     if (label) label.textContent = `${year}年${month+1}月`;
     if (nextBtn) nextBtn.disabled = isCurrentMonth;
     renderWeightChart(data, 'month');
+  } else if (weightChartMode === 'halfyear') {
+    const { endYear, endMonth } = wcHalfYear;
+    const nowYear = now.getFullYear(), nowMonth = now.getMonth();
+    const isCurrent = (endYear === nowYear && endMonth === nowMonth);
+    const todayStr = dateStr(now);
+    // 6ヶ月分のデータを月単位で集める（終了月を含む直近6ヶ月）
+    let carry = null;
+    const data = [];
+    for (let i = 5; i >= 0; i--) {
+      let m = endMonth - i, y = endYear;
+      if (m < 0) { m += 12; y--; }
+      const daysInMonth = (y === nowYear && m === nowMonth) ? now.getDate() : new Date(y, m+1, 0).getDate();
+      const ws = [];
+      for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (ds > todayStr) break;
+        const w = parseFloat(localStorage.getItem('weight_'+ds));
+        if (!isNaN(w)) { ws.push(w); carry = w; }
+      }
+      const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : carry;
+      if (avg !== null) data.push({ d: new Date(y, m, 15), w: avg, label: `${m+1}月` });
+    }
+    const startM = ((endMonth - 5) % 12 + 12) % 12 + 1;
+    const startY = endMonth < 5 ? endYear - 1 : endYear;
+    if (label) label.textContent = `${startY}年${startM}月〜${endYear}年${endMonth+1}月`;
+    if (nextBtn) nextBtn.disabled = isCurrent;
+    renderWeightChart(data, 'year');
   } else if (weightChartMode === 'year') {
     const { year } = wcYear;
     const isCurrentYear = (year === now.getFullYear());
