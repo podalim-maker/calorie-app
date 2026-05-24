@@ -1272,8 +1272,7 @@ function onPhoto(e) {
       `<img src="${thumbDataUrl}" style="width:100%;max-height:200px;object-fit:cover;border-radius:12px;margin-bottom:8px;">`;
     const pb = document.getElementById('photoPickerBtns');
     if (pb) pb.style.display = 'none';
-    const hasKey = !!cfg.apiKey;
-    document.getElementById('analyzeBtn').style.display = hasKey ? 'block' : 'none';
+    document.getElementById('analyzeBtn').style.display = 'block';
     document.getElementById('manualBtn').style.display = 'block';
   };
   img.onerror = () => {
@@ -1285,6 +1284,10 @@ function onPhoto(e) {
 
 async function doAnalyze() {
   if (!pendingPhoto) return;
+  if (!cfg.apiKey) {
+    alert('AIカロリー推定にはAPIキーが必要です。\n設定画面（⚙️）からAnthropicのAPIキーを入力してください。');
+    return;
+  }
   showStep('analyzing');
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
