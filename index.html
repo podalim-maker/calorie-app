@@ -1370,36 +1370,48 @@ async function doAnalyze() {
   }
   showStep('analyzing');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': cfg.apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-calls': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
-        messages: [{
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: pendingPhoto.mediaType, data: pendingPhoto.base64 }
-            },
-            {
-              type: 'text',
-              text: 'この食事写真のカロリーを推定してください。他のテキストは一切不要で、必ず次のJSONのみ返してください:\n{"name":"料理名","calories":数値,"description":"推定根拠（30文字以内）"}'
-            }
-          ]
-        }]
-      })
-    });
+    let res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-api-key': cfg.apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'anthropic-dangerous-direct-browser-calls': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5',
+          max_tokens: 512,
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: { type: 'base64', media_type: pendingPhoto.mediaType, data: pendingPhoto.base64 }
+              },
+              {
+                type: 'text',
+                text: 'この食事写真のカロリーを推定してください。他のテキストは一切不要で、必ず次のJSONのみ返してください:\n{"name":"料理名","calories":数値,"description":"推定根拠（30文字以内）"}'
+              }
+            ]
+          }]
+        })
+      });
+    } catch(netErr) {
+      throw new Error('通信エラー: APIサーバーに接続できませんでした。\n\n考えられる原因:\n・ホーム画面アプリではなくSafari/Chromeブラウザで開いてください\n・ネットワーク接続を確認してください\n・APIキーが正しいか確認してください');
+    }
 
     if (!res.ok) {
-      const e = await res.json();
-      throw new Error(e.error?.message || `HTTPエラー ${res.status}`);
+      let errMsg = `HTTPエラー ${res.status}`;
+      try {
+        const e = await res.json();
+        errMsg = e.error?.message || errMsg;
+        if (res.status === 401) errMsg = 'APIキーが無効です。設定から再登録してください。';
+        if (res.status === 429) errMsg = 'API利用制限に達しました。しばらく待ってから再試行してください。';
+      } catch(_) {}
+      throw new Error(errMsg);
     }
 
     const data = await res.json();
@@ -1417,7 +1429,7 @@ async function doAnalyze() {
 
   } catch(err) {
     showStep('photo');
-    alert(`エラー: ${err.message}`);
+    alert(err.message);
   }
 }
 
