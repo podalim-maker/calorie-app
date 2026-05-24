@@ -48,9 +48,11 @@
       flex: 1; display: flex; align-items: center; justify-content: center;
     }
     .splash-logo {
-      width: 80vw; height: 80vw; max-width: 340px; max-height: 340px;
+      width: 88vw; max-width: 380px;
+      height: auto; aspect-ratio: 1 / 1;
+      object-fit: contain;
       filter: brightness(0) invert(1);
-      opacity: .95;
+      opacity: .70;
     }
     .splash-bottom {
       width: 100%; padding: 0 32px calc(52px + env(safe-area-inset-bottom));
