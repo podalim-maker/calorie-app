@@ -654,6 +654,7 @@
     <button class="add-btn" onclick="openAdd()">
       📷 食事を記録する
     </button>
+    <button class="btn-danger" style="margin:0 0 8px;font-size:13px;padding:10px;" onclick="clearToday()">今日のデータをリセット</button>
 
     <!-- Meal list -->
     <div class="section-label" id="todayLabel">今日の食事</div>
@@ -986,7 +987,6 @@
     <button class="btn-sub" onclick="closeSettings()">キャンセル</button>
 
     <div class="divider"></div>
-    <button class="btn-danger" onclick="clearToday()">今日のデータをリセット</button>
     <button class="btn-danger" style="margin-top:8px;background:#888;" onclick="resetToSetup()">最初のセットアップに戻る</button>
   </div>
 </div>
@@ -1003,6 +1003,7 @@ window.addEventListener('resize', setRealVH);
 // ── State ──
 let cfg = null;          // {gender, age, height, weight, bmr, apiKey}
 let meals = [];          // [{name, calories, time, photo}]
+let loadedDate = '';     // mealsをロードした日付（日付またぎ検知用）
 let addingForDate = null; // null=today, "YYYY-MM-DD"=past date
 let setupGender = 'male';
 let setupActivity = 'low';
@@ -1032,7 +1033,8 @@ function enterApp() {
     if (!cfg) {
       show('setupScreen');
     } else {
-      meals = JSON.parse(localStorage.getItem('meals_' + today()) || '[]');
+      loadedDate = today();
+      meals = JSON.parse(localStorage.getItem('meals_' + loadedDate) || '[]');
       show('mainApp');
       refreshUI();
       refreshDate();
@@ -1080,7 +1082,24 @@ function refreshDate() {
   document.getElementById('todayLabel').textContent = dateText;
 }
 
+function checkDateRollover() {
+  const nowDate = today();
+  if (loadedDate && nowDate !== loadedDate) {
+    loadedDate = nowDate;
+    meals = JSON.parse(localStorage.getItem('meals_' + nowDate) || '[]');
+    refreshDate();
+    loadTodayActivity();
+    loadTodayWeight();
+  }
+}
+
+// アプリをバックグラウンドから復帰した時も日付チェック
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && cfg) checkDateRollover();
+});
+
 function refreshUI() {
+  checkDateRollover();
   const total = meals.reduce((s, m) => s + m.calories, 0);
   const target = getTodayTarget();
   const pct = Math.min(total / target, 1);
