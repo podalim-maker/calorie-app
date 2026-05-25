@@ -1678,6 +1678,9 @@ function getTodayTarget() {
 }
 function setTodayActivity(a) {
   localStorage.setItem('activity_' + today(), a);
+  localStorage.removeItem('steps_' + today());
+  const inp = document.getElementById('todayStepsInput');
+  if (inp) inp.value = '';
   loadTodayActivity();
   refreshUI();
 }
@@ -1895,6 +1898,9 @@ function saveEditDayWeight() {
 
 function setEditDayActivity(a) {
   localStorage.setItem('activity_' + editingDate, a);
+  localStorage.removeItem('steps_' + editingDate);
+  const inp = document.getElementById('edStepsInput');
+  if (inp) inp.value = '';
   refreshEditDay();
 }
 
