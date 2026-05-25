@@ -668,7 +668,7 @@
         <span id="todayStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
       </div>
       <div class="steps-input-row">
-        <input type="number" id="todayStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" min="0" max="200000">
+        <input type="text" id="todayStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
         <span class="steps-unit">歩</span>
         <button class="steps-btn" onclick="saveTodaySteps()">記録</button>
         <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
@@ -734,7 +734,7 @@
           <span id="edStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
         </div>
         <div class="steps-input-row">
-          <input type="number" id="edStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" min="0" max="200000">
+          <input type="text" id="edStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
           <span class="steps-unit">歩</span>
           <button class="steps-btn" onclick="saveEditDaySteps()">記録</button>
           <button class="steps-clear-btn" id="edStepsClear" onclick="clearEditDaySteps()">×</button>
@@ -1719,15 +1719,18 @@ function loadTodaySteps() {
   }
 }
 function saveTodaySteps() {
-  const steps = parseInt(document.getElementById('todayStepsInput').value || '0');
-  if (!steps || steps < 0) { alert('歩数を入力してください'); return; }
+  const inp = document.getElementById('todayStepsInput');
+  inp.blur();
+  const steps = parseInt(inp.value.replace(/[^0-9]/g, '') || '0');
+  if (!steps || steps <= 0) { alert('歩数を入力してください'); return; }
   localStorage.setItem('steps_' + today(), String(steps));
   loadTodayActivity();
   refreshUI();
 }
 function clearTodaySteps() {
   localStorage.removeItem('steps_' + today());
-  document.getElementById('todayStepsInput').value = '';
+  const inp = document.getElementById('todayStepsInput');
+  if (inp) inp.value = '';
   loadTodayActivity();
   refreshUI();
 }
@@ -1807,14 +1810,17 @@ function loadEditDaySteps() {
   }
 }
 function saveEditDaySteps() {
-  const steps = parseInt(document.getElementById('edStepsInput').value || '0');
-  if (!steps || steps < 0) { alert('歩数を入力してください'); return; }
+  const inp = document.getElementById('edStepsInput');
+  inp.blur();
+  const steps = parseInt(inp.value.replace(/[^0-9]/g, '') || '0');
+  if (!steps || steps <= 0) { alert('歩数を入力してください'); return; }
   localStorage.setItem('steps_' + editingDate, String(steps));
   refreshEditDay();
 }
 function clearEditDaySteps() {
   localStorage.removeItem('steps_' + editingDate);
-  document.getElementById('edStepsInput').value = '';
+  const inp = document.getElementById('edStepsInput');
+  if (inp) inp.value = '';
   refreshEditDay();
 }
 function refreshEditDay() {
