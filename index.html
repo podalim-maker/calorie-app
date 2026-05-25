@@ -448,6 +448,17 @@
     .activity-today-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     .act-today-btn { background: var(--bg); border: 2px solid var(--border); border-radius: 12px; padding: 8px 4px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; transition: all .2s; color: var(--sub); }
     .act-today-btn.active { border-color: #1B2A8A; background: #e8ecf8; color: #1B2A8A; }
+    .act-today-btn.steps-mode { opacity: 0.4; }
+    /* ── Steps card ── */
+    .steps-card { background: white; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+    .steps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .steps-label { font-size: 14px; font-weight: 700; color: #444; }
+    .steps-input-row { display: flex; align-items: center; gap: 8px; }
+    .steps-input { flex: 1; border: 2px solid #E0E0E0; border-radius: 10px; padding: 8px 10px; font-size: 16px; font-weight: 600; color: #333; background: #FAFAFA; }
+    .steps-input:focus { border-color: #1B2A8A; outline: none; background: white; }
+    .steps-unit { font-size: 14px; color: #666; flex-shrink: 0; }
+    .steps-btn { background: #1B2A8A; color: white; border: none; border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+    .steps-clear-btn { background: #EEE; color: #888; border: none; border-radius: 10px; padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0; display: none; }
     /* ── Cumulative card ── */
     .cumulative-card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
   </style>
@@ -650,6 +661,21 @@
       </div>
     </div>
 
+    <!-- Steps input -->
+    <div class="steps-card">
+      <div class="steps-header">
+        <span class="steps-label">🚶 歩数入力（任意）</span>
+        <span id="todayStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
+      </div>
+      <div class="steps-input-row">
+        <input type="number" id="todayStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" min="0" max="200000">
+        <span class="steps-unit">歩</span>
+        <button class="steps-btn" onclick="saveTodaySteps()">記録</button>
+        <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
+      </div>
+      <div id="todayStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
+    </div>
+
     <!-- Add button -->
     <button class="add-btn" onclick="openAdd()">
       📷 食事を記録する
@@ -700,6 +726,20 @@
           <button class="act-today-btn" id="ed-mid"  onclick="setEditDayActivity('mid')">やや活動</button>
           <button class="act-today-btn" id="ed-high" onclick="setEditDayActivity('high')">活動的</button>
         </div>
+      </div>
+      <!-- Steps input (edit day) -->
+      <div class="steps-card">
+        <div class="steps-header">
+          <span class="steps-label">🚶 歩数入力（任意）</span>
+          <span id="edStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
+        </div>
+        <div class="steps-input-row">
+          <input type="number" id="edStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" min="0" max="200000">
+          <span class="steps-unit">歩</span>
+          <button class="steps-btn" onclick="saveEditDaySteps()">記録</button>
+          <button class="steps-clear-btn" id="edStepsClear" onclick="clearEditDaySteps()">×</button>
+        </div>
+        <div id="edStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
       </div>
       <!-- Add meal button -->
       <button class="add-btn" onclick="openAddForDate(editingDate)" style="margin-bottom:12px;">📷 食事を記録する</button>
@@ -1295,6 +1335,8 @@ function clearToday() {
   if (!confirm('今日のデータをリセットしますか？')) return;
   meals = [];
   saveMeals();
+  localStorage.removeItem('steps_' + today());
+  loadTodayActivity();
   refreshUI();
   closeSettings();
 }
@@ -1607,15 +1649,29 @@ function getBMRForDate(ds) {
   }
   return calcBMR(cfg.gender, cfg.age, cfg.height, w);
 }
+// 歩数からその日の運動カロリーを算出（歩数未入力はnull）
+function getStepCalories(ds) {
+  const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
+  if (!steps || steps <= 0) return null;
+  let w = parseFloat(localStorage.getItem('weight_' + ds));
+  if (isNaN(w) || w < 1) {
+    const last = getLastWeight(ds);
+    w = (last && last.value > 0) ? last.value : (cfg?.weight || 60);
+  }
+  return Math.round(steps * w * 0.0005);
+}
+// 歩数入力があればBMR＋歩数カロリー、なければ活動係数方式
+function getDayTdee(ds) {
+  if (!cfg) return 0;
+  const stepCal = getStepCalories(ds);
+  if (stepCal !== null) return Math.round(getBMRForDate(ds) + stepCal);
+  return Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[getDayActivity(ds)]);
+}
 function getDayTarget(ds) {
   if (!cfg) return 2000;
-  const tdee = Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[getDayActivity(ds)]);
-  return Math.max(tdee - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
+  return Math.max(getDayTdee(ds) - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
 }
-function getTodayTdee() {
-  if (!cfg) return 0;
-  return Math.round(getBMRForDate(today()) * ACTIVITY_FACTORS[getTodayActivity()]);
-}
+function getTodayTdee() { return getDayTdee(today()); }
 function getTodayTarget() {
   if (!cfg) return 2000;
   return Math.max(getTodayTdee() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
@@ -1627,12 +1683,53 @@ function setTodayActivity(a) {
 }
 function loadTodayActivity() {
   const a = getTodayActivity();
+  const stepsMode = getStepCalories(today()) !== null;
   ['low','mid','high'].forEach(k => {
     const btn = document.getElementById('at-'+k);
-    if (btn) btn.classList.toggle('active', k===a);
+    if (btn) {
+      btn.classList.toggle('active', k===a && !stepsMode);
+      btn.classList.toggle('steps-mode', stepsMode);
+    }
   });
   const tdeeEl = document.getElementById('todayTdeeLabel');
   if (tdeeEl && cfg) tdeeEl.textContent = `消費 ${getTodayTdee().toLocaleString()} kcal`;
+  loadTodaySteps();
+}
+function loadTodaySteps() {
+  const ds = today();
+  const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
+  const inp = document.getElementById('todayStepsInput');
+  const clearBtn = document.getElementById('todayStepsClear');
+  const note = document.getElementById('todayStepsNote');
+  const calLabel = document.getElementById('todayStepsCalLabel');
+  if (!inp) return;
+  if (steps > 0) {
+    inp.value = steps;
+    clearBtn.style.display = '';
+    note.style.display = '';
+    const stepCal = getStepCalories(ds);
+    const bmr = getBMRForDate(ds);
+    calLabel.style.display = '';
+    calLabel.textContent = `BMR ${bmr.toLocaleString()} + 歩数 ${stepCal.toLocaleString()} = ${(bmr+stepCal).toLocaleString()} kcal`;
+  } else {
+    inp.value = '';
+    clearBtn.style.display = 'none';
+    note.style.display = 'none';
+    calLabel.style.display = 'none';
+  }
+}
+function saveTodaySteps() {
+  const steps = parseInt(document.getElementById('todayStepsInput').value || '0');
+  if (!steps || steps < 0) { alert('歩数を入力してください'); return; }
+  localStorage.setItem('steps_' + today(), String(steps));
+  loadTodayActivity();
+  refreshUI();
+}
+function clearTodaySteps() {
+  localStorage.removeItem('steps_' + today());
+  document.getElementById('todayStepsInput').value = '';
+  loadTodayActivity();
+  refreshUI();
 }
 
 // ── Weight ──
@@ -1685,13 +1782,49 @@ function closeEditDay() {
   renderHistory();
 }
 
+function loadEditDaySteps() {
+  const ds = editingDate;
+  if (!ds) return;
+  const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
+  const inp = document.getElementById('edStepsInput');
+  const clearBtn = document.getElementById('edStepsClear');
+  const note = document.getElementById('edStepsNote');
+  const calLabel = document.getElementById('edStepsCalLabel');
+  if (!inp) return;
+  if (steps > 0) {
+    inp.value = steps;
+    clearBtn.style.display = '';
+    note.style.display = '';
+    const stepCal = getStepCalories(ds);
+    const bmr = getBMRForDate(ds);
+    calLabel.style.display = '';
+    calLabel.textContent = `BMR ${bmr.toLocaleString()} + 歩数 ${stepCal.toLocaleString()} = ${(bmr+stepCal).toLocaleString()} kcal`;
+  } else {
+    inp.value = '';
+    clearBtn.style.display = 'none';
+    note.style.display = 'none';
+    calLabel.style.display = 'none';
+  }
+}
+function saveEditDaySteps() {
+  const steps = parseInt(document.getElementById('edStepsInput').value || '0');
+  if (!steps || steps < 0) { alert('歩数を入力してください'); return; }
+  localStorage.setItem('steps_' + editingDate, String(steps));
+  refreshEditDay();
+}
+function clearEditDaySteps() {
+  localStorage.removeItem('steps_' + editingDate);
+  document.getElementById('edStepsInput').value = '';
+  refreshEditDay();
+}
 function refreshEditDay() {
   if (!editingDate) return;
   const ds = editingDate;
   const dayMeals = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
   const total = dayMeals.reduce((s, m) => s + m.calories, 0);
+  const stepsMode = getStepCalories(ds) !== null;
   const act = getDayActivity(ds);
-  const tdee = Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[act]);
+  const tdee = getDayTdee(ds);
   const target = Math.max(tdee - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
   const pct = Math.min(total / target * 100, 100);
   const remain = target - total;
@@ -1716,8 +1849,14 @@ function refreshEditDay() {
   }
 
   // Activity buttons
-  ['low','mid','high'].forEach(k =>
-    document.getElementById('ed-'+k).classList.toggle('active', k === act));
+  ['low','mid','high'].forEach(k => {
+    const btn = document.getElementById('ed-'+k);
+    if (btn) {
+      btn.classList.toggle('active', k === act && !stepsMode);
+      btn.classList.toggle('steps-mode', stepsMode);
+    }
+  });
+  loadEditDaySteps();
 
   // Meal list
   const list = document.getElementById('edMealList');
