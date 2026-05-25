@@ -1247,6 +1247,7 @@ function openApiKeyModal() {
     status.style.display = 'none';
   }
   document.getElementById('apiKeyModal').classList.add('show');
+  setTimeout(() => inp.focus(), 300);
 }
 function closeApiKeyModal() {
   document.getElementById('apiKeyModal').classList.remove('show');
