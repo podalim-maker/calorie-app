@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>歩数と消費カロリーの算出根拠</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f5f6fa; color: #333; padding-bottom: 40px; }
+    .header { background: linear-gradient(135deg, #1a2980 0%, #0d1650 100%); color: white; padding: 20px 20px 24px; }
+    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+    .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .card-title { font-size: 14px; font-weight: 700; color: #1B2A8A; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 14px; line-height: 1.75; color: #444; }
+    .formula { background: #f0f3ff; border-radius: 10px; padding: 14px 16px; margin: 12px 0; font-size: 15px; line-height: 2; color: #333; text-align: center; }
+    .formula strong { color: #1B2A8A; font-weight: 800; font-size: 17px; }
+    .formula .sub { font-size: 13px; color: #666; }
+    .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 14px; line-height: 1.75; color: #555; }
+    .evidence { background: #f8f9ff; border: 1px solid #dde3ff; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #444; }
+    .evidence-label { font-size: 11px; font-weight: 700; color: #1B2A8A; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+    .caution { background: #FFF3F3; border: 1px solid #FFCDD2; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #555; }
+    .caution-label { font-size: 11px; font-weight: 700; color: #C62828; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th { background: #f0f3ff; color: #1B2A8A; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 13px; }
+    td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; color: #444; font-size: 14px; }
+    tr:last-child td { border-bottom: none; }
+    .ref-section { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .ref-section-title { font-size: 13px; font-weight: 700; color: #1B2A8A; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eef0f8; }
+    .ref-item { font-size: 12px; color: #555; line-height: 1.75; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-journal { color: #1B2A8A; font-style: italic; font-weight: 600; }
+    .ref-if { display: inline-block; background: #f0f3ff; color: #1B2A8A; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+    .row { display: flex; gap: 10px; margin-top: 12px; }
+    .badge { flex: 1; background: #f0f3ff; border-radius: 10px; padding: 12px 8px; text-align: center; font-size: 13px; color: #444; line-height: 1.6; }
+    .badge .val { font-size: 18px; font-weight: 800; color: #1B2A8A; display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">‹ 戻る</button>
+    <h1>歩数と消費カロリー</h1>
+    <p>計算方法とエビデンス</p>
+  </div>
+
+  <div class="content">
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        計算式
+      </div>
+      <p>歩数から消費カロリーを次の式で算出します。</p>
+      <div class="formula">
+        <strong>消費カロリー（kcal）</strong><br>
+        ＝ 歩数 × 体重（kg） × 0.0005<br>
+        <span class="sub">※ 歩行の平均MET・歩幅・速度から導出した係数</span>
+      </div>
+      <div class="tip">
+        例：体重 70 kg・10,000 歩の場合<br>
+        10,000 × 70 × 0.0005 ＝ <strong>350 kcal</strong><br><br>
+        このアプリでは <strong>BMR（基礎代謝）＋ 歩数消費カロリー</strong> をその日の総消費カロリーとして使用します。
+      </div>
+      <div class="evidence">
+        <span class="evidence-label">📄 Evidence</span>
+        ウォーキングの MET 値は 3.0〜3.5 程度（Ainsworth et al., <span class="ref-journal">Med Sci Sports Exerc</span> 2011）。歩行速度・体重・歩幅を考慮した換算係数 0.0005 kcal/歩/kg は、Tudor-Locke ら（<span class="ref-journal">Int J Behav Nutr Phys Act</span> 2004）が示した歩数と身体活動量の対応関係と整合します。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        歩数の目安
+      </div>
+      <table>
+        <tr>
+          <th>歩数</th>
+          <th>活動レベルの目安</th>
+          <th>消費カロリー目安<br><span style="font-weight:400;font-size:11px;">体重 60kg の場合</span></th>
+        </tr>
+        <tr><td>3,000 歩</td><td>ほぼ座って過ごした日</td><td>約 90 kcal</td></tr>
+        <tr><td>6,000 歩</td><td>通勤・外出あり</td><td>約 180 kcal</td></tr>
+        <tr><td>8,000 歩</td><td>WHO 推奨の最低目標</td><td>約 240 kcal</td></tr>
+        <tr><td>10,000 歩</td><td>活発な日常活動</td><td>約 300 kcal</td></tr>
+      </table>
+      <div class="tip" style="margin-top:12px;">
+        WHO（2020）は成人に対し、1週間あたり中強度の有酸素活動 150〜300 分、または高強度 75〜150 分を推奨しており、1日 8,000〜10,000 歩はこの目標に対応します。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        精度について
+      </div>
+      <p>この計算式は日常的な歩行（平地・通常速度）を前提とした簡便式です。</p>
+      <div class="caution">
+        <span class="caution-label">⚠️ 注意事項</span>
+        歩行速度・歩幅・地形・個人差により、実際の消費カロリーは ±20〜30% 程度変動します。あくまでも目安としてご利用ください。
+      </div>
+      <div class="row">
+        <div class="badge"><span class="val">±20〜30%</span>個人差・<br>環境による誤差</div>
+        <div class="badge"><span class="val">0.0005</span>係数の<br>根拠（MET換算）</div>
+        <div class="badge"><span class="val">体重連動</span>その日の<br>体重で計算</div>
+      </div>
+    </div>
+
+    <div class="ref-section">
+      <div class="ref-section-title">参考文献</div>
+
+      <div class="ref-item">
+        Ainsworth BE et al. 2011 Compendium of Physical Activities: A second update of codes and MET values. <span class="ref-journal">Med Sci Sports Exerc.</span> 2011;43(8):1575–1581. <span class="ref-if">IF ≈ 5.0</span><br>
+        <span style="font-size:11px;color:#888;">800 種類以上の身体活動の MET 値を収録した標準データベース。ウォーキングの MET 値（3.0〜3.5）の根拠。</span>
+      </div>
+
+      <div class="ref-item">
+        Tudor-Locke C &amp; Bassett DR Jr. How many steps/day are enough? Preliminary pedometer indices for public health. <span class="ref-journal">Sports Med.</span> 2004;34(1):1–8. <span class="ref-if">IF ≈ 9.3</span><br>
+        <span style="font-size:11px;color:#888;">歩数と身体活動レベルの対応を体系化。5,000 歩未満を「座りがち」、10,000 歩以上を「活動的」と定義。</span>
+      </div>
+
+      <div class="ref-item">
+        Tudor-Locke C et al. How many steps/day are enough? For adults. <span class="ref-journal">Int J Behav Nutr Phys Act.</span> 2011;8:79. <span class="ref-if">IF ≈ 5.6</span><br>
+        <span style="font-size:11px;color:#888;">成人における歩数目標に関する包括的レビュー。7,000〜8,000 歩/日が健康維持に有効と提言。</span>
+      </div>
+
+      <div class="ref-item">
+        WHO. WHO guidelines on physical activity and sedentary behaviour. Geneva: World Health Organization; 2020.<br>
+        <span style="font-size:11px;color:#888;">成人に対して週 150〜300 分の中強度有酸素活動を推奨。歩数換算で 8,000〜10,000 歩/日に相当。</span>
+      </div>
+
+      <div class="ref-item">
+        Lee IM et al. Association of step volume and intensity with all-cause mortality in older women. <span class="ref-journal">JAMA Intern Med.</span> 2019;179(8):1105–1112. <span class="ref-if">IF ≈ 21.9</span><br>
+        <span style="font-size:11px;color:#888;">大規模コホート研究（n=16,741）。歩数の増加が死亡リスクの低下と関連することを示した重要論文。</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Back button fallback
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      if (document.referrer) history.back();
+      else window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
