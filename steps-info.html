@@ -15,17 +15,18 @@
     .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
     .card-title { font-size: 14px; font-weight: 700; color: #1B2A8A; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
     p { font-size: 14px; line-height: 1.75; color: #444; }
-    .formula { background: #f0f3ff; border-radius: 10px; padding: 14px 16px; margin: 12px 0; font-size: 15px; line-height: 2; color: #333; text-align: center; }
+    .formula { background: #f0f3ff; border-radius: 10px; padding: 14px 16px; margin: 12px 0; font-size: 15px; line-height: 2.2; color: #333; text-align: center; }
     .formula strong { color: #1B2A8A; font-weight: 800; font-size: 17px; }
     .formula .sub { font-size: 13px; color: #666; }
+    .formula .eq { font-size: 13px; color: #888; margin-top: 4px; display: block; }
     .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 14px; line-height: 1.75; color: #555; }
     .evidence { background: #f8f9ff; border: 1px solid #dde3ff; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #444; }
     .evidence-label { font-size: 11px; font-weight: 700; color: #1B2A8A; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
     .caution { background: #FFF3F3; border: 1px solid #FFCDD2; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #555; }
     .caution-label { font-size: 11px; font-weight: 700; color: #C62828; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-    th { background: #f0f3ff; color: #1B2A8A; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 13px; }
-    td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; color: #444; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th { background: #f0f3ff; color: #1B2A8A; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 12px; }
+    td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; color: #444; font-size: 13px; }
     tr:last-child td { border-bottom: none; }
     .ref-section { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
     .ref-section-title { font-size: 13px; font-weight: 700; color: #1B2A8A; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eef0f8; }
@@ -36,6 +37,11 @@
     .row { display: flex; gap: 10px; margin-top: 12px; }
     .badge { flex: 1; background: #f0f3ff; border-radius: 10px; padding: 12px 8px; text-align: center; font-size: 13px; color: #444; line-height: 1.6; }
     .badge .val { font-size: 18px; font-weight: 800; color: #1B2A8A; display: block; }
+    .component-box { border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 13px; line-height: 1.8; }
+    .cb-blue  { background: #EEF2FF; border-left: 3px solid #1B2A8A; }
+    .cb-green { background: #E8F5E9; border-left: 3px solid #2E7D32; }
+    .cb-orange{ background: #FFF3E0; border-left: 3px solid #E65100; }
+    .cb-label { font-weight: 700; font-size: 12px; color: #444; margin-bottom: 4px; display: block; }
   </style>
 </head>
 <body>
@@ -47,49 +53,123 @@
 
   <div class="content">
 
+    <!-- ① メイン公式 -->
     <div class="card">
       <div class="card-title">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
-        計算式
+        TDEE 計算式（歩数入力時）
       </div>
-      <p>歩数から消費カロリーを次の式で算出します。</p>
+      <p>1日の歩数が入力された場合、次の式で総消費カロリー（TDEE）を算出します。</p>
       <div class="formula">
-        <strong>消費カロリー（kcal）</strong><br>
-        ＝ 歩数 × 体重（kg） × 0.0005<br>
-        <span class="sub">※ 歩行の平均MET・歩幅・速度から導出した係数</span>
+        <strong>TDEE（kcal）</strong><br>
+        ＝ （BMR ＋ 歩数カロリー ＋ NEAT） ÷ 0.90<br>
+        <span class="sub">÷ 0.90 は食事誘発性熱産生（TEF ≈ 10%）を組み込む係数</span>
       </div>
-      <div class="tip">
-        例：体重 70 kg・10,000 歩の場合<br>
-        10,000 × 70 × 0.0005 ＝ <strong>350 kcal</strong><br><br>
-        このアプリでは <strong>BMR（基礎代謝）＋ 歩数消費カロリー</strong> をその日の総消費カロリーとして使用します。
+      <p style="margin-top:10px;">この式は消費カロリーの 3 つの成分を個別に定量化します。</p>
+
+      <div class="component-box cb-blue">
+        <span class="cb-label">🔵 BMR（基礎代謝）</span>
+        性別・年齢・身長・体重から Mifflin-St Jeor 式で算出。完全安静時のエネルギー消費量。
+      </div>
+      <div class="component-box cb-green">
+        <span class="cb-label">🟢 歩数カロリー（歩行運動）</span>
+        歩数 × 体重（kg）× 0.0005 kcal<br>
+        <span style="font-size:12px;color:#666;">根拠：Ainsworth et al. 2011（歩行 MET ≈ 3.0〜3.5）</span>
+      </div>
+      <div class="component-box cb-orange">
+        <span class="cb-label">🟠 NEAT（非運動性活動熱産生）</span>
+        家事・立ち仕事・姿勢保持など「意図的な運動以外」の日常動作。歩数から線形補間で推定。<br>
+        <span style="font-size:12px;color:#666;">根拠：FAO/WHO/UNU 2004 PAL 実測値 ＋ Levine JPEN 2005</span>
+      </div>
+
+      <div class="tip" style="margin-top:12px;">
+        例：体重 70 kg・10,000 歩・BMR 1,600 kcal の場合<br>
+        歩数カロリー：10,000 × 70 × 0.0005 ＝ 350 kcal<br>
+        NEAT：約 218 kcal<br>
+        TDEE ＝（1,600 ＋ 350 ＋ 218）÷ 0.90 ＝ <strong>約 2,409 kcal</strong>
+      </div>
+    </div>
+
+    <!-- ② 歩数カロリー -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        歩数カロリーの算出
+      </div>
+      <div class="formula">
+        歩数カロリー（kcal）＝ 歩数 × 体重（kg）× 0.0005
       </div>
       <div class="evidence">
         <span class="evidence-label">📄 Evidence</span>
-        ウォーキングの MET 値は 3.0〜3.5 程度（Ainsworth et al., <span class="ref-journal">Med Sci Sports Exerc</span> 2011）。歩行速度・体重・歩幅を考慮した換算係数 0.0005 kcal/歩/kg は、Tudor-Locke ら（<span class="ref-journal">Int J Behav Nutr Phys Act</span> 2004）が示した歩数と身体活動量の対応関係と整合します。
+        ウォーキングの MET 値は 3.0〜3.5（Ainsworth et al. 2011）。平均歩幅・歩行速度・体重を考慮した換算係数 0.0005 kcal/歩/kg は Tudor-Locke ら（2004）が示した歩数と身体活動量の対応関係と整合します。
       </div>
     </div>
 
+    <!-- ③ NEAT -->
     <div class="card">
       <div class="card-title">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
-        歩数の目安
+        NEAT の推定（歩数からの線形補間）
       </div>
+      <p>FAO/WHO/UNU（2004）の活動レベル（PAL）実測値から導出した 3 点をもとに線形補間します。</p>
       <table>
         <tr>
           <th>歩数</th>
-          <th>活動レベルの目安</th>
-          <th>消費カロリー目安<br><span style="font-weight:400;font-size:11px;">体重 60kg の場合</span></th>
+          <th>活動レベル目安</th>
+          <th>NEAT 推定値</th>
         </tr>
-        <tr><td>3,000 歩</td><td>ほぼ座って過ごした日</td><td>約 90 kcal</td></tr>
-        <tr><td>6,000 歩</td><td>通勤・外出あり</td><td>約 180 kcal</td></tr>
-        <tr><td>8,000 歩</td><td>WHO 推奨の最低目標</td><td>約 240 kcal</td></tr>
-        <tr><td>10,000 歩</td><td>活発な日常活動</td><td>約 300 kcal</td></tr>
+        <tr><td>0 歩</td><td>完全安静（基準）</td><td>0 kcal</td></tr>
+        <tr><td>3,000 歩</td><td>ほぼ座位（PAL 1.4）</td><td>約 24 kcal</td></tr>
+        <tr><td>7,000 歩</td><td>一般的な日常活動（PAL 1.6）</td><td>約 139 kcal</td></tr>
+        <tr><td>12,000 歩以上</td><td>活発な活動（PAL 1.8）</td><td>約 218 kcal</td></tr>
       </table>
-      <div class="tip" style="margin-top:12px;">
-        WHO（2020）は成人に対し、1週間あたり中強度の有酸素活動 150〜300 分、または高強度 75〜150 分を推奨しており、1日 8,000〜10,000 歩はこの目標に対応します。
+      <div class="evidence" style="margin-top:12px;">
+        <span class="evidence-label">📄 Evidence</span>
+        FAO/WHO/UNU（2004）は PAL 1.4・1.6・1.8 の実測値を報告しており、BMR の差分として NEAT を分離できます（Levine JA, <span class="ref-journal" style="color:#1B2A8A;font-style:italic;font-weight:600;">JPEN J Parenter Enteral Nutr</span> 2005）。3,000 歩・7,000 歩・12,000 歩の 3 点を歩数-PAL 換算の基準として使用しています。
       </div>
     </div>
 
+    <!-- ④ TEF -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        TEF（食事誘発性熱産生）
+      </div>
+      <p>食事を消化・吸収・代謝するときに消費されるエネルギーで、総消費カロリーの約 10% を占めます。</p>
+      <div class="formula">
+        TEF ≈ TDEE × 10%<br>
+        <span class="sub">÷ 0.90 で算出することで自動的に組み込まれます</span>
+      </div>
+      <div class="evidence">
+        <span class="evidence-label">📄 Evidence</span>
+        Westerterp（<span class="ref-journal" style="color:#1B2A8A;font-style:italic;font-weight:600;">Nutr Metab</span> 2004）のレビューでは、混合食における TEF は TDEE の 8〜10% であると報告されています。本アプリでは保守的な中央値として 10% を採用し、(BMR + 歩数cal + NEAT) ÷ 0.90 で TEF を自動加算します。
+      </div>
+    </div>
+
+    <!-- ⑤ 活動度３段階との整合性 -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        活動度３段階との整合性
+      </div>
+      <p>歩数未入力時に使用する活動係数（PAL）モードと、歩数モードの計算結果は境界点で一致します。</p>
+      <table>
+        <tr>
+          <th>活動度</th>
+          <th>係数（PAL）</th>
+          <th>相当歩数</th>
+          <th>TDEE（BMR=1500の場合）</th>
+        </tr>
+        <tr><td>低活動</td><td>1.40</td><td>〜3,000 歩</td><td>2,100 kcal</td></tr>
+        <tr><td>中活動</td><td>1.60</td><td>〜7,000 歩</td><td>2,400 kcal</td></tr>
+        <tr><td>高活動</td><td>1.80</td><td>〜12,000 歩</td><td>2,700 kcal</td></tr>
+      </table>
+      <div class="tip" style="margin-top:12px;">
+        歩数を入力するとより実態に即した計算になります。活動度ボタンと歩数入力はどちらか一方のみ有効です。
+      </div>
+    </div>
+
+    <!-- ⑥ 精度 -->
     <div class="card">
       <div class="card-title">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
@@ -102,32 +182,38 @@
       </div>
       <div class="row">
         <div class="badge"><span class="val">±20〜30%</span>個人差・<br>環境による誤差</div>
-        <div class="badge"><span class="val">0.0005</span>係数の<br>根拠（MET換算）</div>
+        <div class="badge"><span class="val">10%</span>TEFの<br>寄与率</div>
         <div class="badge"><span class="val">体重連動</span>その日の<br>体重で計算</div>
       </div>
     </div>
 
+    <!-- 参考文献 -->
     <div class="ref-section">
       <div class="ref-section-title">参考文献</div>
 
       <div class="ref-item">
         Ainsworth BE et al. 2011 Compendium of Physical Activities: A second update of codes and MET values. <span class="ref-journal">Med Sci Sports Exerc.</span> 2011;43(8):1575–1581. <span class="ref-if">IF ≈ 5.0</span><br>
-        <span style="font-size:11px;color:#888;">800 種類以上の身体活動の MET 値を収録した標準データベース。ウォーキングの MET 値（3.0〜3.5）の根拠。</span>
+        <span style="font-size:11px;color:#888;">800 種類以上の身体活動の MET 値を収録。歩行 MET 値（3.0〜3.5）の根拠。</span>
       </div>
 
       <div class="ref-item">
         Tudor-Locke C &amp; Bassett DR Jr. How many steps/day are enough? Preliminary pedometer indices for public health. <span class="ref-journal">Sports Med.</span> 2004;34(1):1–8. <span class="ref-if">IF ≈ 9.3</span><br>
-        <span style="font-size:11px;color:#888;">歩数と身体活動レベルの対応を体系化。5,000 歩未満を「座りがち」、10,000 歩以上を「活動的」と定義。</span>
+        <span style="font-size:11px;color:#888;">歩数と身体活動レベルの対応を体系化。歩数-エネルギー換算係数の根拠。</span>
       </div>
 
       <div class="ref-item">
-        Tudor-Locke C et al. How many steps/day are enough? For adults. <span class="ref-journal">Int J Behav Nutr Phys Act.</span> 2011;8:79. <span class="ref-if">IF ≈ 5.6</span><br>
-        <span style="font-size:11px;color:#888;">成人における歩数目標に関する包括的レビュー。7,000〜8,000 歩/日が健康維持に有効と提言。</span>
+        FAO/WHO/UNU. Human Energy Requirements. Report of a Joint FAO/WHO/UNU Expert Consultation. Rome: FAO; 2004.<br>
+        <span style="font-size:11px;color:#888;">PAL 1.4（低活動）・1.6（中活動）・1.8（高活動）の実測値を収録。NEAT 推定の基準値として使用。</span>
       </div>
 
       <div class="ref-item">
-        WHO. WHO guidelines on physical activity and sedentary behaviour. Geneva: World Health Organization; 2020.<br>
-        <span style="font-size:11px;color:#888;">成人に対して週 150〜300 分の中強度有酸素活動を推奨。歩数換算で 8,000〜10,000 歩/日に相当。</span>
+        Levine JA. Nonexercise activity thermogenesis (NEAT): environment and biology. <span class="ref-journal">Am J Physiol Endocrinol Metab.</span> 2004;286(5):E675–685. <span class="ref-if">IF ≈ 4.2</span><br>
+        <span style="font-size:11px;color:#888;">NEAT の概念・測定法・個人差を体系的に整理。歩行以外の日常活動がエネルギー消費に与える影響を定量化。</span>
+      </div>
+
+      <div class="ref-item">
+        Westerterp KR. Diet induced thermogenesis. <span class="ref-journal">Nutr Metab (Lond).</span> 2004;1(1):5. <span class="ref-if">IF ≈ 3.9</span><br>
+        <span style="font-size:11px;color:#888;">混合食の TEF は TDEE の 8〜10% と報告。÷0.90 による TEF 組み込みの根拠。</span>
       </div>
 
       <div class="ref-item">
@@ -140,7 +226,6 @@
   </div>
 
   <script>
-    // Back button fallback
     document.querySelector('.back-btn').addEventListener('click', () => {
       if (document.referrer) history.back();
       else window.location.href = 'index.html';
