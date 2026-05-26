@@ -459,6 +459,10 @@
     .steps-unit { font-size: 14px; color: #666; flex-shrink: 0; }
     .steps-btn { background: #1B2A8A; color: white; border: none; border-radius: 10px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
     .steps-clear-btn { background: #EEE; color: #888; border: none; border-radius: 10px; padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0; display: none; }
+    /* ── Activity/Steps tab switcher ── */
+    .act-mode-tabs { display: flex; gap: 4px; background: #F0F3FF; border-radius: 10px; padding: 3px; margin-bottom: 10px; }
+    .act-mode-tab { flex: 1; background: none; border: none; border-radius: 8px; padding: 7px 4px; font-size: 13px; font-weight: 600; cursor: pointer; color: #999; transition: all .2s; }
+    .act-mode-tab.active { background: white; color: #1B2A8A; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
     /* ── Cumulative card ── */
     .cumulative-card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
   </style>
@@ -648,32 +652,41 @@
       </div>
     </div>
 
-    <!-- Activity today -->
+    <!-- Activity / Steps combined card -->
     <div class="activity-today-card">
       <div class="activity-today-header">
-        <span class="activity-today-label">今日の活動度　<a href="activity-info.html" style="font-size: 13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
+        <span class="activity-today-label">消費カロリーの計算</span>
         <span id="todayTdeeLabel" style="font-size: 14px;color:#AAA;">消費 -- kcal</span>
       </div>
-      <div class="activity-today-row">
-        <button class="act-today-btn" id="at-low" onclick="setTodayActivity('low')">座り仕事</button>
-        <button class="act-today-btn" id="at-mid" onclick="setTodayActivity('mid')">やや活動</button>
-        <button class="act-today-btn" id="at-high" onclick="setTodayActivity('high')">活動的</button>
+      <!-- Tab bar -->
+      <div class="act-mode-tabs">
+        <button class="act-mode-tab active" id="today-tab-act" onclick="switchTodayTab('act')">活動度</button>
+        <button class="act-mode-tab" id="today-tab-steps" onclick="switchTodayTab('steps')">歩数入力</button>
       </div>
-    </div>
-
-    <!-- Steps input -->
-    <div class="steps-card">
-      <div class="steps-header">
-        <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
-        <span id="todayStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
+      <!-- Activity panel -->
+      <div id="today-panel-act">
+        <div class="activity-today-row">
+          <button class="act-today-btn" id="at-low" onclick="setTodayActivity('low')">座り仕事</button>
+          <button class="act-today-btn" id="at-mid" onclick="setTodayActivity('mid')">やや活動</button>
+          <button class="act-today-btn" id="at-high" onclick="setTodayActivity('high')">活動的</button>
+        </div>
+        <div style="text-align:right;margin-top:8px;">
+          <a href="activity-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+        </div>
       </div>
-      <div class="steps-input-row">
-        <input type="text" id="todayStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
-        <span class="steps-unit">歩</span>
-        <button class="steps-btn" onclick="saveTodaySteps()">記録</button>
-        <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
+      <!-- Steps panel -->
+      <div id="today-panel-steps" style="display:none;">
+        <div class="steps-input-row">
+          <input type="text" id="todayStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
+          <span class="steps-unit">歩</span>
+          <button class="steps-btn" onclick="saveTodaySteps()">記録</button>
+          <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
+        </div>
+        <div id="todayStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
+        <div style="text-align:right;margin-top:8px;">
+          <a href="steps-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+        </div>
       </div>
-      <div id="todayStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
     </div>
 
     <!-- Add button -->
@@ -715,31 +728,41 @@
           <button class="weight-btn" onclick="saveEditDayWeight()">記録</button>
         </div>
       </div>
-      <!-- Activity -->
+      <!-- Activity / Steps combined card (edit day) -->
       <div class="activity-today-card" style="margin-bottom:12px;">
         <div class="activity-today-header">
-          <span class="activity-today-label">この日の活動度</span>
+          <span class="activity-today-label">消費カロリーの計算</span>
           <span id="edTdeeLabel" style="font-size: 14px;color:#AAA;"></span>
         </div>
-        <div class="activity-today-row">
-          <button class="act-today-btn" id="ed-low"  onclick="setEditDayActivity('low')">座り仕事</button>
-          <button class="act-today-btn" id="ed-mid"  onclick="setEditDayActivity('mid')">やや活動</button>
-          <button class="act-today-btn" id="ed-high" onclick="setEditDayActivity('high')">活動的</button>
+        <!-- Tab bar -->
+        <div class="act-mode-tabs">
+          <button class="act-mode-tab active" id="edit-tab-act" onclick="switchEditTab('act')">活動度</button>
+          <button class="act-mode-tab" id="edit-tab-steps" onclick="switchEditTab('steps')">歩数入力</button>
         </div>
-      </div>
-      <!-- Steps input (edit day) -->
-      <div class="steps-card">
-        <div class="steps-header">
-          <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
-          <span id="edStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
+        <!-- Activity panel -->
+        <div id="edit-panel-act">
+          <div class="activity-today-row">
+            <button class="act-today-btn" id="ed-low"  onclick="setEditDayActivity('low')">座り仕事</button>
+            <button class="act-today-btn" id="ed-mid"  onclick="setEditDayActivity('mid')">やや活動</button>
+            <button class="act-today-btn" id="ed-high" onclick="setEditDayActivity('high')">活動的</button>
+          </div>
+          <div style="text-align:right;margin-top:8px;">
+            <a href="activity-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+          </div>
         </div>
-        <div class="steps-input-row">
-          <input type="text" id="edStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
-          <span class="steps-unit">歩</span>
-          <button class="steps-btn" onclick="saveEditDaySteps()">記録</button>
-          <button class="steps-clear-btn" id="edStepsClear" onclick="clearEditDaySteps()">×</button>
+        <!-- Steps panel -->
+        <div id="edit-panel-steps" style="display:none;">
+          <div class="steps-input-row">
+            <input type="text" id="edStepsInput" class="steps-input" placeholder="例: 8000" inputmode="numeric" pattern="[0-9]*">
+            <span class="steps-unit">歩</span>
+            <button class="steps-btn" onclick="saveEditDaySteps()">記録</button>
+            <button class="steps-clear-btn" id="edStepsClear" onclick="clearEditDaySteps()">×</button>
+          </div>
+          <div id="edStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
+          <div style="text-align:right;margin-top:8px;">
+            <a href="steps-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+          </div>
         </div>
-        <div id="edStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
       </div>
       <!-- Add meal button -->
       <button class="add-btn" onclick="openAddForDate(editingDate)" style="margin-bottom:12px;">📷 食事を記録する</button>
@@ -1692,6 +1715,24 @@ function getTodayTarget() {
   if (!cfg) return 2000;
   return Math.max(getTodayTdee() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
 }
+// タブ切り替え（今日）
+function switchTodayTab(tab) {
+  const isSteps = tab === 'steps';
+  document.getElementById('today-tab-act').classList.toggle('active', !isSteps);
+  document.getElementById('today-tab-steps').classList.toggle('active', isSteps);
+  document.getElementById('today-panel-act').style.display = isSteps ? 'none' : '';
+  document.getElementById('today-panel-steps').style.display = isSteps ? '' : 'none';
+  if (!isSteps) {
+    // 活動度タブに切り替え→歩数データを削除
+    localStorage.removeItem('steps_' + today());
+    const inp = document.getElementById('todayStepsInput');
+    if (inp) inp.value = '';
+    document.getElementById('todayStepsCalLabel').style.display = 'none';
+    document.getElementById('todayStepsClear').style.display = 'none';
+    loadTodayActivity();
+    refreshUI();
+  }
+}
 function setTodayActivity(a) {
   localStorage.setItem('activity_' + today(), a);
   localStorage.removeItem('steps_' + today());
@@ -1703,11 +1744,18 @@ function setTodayActivity(a) {
 function loadTodayActivity() {
   const a = getTodayActivity();
   const stepsMode = getStepCalories(today()) !== null;
+  // タブを自動切り替え
+  if (document.getElementById('today-tab-act')) {
+    document.getElementById('today-tab-act').classList.toggle('active', !stepsMode);
+    document.getElementById('today-tab-steps').classList.toggle('active', stepsMode);
+    document.getElementById('today-panel-act').style.display = stepsMode ? 'none' : '';
+    document.getElementById('today-panel-steps').style.display = stepsMode ? '' : 'none';
+  }
   ['low','mid','high'].forEach(k => {
     const btn = document.getElementById('at-'+k);
     if (btn) {
       btn.classList.toggle('active', k===a && !stepsMode);
-      btn.classList.toggle('steps-mode', stepsMode);
+      btn.classList.remove('steps-mode');
     }
   });
   const tdeeEl = document.getElementById('todayTdeeLabel');
@@ -1719,22 +1767,19 @@ function loadTodaySteps() {
   const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
   const inp = document.getElementById('todayStepsInput');
   const clearBtn = document.getElementById('todayStepsClear');
-  const note = document.getElementById('todayStepsNote');
   const calLabel = document.getElementById('todayStepsCalLabel');
   if (!inp) return;
   if (steps > 0) {
     inp.value = steps;
     clearBtn.style.display = '';
-    note.style.display = '';
     const stepCal = getStepCalories(ds) || 0;
     const neat    = getNEATFromSteps(steps);
     const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;text-decoration:underline;">算出根拠 ›</a>`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
-    note.style.display = 'none';
     calLabel.style.display = 'none';
   }
 }
@@ -1805,28 +1850,49 @@ function closeEditDay() {
   renderHistory();
 }
 
+// タブ切り替え（履歴編集）
+function switchEditTab(tab) {
+  const isSteps = tab === 'steps';
+  document.getElementById('edit-tab-act').classList.toggle('active', !isSteps);
+  document.getElementById('edit-tab-steps').classList.toggle('active', isSteps);
+  document.getElementById('edit-panel-act').style.display = isSteps ? 'none' : '';
+  document.getElementById('edit-panel-steps').style.display = isSteps ? '' : 'none';
+  if (!isSteps) {
+    localStorage.removeItem('steps_' + editingDate);
+    const inp = document.getElementById('edStepsInput');
+    if (inp) inp.value = '';
+    document.getElementById('edStepsCalLabel').style.display = 'none';
+    document.getElementById('edStepsClear').style.display = 'none';
+    refreshEditDay();
+  }
+}
 function loadEditDaySteps() {
   const ds = editingDate;
   if (!ds) return;
   const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
   const inp = document.getElementById('edStepsInput');
   const clearBtn = document.getElementById('edStepsClear');
-  const note = document.getElementById('edStepsNote');
   const calLabel = document.getElementById('edStepsCalLabel');
   if (!inp) return;
-  if (steps > 0) {
+  // タブ自動切り替え
+  const stepsMode = steps > 0;
+  if (document.getElementById('edit-tab-act')) {
+    document.getElementById('edit-tab-act').classList.toggle('active', !stepsMode);
+    document.getElementById('edit-tab-steps').classList.toggle('active', stepsMode);
+    document.getElementById('edit-panel-act').style.display = stepsMode ? 'none' : '';
+    document.getElementById('edit-panel-steps').style.display = stepsMode ? '' : 'none';
+  }
+  if (stepsMode) {
     inp.value = steps;
     clearBtn.style.display = '';
-    note.style.display = '';
     const stepCal = getStepCalories(ds) || 0;
     const neat    = getNEATFromSteps(steps);
     const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;text-decoration:underline;">算出根拠 ›</a>`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
-    note.style.display = 'none';
     calLabel.style.display = 'none';
   }
 }
@@ -1880,7 +1946,7 @@ function refreshEditDay() {
     const btn = document.getElementById('ed-'+k);
     if (btn) {
       btn.classList.toggle('active', k === act && !stepsMode);
-      btn.classList.toggle('steps-mode', stepsMode);
+      btn.classList.remove('steps-mode');
     }
   });
   loadEditDaySteps();
