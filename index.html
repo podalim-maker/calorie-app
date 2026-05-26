@@ -651,7 +651,7 @@
     <!-- Activity today -->
     <div class="activity-today-card">
       <div class="activity-today-header">
-        <span class="activity-today-label">今日の活動度　<a href="activity-info.html" style="font-size: 13px;color:#AAA;font-weight:400;text-decoration:none;">説明 ›</a></span>
+        <span class="activity-today-label">今日の活動度　<a href="activity-info.html" style="font-size: 13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
         <span id="todayTdeeLabel" style="font-size: 14px;color:#AAA;">消費 -- kcal</span>
       </div>
       <div class="activity-today-row">
@@ -664,7 +664,7 @@
     <!-- Steps input -->
     <div class="steps-card">
       <div class="steps-header">
-        <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#AAA;font-weight:400;text-decoration:none;">説明 ›</a></span>
+        <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
         <span id="todayStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
       </div>
       <div class="steps-input-row">
@@ -730,7 +730,7 @@
       <!-- Steps input (edit day) -->
       <div class="steps-card">
         <div class="steps-header">
-          <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#AAA;font-weight:400;text-decoration:none;">説明 ›</a></span>
+          <span class="steps-label"><svg width="14" height="14" viewBox="0 0 15 15" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M1 14 L1 10 L5 10 L5 6 L9 6 L9 2 L13 2 L13 0 L15 0 L15 2 L11 2 L11 6 L7 6 L7 10 L3 10 L3 14 Z"/></svg>歩数入力（任意）　<a href="steps-info.html" style="font-size:13px;color:#1B2A8A;font-weight:400;text-decoration:underline;">算出根拠 ›</a></span>
           <span id="edStepsNote" style="font-size:12px;color:#1B2A8A;display:none;">歩数モードで計算中</span>
         </div>
         <div class="steps-input-row">
@@ -782,7 +782,7 @@
         </div>
         <div id="weightChart"></div>
         <div style="text-align:right;margin-top:6px;">
-          <a href="weight-info.html" style="font-size: 13px;color:#AAA;text-decoration:none;">体重の変動について ›</a>
+          <a href="weight-info.html" style="font-size: 13px;color:#1B2A8A;text-decoration:underline;">体重の変動について ›</a>
         </div>
       </div>
       <div class="section-label">食事記録</div>
@@ -1730,7 +1730,7 @@ function loadTodaySteps() {
     const neat    = getNEATFromSteps(steps);
     const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;">算出根拠 ›</a>`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;text-decoration:underline;">算出根拠 ›</a>`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
@@ -1822,7 +1822,7 @@ function loadEditDaySteps() {
     const neat    = getNEATFromSteps(steps);
     const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;">算出根拠 ›</a>`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;text-decoration:underline;">算出根拠 ›</a>`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
@@ -1983,7 +1983,7 @@ function renderHome() {
       <span class="home-hero-pct">${Math.round(pct)}%</span>
     </div>
     <div><span class="home-hero-num">${remainDisp}</span> <span class="home-hero-unit">kcal</span></div>
-    <div class="home-hero-target">推奨上限 ${target.toLocaleString()} kcal　<a href="calorie-info.html" style="font-size: 13px;color:rgba(255,255,255,.45);text-decoration:none;">算出根拠 ›</a></div>
+    <div class="home-hero-target">推奨上限 ${target.toLocaleString()} kcal　<a href="calorie-info.html" style="font-size: 13px;color:rgba(255,255,255,.8);text-decoration:underline;">算出根拠 ›</a></div>
     <div class="home-hero-bar-bg"><div class="home-hero-bar-fill" style="width:${pct}%"></div></div>
     <div class="home-hero-footer"><span>${document.getElementById('h-date').textContent}</span><span>${subText}</span></div>`;
 
