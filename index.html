@@ -1649,7 +1649,8 @@ function getBMRForDate(ds) {
   }
   return calcBMR(cfg.gender, cfg.age, cfg.height, w);
 }
-// 歩数からその日の運動カロリーを算出（歩数未入力はnull）
+// 歩数から歩行カロリーを算出（未入力はnull）
+// 根拠: Ainsworth et al. Med Sci Sports Exerc 2011（MET=3.0）
 function getStepCalories(ds) {
   const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
   if (!steps || steps <= 0) return null;
@@ -1660,11 +1661,26 @@ function getStepCalories(ds) {
   }
   return Math.round(steps * w * 0.0005);
 }
-// 歩数入力があればBMR＋歩数カロリー、なければ活動係数方式
+// 歩数からNEATを推定（FAO/WHO/UNU PAL実測値3点からの線形補間）
+// 根拠: FAO/WHO/UNU Human Energy Requirements 2004 + Levine JPEN 2005
+function getNEATFromSteps(steps) {
+  if (steps <= 0) return 0;
+  if (steps <= 3000) return Math.round(24 * steps / 3000);          // 〜3,000歩: 0〜24kcal
+  if (steps <= 7000) return Math.round(24 + (steps - 3000) * 115 / 4000); // 3,000〜7,000歩
+  return Math.round(139 + (steps - 7000) * 79 / 5000);              // 7,000〜歩
+}
+// 歩数モード: TDEE = (BMR + 歩数cal + NEAT) / 0.90
+// TEF = TDEE の10%を /0.90 で組み込む
+// 根拠: Westerterp Nutr Metab 2004（TEF≈10%）
 function getDayTdee(ds) {
   if (!cfg) return 0;
-  const stepCal = getStepCalories(ds);
-  if (stepCal !== null) return Math.round(getBMRForDate(ds) + stepCal);
+  const steps = parseInt(localStorage.getItem('steps_' + ds) || '0');
+  if (steps > 0) {
+    const bmr    = getBMRForDate(ds);
+    const stepCal = getStepCalories(ds) || 0;
+    const neat   = getNEATFromSteps(steps);
+    return Math.round((bmr + stepCal + neat) / 0.90);
+  }
   return Math.round(getBMRForDate(ds) * ACTIVITY_FACTORS[getDayActivity(ds)]);
 }
 function getDayTarget(ds) {
@@ -1710,10 +1726,11 @@ function loadTodaySteps() {
     inp.value = steps;
     clearBtn.style.display = '';
     note.style.display = '';
-    const stepCal = getStepCalories(ds);
-    const bmr = getBMRForDate(ds);
+    const stepCal = getStepCalories(ds) || 0;
+    const neat    = getNEATFromSteps(steps);
+    const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.textContent = `BMR ${bmr.toLocaleString()} + 歩数 ${stepCal.toLocaleString()} = ${(bmr+stepCal).toLocaleString()} kcal`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;">算出根拠 ›</a>`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
@@ -1801,10 +1818,11 @@ function loadEditDaySteps() {
     inp.value = steps;
     clearBtn.style.display = '';
     note.style.display = '';
-    const stepCal = getStepCalories(ds);
-    const bmr = getBMRForDate(ds);
+    const stepCal = getStepCalories(ds) || 0;
+    const neat    = getNEATFromSteps(steps);
+    const tef     = Math.round(getDayTdee(ds) * 0.10);
     calLabel.style.display = '';
-    calLabel.textContent = `BMR ${bmr.toLocaleString()} + 歩数 ${stepCal.toLocaleString()} = ${(bmr+stepCal).toLocaleString()} kcal`;
+    calLabel.innerHTML = `歩数 <b>${stepCal}</b> + NEAT <b>${neat}</b> + TEF <b>${tef}</b> kcal　<a href="steps-info.html" style="color:#1B2A8A;font-size:12px;">算出根拠 ›</a>`;
   } else {
     inp.value = '';
     clearBtn.style.display = 'none';
