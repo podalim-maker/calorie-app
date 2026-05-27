@@ -1571,6 +1571,7 @@ function saveMealToDate(meal) {
 }
 
 function deleteMeal(i) {
+  if (!confirm(`「${meals[i].name}」を削除しますか？`)) return;
   meals.splice(i, 1);
   saveMeals();
   refreshUI();
@@ -1996,6 +1997,7 @@ function setEditDayActivity(a) {
 function deleteEditDayMeal(i) {
   const ds = editingDate;
   const dayMeals = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
+  if (!confirm(`「${dayMeals[i].name}」を削除しますか？`)) return;
   dayMeals.splice(i, 1);
   localStorage.setItem('meals_' + ds, JSON.stringify(dayMeals));
   refreshEditDay();
