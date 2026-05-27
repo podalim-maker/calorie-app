@@ -796,7 +796,7 @@
           <button class="chart-toggle active" id="wt-month" onclick="toggleWeightChart('month')">1ヶ月</button>
           <button class="chart-toggle" id="wt-halfyear" onclick="toggleWeightChart('halfyear')">半年</button>
           <button class="chart-toggle" id="wt-year" onclick="toggleWeightChart('year')">1年</button>
-          <button class="chart-toggle" id="wt-5year" onclick="toggleWeightChart('5year')">5年</button>
+          <button class="chart-toggle" id="wt-5year" onclick="toggleWeightChart('5year')">3年</button>
         </div>
         <div class="chart-nav-bar">
           <button class="chart-nav-btn" id="wt-prev" onclick="weightChartPrev()">‹</button>
@@ -2407,7 +2407,7 @@ let weightChartMode = 'month';
 let wcMonthOffset    = 0;  // 30日単位のオフセット（0=今日終わり）
 let wcHalfOffset     = 0;  // 6ヶ月単位のオフセット（0=今月終わり）
 let wcYearOffset     = 0;  // 12ヶ月単位のオフセット（0=今月終わり）
-let wcFiveYearOffset = 0;  // 5年単位のオフセット
+let wcFiveYearOffset = 0;  // 3年単位のオフセット
 
 function toggleWeightChart(mode) {
   weightChartMode = mode;
@@ -2423,7 +2423,7 @@ function weightChartPrev() {
   if (weightChartMode === 'month')    wcMonthOffset -= 30;
   else if (weightChartMode === 'halfyear') wcHalfOffset -= 6;
   else if (weightChartMode === 'year')     wcYearOffset -= 12;
-  else                                     wcFiveYearOffset -= 5;
+  else                                     wcFiveYearOffset -= 3;
   renderWeightChartCurrent();
 }
 
@@ -2431,7 +2431,7 @@ function weightChartNext() {
   if (weightChartMode === 'month')    wcMonthOffset += 30;
   else if (weightChartMode === 'halfyear') wcHalfOffset += 6;
   else if (weightChartMode === 'year')     wcYearOffset += 12;
-  else                                     wcFiveYearOffset += 5;
+  else                                     wcFiveYearOffset += 3;
   renderWeightChartCurrent();
 }
 
@@ -2520,9 +2520,9 @@ function renderWeightChartCurrent() {
     renderWeightChart(data, 'year');
 
   } else {
-    // 5年（従来通りカレンダー年）
-    const startYear = now.getFullYear() - 4 + wcFiveYearOffset;
-    const endYear = startYear + 4;
+    // 3年（カレンダー年）
+    const startYear = now.getFullYear() - 2 + wcFiveYearOffset;
+    const endYear = startYear + 2;
     const isCurrentPeriod = (endYear >= now.getFullYear());
     const result = [];
     for (let y = startYear; y <= endYear; y++) {
@@ -2540,7 +2540,7 @@ function renderWeightChartCurrent() {
       const avg = ws.length ? Math.round(ws.reduce((a,b)=>a+b,0)/ws.length*10)/10 : null;
       result.push({ d: new Date(y, 6, 1), w: avg, label: `${y}年` });
     }
-    if (label) label.textContent = `${startYear}〜${endYear}年`;
+    if (label) label.textContent = `${startYear}〜${endYear}年（3年）`;
     if (nextBtn) nextBtn.disabled = isCurrentPeriod;
     renderWeightChart(result, '5year');
   }
