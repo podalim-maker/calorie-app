@@ -1851,6 +1851,11 @@ function openEditDay(ds) {
 }
 
 function closeEditDay() {
+  // 今日の日付を編集していた場合はメモリ上のmealsを同期する
+  if (editingDate === today()) {
+    meals = JSON.parse(localStorage.getItem('meals_' + editingDate) || '[]');
+    refreshUI();
+  }
   document.getElementById('editDayScreen').classList.remove('open');
   editingDate = null;
   renderHistory();
