@@ -1145,6 +1145,8 @@ function refreshDate() {
   document.getElementById('todayLabel').textContent = dateText;
 }
 
+let _inRefreshUI = false;
+
 function checkDateRollover() {
   const nowDate = today();
   if (loadedDate && nowDate !== loadedDate) {
@@ -1153,6 +1155,7 @@ function checkDateRollover() {
     refreshDate();
     loadTodayActivity();
     loadTodayWeight();
+    if (!_inRefreshUI) refreshUI(); // 食事リストを再描画（再帰防止フラグあり）
   }
 }
 
@@ -1162,7 +1165,9 @@ document.addEventListener('visibilitychange', () => {
 });
 
 function refreshUI() {
+  _inRefreshUI = true;
   checkDateRollover();
+  _inRefreshUI = false;
   const total = meals.reduce((s, m) => s + m.calories, 0);
   const target = getTodayTarget();
   const pct = Math.min(total / target, 1);
