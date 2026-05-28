@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMIについて</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f5f6fa; color: #333; padding-bottom: 40px; }
+    .header { background: linear-gradient(135deg, #1a2980 0%, #0d1650 100%); color: white; padding: 20px 20px 24px; }
+    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+    .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .card-title { font-size: 14px; font-weight: 700; color: #1B2A8A; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 14px; line-height: 1.75; color: #444; }
+    .formula { background: #f0f3ff; border-radius: 10px; padding: 14px 16px; margin: 12px 0; font-size: 15px; line-height: 2.2; color: #333; text-align: center; }
+    .formula strong { color: #1B2A8A; font-weight: 800; font-size: 17px; }
+    .formula .sub { font-size: 13px; color: #666; }
+    .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 14px; line-height: 1.75; color: #555; }
+    .evidence { background: #f8f9ff; border: 1px solid #dde3ff; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #444; }
+    .caution { background: #FFF3F3; border: 1px solid #FFCDD2; border-radius: 10px; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.75; color: #555; }
+    .caution-label { font-size: 11px; font-weight: 700; color: #C62828; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th { background: #f0f3ff; color: #1B2A8A; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 13px; }
+    td { padding: 10px 10px; border-bottom: 1px solid #f0f0f0; color: #444; font-size: 14px; }
+    tr:last-child td { border-bottom: none; }
+    .bmi-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .ref-section { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .ref-section-title { font-size: 13px; font-weight: 700; color: #1B2A8A; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eef0f8; }
+    .ref-item { font-size: 12px; color: #555; line-height: 1.75; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-journal { color: #1B2A8A; font-style: italic; font-weight: 600; }
+    .ref-num { font-weight:700; color:#555; font-size:12px; margin-right:4px; }
+    .cite { color:#888; font-size:10px; font-weight:700; vertical-align:super; margin-left:1px; }
+    .row { display: flex; gap: 10px; margin-top: 12px; }
+    .badge { flex: 1; background: #f0f3ff; border-radius: 10px; padding: 12px 8px; text-align: center; font-size: 13px; color: #444; line-height: 1.6; }
+    .badge .val { font-size: 20px; font-weight: 800; color: #1B2A8A; display: block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">‹ 戻る</button>
+    <h1>BMI（体格指数）</h1>
+    <p>計算方法と肥満判定の根拠</p>
+  </div>
+
+  <div class="content">
+
+    <!-- 計算式 -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        計算式
+      </div>
+      <p>BMI（Body Mass Index）は体重と身長から算出する体格の指標です。</p>
+      <div class="formula">
+        <strong>BMI</strong> ＝ 体重（kg）÷ 身長（m）²<br>
+        <span class="sub">例：70 kg・170 cm の場合　70 ÷ 1.70² ＝ <b>24.2</b></span>
+      </div>
+      <div class="evidence">
+        BMI は19世紀にアドルフ・ケトレーが考案した指数が原型です。WHO および日本肥満学会が体格評価の国際標準指標として採用しており、大規模疫学研究で死亡リスク・生活習慣病リスクとの関連が最も広く検証されています。<sup class="cite">[1][2]</sup>
+      </div>
+    </div>
+
+    <!-- 判定基準（日本肥満学会） -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        判定基準（日本肥満学会）
+      </div>
+      <p>日本では BMI 25 以上を「肥満」と定義しています。欧米の基準（30以上）より低い理由は、アジア人は体脂肪率が高く同じ BMI でも心血管・代謝疾患リスクが高いためです。<sup class="cite">[3]</sup></p>
+      <table style="margin-top:12px;">
+        <tr>
+          <th>BMI</th>
+          <th>判定</th>
+          <th>リスク目安</th>
+        </tr>
+        <tr>
+          <td>&lt; 18.5</td>
+          <td><span class="bmi-dot" style="background:#9C27B0;"></span>低体重</td>
+          <td>骨粗鬆症・免疫低下・貧血</td>
+        </tr>
+        <tr>
+          <td>18.5〜25.0</td>
+          <td><span class="bmi-dot" style="background:#1B2A8A;"></span>普通体重</td>
+          <td>最も疾患リスクが低い</td>
+        </tr>
+        <tr>
+          <td>25.0〜30.0</td>
+          <td><span class="bmi-dot" style="background:#FF9800;"></span>肥満1度</td>
+          <td>高血圧・糖尿病リスク上昇</td>
+        </tr>
+        <tr>
+          <td>30.0〜35.0</td>
+          <td><span class="bmi-dot" style="background:#FF5722;"></span>肥満2度</td>
+          <td>心疾患・脂質異常症</td>
+        </tr>
+        <tr>
+          <td>≥ 35.0</td>
+          <td><span class="bmi-dot" style="background:#C62828;"></span>肥満3度以上</td>
+          <td>重篤な合併症リスク大</td>
+        </tr>
+      </table>
+      <div class="evidence" style="margin-top:12px;">
+        日本肥満学会（<span class="ref-journal">肥満症診療ガイドライン 2022</span>）<sup class="cite">[3]</sup> が定める判定基準。WHO のアジア人向け再分析（<span class="ref-journal">Lancet</span> 2004）<sup class="cite">[4]</sup> でも BMI 23 以上からリスク上昇が確認されており、日本の基準 25 はその中間的な閾値として設定されています。
+      </div>
+    </div>
+
+    <!-- BMIの限界 -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#1B2A8A"><path d="M1 15 L1 11 L5 11 L5 7 L9 7 L9 3 L13 3 L13 0 L15 0 L15 3 L11 3 L11 7 L7 7 L7 11 L3 11 L3 15 Z"/></svg>
+        BMI の限界と注意点
+      </div>
+      <p>BMI は簡便で有用な指標ですが、以下の点に注意が必要です。</p>
+      <div class="caution" style="margin-top:12px;">
+        <span class="caution-label">⚠️ 注意事項</span>
+        BMI は筋肉と脂肪を区別しません。筋肉量が多いアスリートでは BMI が高くても体脂肪率は低い場合があります。また、高齢者では同じ BMI でも体脂肪率が高い傾向があります。<sup class="cite">[5]</sup>
+      </div>
+      <div class="row">
+        <div class="badge"><span class="val">22.0</span>統計的に<br>最も疾患<br>リスクが低い</div>
+        <div class="badge"><span class="val">18.5<br>〜25</span>日本の<br>普通体重<br>範囲</div>
+        <div class="badge"><span class="val">±20%</span>個人差に<br>よる誤差<br>の目安</div>
+      </div>
+    </div>
+
+    <!-- 参考文献 -->
+    <div class="ref-section">
+      <div class="ref-section-title">参考文献</div>
+
+      <div class="ref-item">
+        <span class="ref-num">[1]</span>WHO. Obesity: preventing and managing the global epidemic. Report of a WHO Consultation. <span class="ref-journal">WHO Technical Report Series.</span> 2000;894:1–253.<br>
+        <span style="font-size:11px;color:#888;">BMIを体格評価の国際標準指標として採用したWHO報告書。</span>
+      </div>
+
+      <div class="ref-item">
+        <span class="ref-num">[2]</span>Flegal KM et al. Association of all-cause mortality with overweight and obesity using standard body mass index categories. <span class="ref-journal">JAMA.</span> 2013;309(1):71–82.<br>
+        <span style="font-size:11px;color:#888;">約290万人のメタ解析。BMI区分と全死亡リスクの関連を定量化。</span>
+      </div>
+
+      <div class="ref-item">
+        <span class="ref-num">[3]</span>日本肥満学会. 肥満症診療ガイドライン 2022. 東京: ライフサイエンス出版; 2022.<br>
+        <span style="font-size:11px;color:#888;">日本における肥満・BMI判定の公式基準。BMI 25以上を肥満と定義。</span>
+      </div>
+
+      <div class="ref-item">
+        <span class="ref-num">[4]</span>WHO Expert Consultation. Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies. <span class="ref-journal">Lancet.</span> 2004;363(9403):157–163.<br>
+        <span style="font-size:11px;color:#888;">アジア人ではBMI 23以上から心代謝疾患リスクが上昇することを示した重要報告。</span>
+      </div>
+
+      <div class="ref-item">
+        <span class="ref-num">[5]</span>Romero-Corral A et al. Accuracy of body mass index in diagnosing obesity in the adult general population. <span class="ref-journal">Int J Obes.</span> 2008;32(6):959–966.<br>
+        <span style="font-size:11px;color:#888;">BMIの体脂肪率診断精度を検証。筋肉量・性別・年齢による限界を指摘。</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    document.querySelector('.back-btn').addEventListener('click', () => {
+      if (document.referrer) history.back();
+      else window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
