@@ -1837,7 +1837,7 @@ function updateTodayBMI(w) {
   else if (bmi < 30.0) { cat = '肥満1度';   color = '#FF9800'; }
   else if (bmi < 35.0) { cat = '肥満2度';   color = '#FF5722'; }
   else                  { cat = '肥満3度以上'; color = '#C62828'; }
-  el.innerHTML = `BMI <b>${bmi.toFixed(1)}</b>　<span style="color:${color};font-weight:600;">${cat}</span>`;
+  el.innerHTML = `BMI <b>${bmi.toFixed(1)}</b>　<span style="color:${color};font-weight:600;">${cat}</span>　<a href="bmi-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>`;
   el.style.display = '';
 }
 
