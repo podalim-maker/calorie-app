@@ -140,11 +140,12 @@
     </div>
   </div>
 
-  <!-- ━━━ イベント追加モーダル ━━━ -->
+  <!-- ━━━ イベント追加/編集モーダル ━━━ -->
   <div class="overlay" id="evtOverlay">
     <div class="sheet">
-      <div class="sheet-title">イベントを追加</div>
-      <div class="form-group">
+      <div class="sheet-title" id="evtModalTitle">イベントを追加</div>
+      <!-- 種別選択（開始イベント編集時は非表示） -->
+      <div class="form-group" id="evtTypeGroup">
         <label class="form-label">イベントの種類</label>
         <div class="event-type-grid">
           <button class="evt-btn" id="evtbtn-increase" onclick="selectEvtType('increase')">
@@ -161,6 +162,11 @@
           </button>
         </div>
       </div>
+      <!-- 開始イベント編集時の固定ラベル -->
+      <div id="evtStartLabel" style="display:none;margin-bottom:16px;">
+        <span style="font-size:12px;font-weight:700;color:#888;letter-spacing:.04em;">イベントの種類</span>
+        <div style="margin-top:6px;font-size:14px;font-weight:700;color:#1B2A8A;">● 開始（変更不可）</div>
+      </div>
       <div class="form-group">
         <label class="form-label">日付</label>
         <input type="date" class="form-input" id="evtDateInput">
@@ -169,7 +175,7 @@
         <label class="form-label">備考（任意）</label>
         <input type="text" class="form-input" id="evtNoteInput" placeholder="例：0.9mg → 1.8mg">
       </div>
-      <button class="save-btn" onclick="saveEvt()">追加</button>
+      <button class="save-btn" id="evtSaveBtn" onclick="saveEvt()">追加</button>
       <button class="cancel-btn" onclick="closeEvtModal()">キャンセル</button>
     </div>
   </div>
@@ -186,6 +192,7 @@
     let invType = 'medication';
     let editingInvId = null;
     let evtTargetInvId = null;
+    let editingEvtId = null;   // null=新規, number=編集中イベントid
     let evtType = 'increase';
 
     // ── データ管理 ──
@@ -219,15 +226,22 @@
 
         const evtRows = sortedEvts.map(ev => {
           const ec = EVT_COLOR[ev.eventType] || color;
+          const editBtn = `<button class="icon-btn" onclick="openEvtModal(${iv.id},${ev.id})" title="編集" style="padding:3px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9BA4C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>`;
+          const delBtn = ev.eventType !== 'start'
+            ? `<button class="event-del-btn" onclick="deleteEvt(${iv.id},${ev.id})">×</button>`
+            : '<div style="width:24px;"></div>';
           return `
             <div class="event-row">
               <span class="event-sym" style="color:${ec};">${EVT_SYM[ev.eventType]||'●'}</span>
               <span class="event-label" style="color:${ec};">${EVT_LABEL[ev.eventType]||ev.eventType}</span>
               <span class="event-date">${ev.date.replace(/-/g,'/')}</span>
               <span class="event-note">${esc(ev.note||'')}</span>
-              ${ev.eventType !== 'start'
-                ? `<button class="event-del-btn" onclick="deleteEvt(${iv.id},${ev.id})">×</button>`
-                : '<div style="width:28px;"></div>'}
+              ${editBtn}${delBtn}
             </div>`;
         }).join('');
 
@@ -324,14 +338,43 @@
     }
 
     // ── イベントモーダル ──
-    function openEvtModal(invId) {
+    function openEvtModal(invId, evtId = null) {
       evtTargetInvId = invId;
-      selectEvtType('increase');
-      document.getElementById('evtDateInput').value = todayStr();
-      document.getElementById('evtNoteInput').value = '';
+      editingEvtId   = evtId;
+      const isEdit   = evtId !== null;
+
+      if (isEdit) {
+        // 既存イベントの編集
+        const iv  = migrate(load()).find(i => i.id === invId);
+        const ev  = iv ? iv.events.find(e => e.id === evtId) : null;
+        if (!ev) return;
+        const isStart = ev.eventType === 'start';
+
+        document.getElementById('evtModalTitle').textContent = 'イベントを編集';
+        document.getElementById('evtSaveBtn').textContent    = '保存';
+        document.getElementById('evtTypeGroup').style.display  = isStart ? 'none' : '';
+        document.getElementById('evtStartLabel').style.display = isStart ? '' : 'none';
+
+        if (!isStart) selectEvtType(ev.eventType);
+        document.getElementById('evtDateInput').value = ev.date;
+        document.getElementById('evtNoteInput').value = ev.note || '';
+      } else {
+        // 新規追加
+        document.getElementById('evtModalTitle').textContent  = 'イベントを追加';
+        document.getElementById('evtSaveBtn').textContent     = '追加';
+        document.getElementById('evtTypeGroup').style.display  = '';
+        document.getElementById('evtStartLabel').style.display = 'none';
+        selectEvtType('increase');
+        document.getElementById('evtDateInput').value = todayStr();
+        document.getElementById('evtNoteInput').value = '';
+      }
       document.getElementById('evtOverlay').classList.add('open');
     }
-    function closeEvtModal() { document.getElementById('evtOverlay').classList.remove('open'); evtTargetInvId = null; }
+    function closeEvtModal() {
+      document.getElementById('evtOverlay').classList.remove('open');
+      evtTargetInvId = null;
+      editingEvtId   = null;
+    }
     function selectEvtType(t) {
       evtType = t;
       ['increase','decrease','stop','restart'].forEach(k =>
@@ -344,7 +387,19 @@
       const list = migrate(load());
       const iv = list.find(i => i.id === evtTargetInvId);
       if (!iv) return;
-      iv.events.push({ id: Date.now(), date, eventType: evtType, note });
+
+      if (editingEvtId !== null) {
+        // 編集：既存イベントを更新
+        const ev = iv.events.find(e => e.id === editingEvtId);
+        if (ev) {
+          ev.date = date;
+          ev.note = note;
+          if (ev.eventType !== 'start') ev.eventType = evtType;
+        }
+      } else {
+        // 新規追加
+        iv.events.push({ id: Date.now(), date, eventType: evtType, note });
+      }
       save(list);
       closeEvtModal();
       renderList();
