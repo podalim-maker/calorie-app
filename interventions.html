@@ -87,7 +87,7 @@
   <div class="header">
     <button class="back-btn" onclick="goBack()">‹ 戻る</button>
     <h1>治療介入</h1>
-    <p>薬剤・パーソナルトレーニングなどの記録</p>
+    <p>薬剤・運動などの記録</p>
   </div>
 
   <div class="content">
@@ -119,7 +119,7 @@
             <span class="type-icon">💊</span><span class="type-name">薬剤</span>
           </button>
           <button class="type-btn" id="type-training" style="--tc:#27AE60;--tbg:#E8F5E9;" onclick="selectInvType('training')">
-            <span class="type-icon">🏋️</span><span class="type-name">パーソナルトレーニング</span>
+            <span class="type-icon">🏃</span><span class="type-name">運動</span>
           </button>
         </div>
       </div>
@@ -182,9 +182,9 @@
 
   <script>
     const TYPE_COLORS = { medication: '#1B2A8A', training: '#27AE60' };
-    const TYPE_LABELS = { medication: '薬剤', training: 'パーソナルトレーニング' };
-    const TYPE_NAMES  = { medication: '薬剤名', training: 'トレーナー名 / 施設名' };
-    const TYPE_PH     = { medication: '例：リラグルチド', training: '例：〇〇ジム' };
+    const TYPE_LABELS = { medication: '薬剤', training: '運動' };
+    const TYPE_NAMES  = { medication: '薬剤名', training: '運動の種類 / 施設名' };
+    const TYPE_PH     = { medication: '例：リラグルチド', training: '例：ウォーキング・〇〇ジム' };
     const EVT_LABEL   = { start:'開始', increase:'増量', decrease:'減量', stop:'中止', restart:'再開' };
     const EVT_SYM     = { start:'●', increase:'▲', decrease:'▼', stop:'×', restart:'↩' };
     const EVT_COLOR   = { start:null, increase:null, decrease:null, stop:'#9E9E9E', restart:null };
