@@ -13,173 +13,164 @@
     .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
     .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
 
-    /* 介入カード */
-    .inv-card {
-      background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
-      display: flex; align-items: flex-start; gap: 12px;
-    }
-    .inv-num {
-      width: 28px; height: 28px; border-radius: 50%; background: #f0f3ff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700; color: #1B2A8A; flex-shrink: 0; margin-top: 2px;
-    }
-    .inv-body { flex: 1; min-width: 0; }
-    .inv-type-badge {
-      display: inline-block; border-radius: 6px; padding: 2px 8px;
-      font-size: 11px; font-weight: 700; margin-bottom: 6px;
-    }
-    .inv-name { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 4px; word-break: break-all; }
-    .inv-date { font-size: 12px; color: #888; }
-    .inv-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-    .inv-edit-btn {
-      background: none; border: none; color: #9BA4C7; cursor: pointer;
-      padding: 4px; line-height: 1;
-    }
-    .inv-edit-btn:hover { color: #1B2A8A; }
-    .inv-delete-btn {
-      background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer;
-      padding: 4px; line-height: 1;
-    }
-    .inv-delete-btn:hover { color: #E53935; }
+    /* カード */
+    .inv-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .inv-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .inv-num { width: 26px; height: 26px; border-radius: 50%; background: #f0f3ff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #1B2A8A; flex-shrink: 0; margin-top: 2px; }
+    .inv-header-body { flex: 1; min-width: 0; }
+    .inv-type-badge { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-bottom: 5px; }
+    .inv-name { font-size: 15px; font-weight: 700; color: #222; word-break: break-all; }
+    .inv-memo { font-size: 12px; color: #888; margin-top: 3px; white-space: pre-wrap; }
+    .inv-header-actions { display: flex; gap: 2px; flex-shrink: 0; }
+    .icon-btn { background: none; border: none; padding: 5px; cursor: pointer; line-height: 1; border-radius: 8px; }
+    .icon-btn:hover { background: #f5f5f5; }
+
+    /* イベントリスト */
+    .event-list { border-top: 1px solid #f0f0f0; padding-top: 10px; }
+    .event-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f8f8f8; }
+    .event-row:last-of-type { border-bottom: none; }
+    .event-sym { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; }
+    .event-label { font-size: 12px; font-weight: 700; width: 34px; flex-shrink: 0; }
+    .event-date { font-size: 12px; color: #888; width: 60px; flex-shrink: 0; }
+    .event-note { font-size: 12px; color: #555; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .event-del-btn { background: none; border: none; color: #CCC; font-size: 16px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+    .event-del-btn:hover { color: #E53935; }
+
+    /* イベント追加ボタン */
+    .add-event-btn { width: 100%; padding: 10px; border: 1.5px dashed #C5CAE9; border-radius: 10px; background: none; color: #7986CB; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; }
+    .add-event-btn:active { background: #f0f3ff; }
 
     /* 空状態 */
     .empty-state { text-align: center; padding: 40px 20px; color: #CCC; font-size: 14px; }
 
-    /* 追加ボタン */
-    .add-btn {
-      width: 100%; padding: 14px; border: 2px dashed #C5CAE9; border-radius: 14px;
-      background: none; color: #7986CB; font-size: 14px; font-weight: 600;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      margin-top: 4px;
-    }
+    /* 新規介入追加ボタン */
+    .add-btn { width: 100%; padding: 14px; border: 2px dashed #C5CAE9; border-radius: 14px; background: none; color: #7986CB; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
     .add-btn:active { background: #f0f3ff; }
 
-    /* ━━━ モーダル ━━━ */
-    .overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
-      z-index: 100; align-items: flex-end; justify-content: center;
-    }
+    /* 凡例 */
+    .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; }
+
+    /* ━━━ モーダル共通 ━━━ */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: flex-end; justify-content: center; }
     .overlay.open { display: flex; }
-    .sheet {
-      background: white; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px;
-      padding: 24px 20px 40px; animation: slideUp .25s ease;
-    }
+    .sheet { background: white; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 24px 20px 40px; animation: slideUp .25s ease; }
     @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .sheet-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: #222; }
 
-    /* タイプ選択 */
+    /* タイプ選択（介入種別） */
     .type-selector { display: flex; gap: 10px; margin-bottom: 18px; }
-    .type-btn {
-      flex: 1; padding: 12px 8px; border-radius: 12px; border: 2px solid #E0E0E0;
-      background: white; cursor: pointer; text-align: center; transition: all .15s;
-    }
+    .type-btn { flex: 1; padding: 12px 8px; border-radius: 12px; border: 2px solid #E0E0E0; background: white; cursor: pointer; text-align: center; transition: all .15s; }
     .type-btn.active { border-color: var(--tc); background: var(--tbg); }
     .type-btn .type-icon { font-size: 22px; margin-bottom: 4px; display: block; }
     .type-btn .type-name { font-size: 12px; font-weight: 700; color: #555; }
     .type-btn.active .type-name { color: var(--tc); }
 
+    /* イベント種別ボタン群 */
+    .event-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+    .evt-btn { padding: 10px 4px; border-radius: 10px; border: 2px solid #E0E0E0; background: white; cursor: pointer; text-align: center; transition: all .15s; font-size: 12px; font-weight: 700; color: #666; }
+    .evt-btn.active { border-color: #1B2A8A; background: #EEF1FF; color: #1B2A8A; }
+    .evt-btn .evt-sym { font-size: 16px; display: block; margin-bottom: 3px; }
+
     /* フォーム */
     .form-group { margin-bottom: 16px; }
     .form-label { font-size: 12px; font-weight: 700; color: #888; margin-bottom: 6px; display: block; letter-spacing: .04em; }
-    .form-input {
-      width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 10px;
-      font-size: 15px; color: #333; outline: none; background: white;
-      -webkit-appearance: none;
-    }
+    .form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 10px; font-size: 15px; color: #333; outline: none; background: white; -webkit-appearance: none; }
     .form-input:focus { border-color: #1B2A8A; }
-    textarea.form-input { resize: vertical; min-height: 72px; font-family: inherit; line-height: 1.6; }
-
-    .save-btn {
-      width: 100%; padding: 14px; background: #1B2A8A; color: white; border: none;
-      border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px;
-    }
+    textarea.form-input { resize: vertical; min-height: 68px; font-family: inherit; line-height: 1.6; }
+    .save-btn { width: 100%; padding: 14px; background: #1B2A8A; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
     .save-btn:active { background: #0d1650; }
-    .cancel-btn {
-      width: 100%; padding: 12px; background: none; border: none;
-      color: #999; font-size: 14px; cursor: pointer; margin-top: 6px;
-    }
-
-    /* 凡例 */
-    .legend { display: flex; gap: 16px; margin-bottom: 20px; }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .cancel-btn { width: 100%; padding: 12px; background: none; border: none; color: #999; font-size: 14px; cursor: pointer; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="header">
     <button class="back-btn" onclick="goBack()">‹ 戻る</button>
     <h1>治療介入</h1>
-    <p>薬剤・パーソナルトレーニングなどの開始記録</p>
+    <p>薬剤・パーソナルトレーニングなどの記録</p>
   </div>
 
   <div class="content">
-
     <!-- 凡例 -->
     <div class="legend">
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#1B2A8A;"></div>薬剤
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:#27AE60;"></div>パーソナルトレーニング
-      </div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:12px;">●</span> 開始</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:12px;">▲</span> 増量</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:12px;">▼</span> 減量</div>
+      <div class="legend-item"><span style="color:#9E9E9E;font-size:12px;">×</span> 中止</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:12px;">↩</span> 再開</div>
     </div>
 
-    <!-- 介入リスト -->
     <div id="invList"></div>
 
-    <!-- 追加ボタン -->
-    <button class="add-btn" onclick="openModal(null)">
+    <button class="add-btn" onclick="openInvModal(null)">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       介入を追加
     </button>
-
   </div>
 
-  <!-- ━━━ 追加 / 編集モーダル ━━━ -->
-  <div class="overlay" id="addOverlay">
+  <!-- ━━━ 介入追加/編集モーダル ━━━ -->
+  <div class="overlay" id="invOverlay">
     <div class="sheet">
-      <div class="sheet-title" id="modalTitle">介入を追加</div>
-
-      <!-- タイプ選択 -->
+      <div class="sheet-title" id="invModalTitle">介入を追加</div>
       <div class="form-group">
         <label class="form-label">介入の種類</label>
         <div class="type-selector">
-          <button class="type-btn active" id="type-medication"
-            style="--tc:#1B2A8A;--tbg:#EEF1FF;"
-            onclick="selectType('medication')">
-            <span class="type-icon">💊</span>
-            <span class="type-name">薬剤</span>
+          <button class="type-btn active" id="type-medication" style="--tc:#1B2A8A;--tbg:#EEF1FF;" onclick="selectInvType('medication')">
+            <span class="type-icon">💊</span><span class="type-name">薬剤</span>
           </button>
-          <button class="type-btn" id="type-training"
-            style="--tc:#27AE60;--tbg:#E8F5E9;"
-            onclick="selectType('training')">
-            <span class="type-icon">🏋️</span>
-            <span class="type-name">パーソナルトレーニング</span>
+          <button class="type-btn" id="type-training" style="--tc:#27AE60;--tbg:#E8F5E9;" onclick="selectInvType('training')">
+            <span class="type-icon">🏋️</span><span class="type-name">パーソナルトレーニング</span>
           </button>
         </div>
       </div>
-
-      <!-- 名前 -->
       <div class="form-group">
-        <label class="form-label" id="nameLabel">薬剤名</label>
+        <label class="form-label" id="invNameLabel">薬剤名</label>
         <input type="text" class="form-input" id="invNameInput" placeholder="例：リラグルチド">
       </div>
-
-      <!-- 開始日 -->
       <div class="form-group">
         <label class="form-label">開始日</label>
-        <input type="date" class="form-input" id="invDateInput">
+        <input type="date" class="form-input" id="invStartDateInput">
       </div>
-
-      <!-- 備考 -->
       <div class="form-group">
         <label class="form-label">備考（任意）</label>
         <textarea class="form-input" id="invMemoInput" placeholder="用量、担当者名など"></textarea>
       </div>
+      <button class="save-btn" onclick="saveInv()">保存</button>
+      <button class="cancel-btn" onclick="closeInvModal()">キャンセル</button>
+    </div>
+  </div>
 
-      <button class="save-btn" onclick="saveIntervention()">保存</button>
-      <button class="cancel-btn" onclick="closeModal()">キャンセル</button>
+  <!-- ━━━ イベント追加モーダル ━━━ -->
+  <div class="overlay" id="evtOverlay">
+    <div class="sheet">
+      <div class="sheet-title">イベントを追加</div>
+      <div class="form-group">
+        <label class="form-label">イベントの種類</label>
+        <div class="event-type-grid">
+          <button class="evt-btn" id="evtbtn-increase" onclick="selectEvtType('increase')">
+            <span class="evt-sym">▲</span>増量
+          </button>
+          <button class="evt-btn" id="evtbtn-decrease" onclick="selectEvtType('decrease')">
+            <span class="evt-sym">▼</span>減量
+          </button>
+          <button class="evt-btn" id="evtbtn-stop" onclick="selectEvtType('stop')">
+            <span class="evt-sym">×</span>中止
+          </button>
+          <button class="evt-btn" id="evtbtn-restart" onclick="selectEvtType('restart')">
+            <span class="evt-sym">↩</span>再開
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">日付</label>
+        <input type="date" class="form-input" id="evtDateInput">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備考（任意）</label>
+        <input type="text" class="form-input" id="evtNoteInput" placeholder="例：0.9mg → 1.8mg">
+      </div>
+      <button class="save-btn" onclick="saveEvt()">追加</button>
+      <button class="cancel-btn" onclick="closeEvtModal()">キャンセル</button>
     </div>
   </div>
 
@@ -188,136 +179,200 @@
     const TYPE_LABELS = { medication: '薬剤', training: 'パーソナルトレーニング' };
     const TYPE_NAMES  = { medication: '薬剤名', training: 'トレーナー名 / 施設名' };
     const TYPE_PH     = { medication: '例：リラグルチド', training: '例：〇〇ジム' };
-    let selectedType = 'medication';
-    let editingId = null;   // null=新規, number=編集中のid
+    const EVT_LABEL   = { start:'開始', increase:'増量', decrease:'減量', stop:'中止', restart:'再開' };
+    const EVT_SYM     = { start:'●', increase:'▲', decrease:'▼', stop:'×', restart:'↩' };
+    const EVT_COLOR   = { start:null, increase:null, decrease:null, stop:'#9E9E9E', restart:null };
 
-    function loadInterventions() {
-      return JSON.parse(localStorage.getItem('interventions') || '[]');
-    }
-    function saveInterventions(list) {
-      localStorage.setItem('interventions', JSON.stringify(list));
+    let invType = 'medication';
+    let editingInvId = null;
+    let evtTargetInvId = null;
+    let evtType = 'increase';
+
+    // ── データ管理 ──
+    function load() { return JSON.parse(localStorage.getItem('interventions') || '[]'); }
+    function save(list) { localStorage.setItem('interventions', JSON.stringify(list)); }
+
+    // 旧データ（eventsなし）を移行
+    function migrate(list) {
+      return list.map(iv => {
+        if (!iv.events) {
+          iv.events = [{ id: Date.now()+Math.random(), date: iv.startDate, eventType: 'start', note: '' }];
+        }
+        return iv;
+      });
     }
 
+    // ── 描画 ──
     function renderList() {
-      const list = loadInterventions();
+      let list = migrate(load());
+      save(list); // 移行済みを保存
       const el = document.getElementById('invList');
       if (list.length === 0) {
         el.innerHTML = '<div class="empty-state">まだ介入記録がありません</div>';
         return;
       }
       el.innerHTML = list.map((iv, idx) => {
-        const color = TYPE_COLORS[iv.type] || '#888';
-        const typeLabel = TYPE_LABELS[iv.type] || iv.type;
-        const d = iv.startDate.replace(/-/g, '/');
+        const color  = TYPE_COLORS[iv.type] || '#888';
+        const tlabel = TYPE_LABELS[iv.type] || iv.type;
         const bg = iv.type === 'medication' ? '#EEF1FF' : '#E8F5E9';
-        const memoHtml = iv.memo
-          ? `<div style="font-size:12px;color:#888;margin-top:4px;white-space:pre-wrap;">${escapeHtml(iv.memo)}</div>` : '';
+        const sortedEvts = [...iv.events].sort((a,b)=>a.date.localeCompare(b.date));
+
+        const evtRows = sortedEvts.map(ev => {
+          const ec = EVT_COLOR[ev.eventType] || color;
+          return `
+            <div class="event-row">
+              <span class="event-sym" style="color:${ec};">${EVT_SYM[ev.eventType]||'●'}</span>
+              <span class="event-label" style="color:${ec};">${EVT_LABEL[ev.eventType]||ev.eventType}</span>
+              <span class="event-date">${ev.date.replace(/-/g,'/')}</span>
+              <span class="event-note">${esc(ev.note||'')}</span>
+              ${ev.eventType !== 'start'
+                ? `<button class="event-del-btn" onclick="deleteEvt(${iv.id},${ev.id})">×</button>`
+                : '<div style="width:28px;"></div>'}
+            </div>`;
+        }).join('');
+
         return `
-          <div class="inv-card">
-            <div class="inv-num">${idx+1}</div>
-            <div class="inv-body">
-              <span class="inv-type-badge" style="background:${bg};color:${color};">${typeLabel}</span>
-              <div class="inv-name">${escapeHtml(iv.name || '（名称未設定）')}</div>
-              <div class="inv-date">開始：${d}</div>
-              ${memoHtml}
+          <div class="inv-card" id="inv-${iv.id}">
+            <div class="inv-card-header">
+              <div class="inv-num">${idx+1}</div>
+              <div class="inv-header-body">
+                <span class="inv-type-badge" style="background:${bg};color:${color};">${tlabel}</span>
+                <div class="inv-name">${esc(iv.name||'（名称未設定）')}</div>
+                ${iv.memo ? `<div class="inv-memo">${esc(iv.memo)}</div>` : ''}
+              </div>
+              <div class="inv-header-actions">
+                <button class="icon-btn" onclick="openInvModal(${iv.id})" title="編集">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9BA4C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="icon-btn" onclick="deleteInv(${iv.id})" title="削除">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2" stroke-linecap="round">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <div class="inv-actions">
-              <button class="inv-edit-btn" onclick="openModal(${iv.id})" title="編集">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-              <button class="inv-delete-btn" onclick="deleteIntervention(${iv.id})" title="削除">×</button>
+            <div class="event-list">
+              ${evtRows}
             </div>
+            <button class="add-event-btn" onclick="openEvtModal(${iv.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              イベントを追加
+            </button>
           </div>`;
       }).join('');
     }
 
-    function deleteIntervention(id) {
-      const iv = loadInterventions().find(i => i.id === id);
-      const name = iv ? (iv.name || '介入記録') : '介入記録';
-      if (!confirm(`「${name}」を削除しますか？`)) return;
-      saveInterventions(loadInterventions().filter(i => i.id !== id));
-      renderList();
-    }
-
-    function openModal(id) {
-      editingId = id;
+    // ── 介入モーダル ──
+    function openInvModal(id) {
+      editingInvId = id;
       const isEdit = id !== null;
-      document.getElementById('modalTitle').textContent = isEdit ? '介入を編集' : '介入を追加';
-
+      document.getElementById('invModalTitle').textContent = isEdit ? '介入を編集' : '介入を追加';
       if (isEdit) {
-        const iv = loadInterventions().find(i => i.id === id);
+        const iv = load().find(i => i.id === id);
         if (!iv) return;
-        selectType(iv.type);
+        selectInvType(iv.type);
         document.getElementById('invNameInput').value = iv.name || '';
-        document.getElementById('invDateInput').value = iv.startDate;
+        const firstEvt = iv.events ? [...iv.events].sort((a,b)=>a.date.localeCompare(b.date))[0] : null;
+        document.getElementById('invStartDateInput').value = firstEvt ? firstEvt.date : (iv.startDate||'');
         document.getElementById('invMemoInput').value = iv.memo || '';
+        // 開始日は編集モードでは変更不可（表示のみ）
+        document.getElementById('invStartDateInput').disabled = true;
       } else {
-        selectType('medication');
+        selectInvType('medication');
         document.getElementById('invNameInput').value = '';
-        document.getElementById('invDateInput').value = todayStr();
+        document.getElementById('invStartDateInput').value = todayStr();
+        document.getElementById('invStartDateInput').disabled = false;
         document.getElementById('invMemoInput').value = '';
       }
-      document.getElementById('addOverlay').classList.add('open');
+      document.getElementById('invOverlay').classList.add('open');
     }
-
-    function closeModal() {
-      document.getElementById('addOverlay').classList.remove('open');
-      editingId = null;
+    function closeInvModal() { document.getElementById('invOverlay').classList.remove('open'); editingInvId = null; }
+    function selectInvType(t) {
+      invType = t;
+      ['medication','training'].forEach(k => document.getElementById('type-'+k).classList.toggle('active', k===t));
+      document.getElementById('invNameLabel').textContent = TYPE_NAMES[t];
+      document.getElementById('invNameInput').placeholder = TYPE_PH[t];
     }
-
-    function selectType(type) {
-      selectedType = type;
-      ['medication','training'].forEach(t => {
-        document.getElementById('type-' + t).classList.toggle('active', t === type);
-      });
-      document.getElementById('nameLabel').textContent = TYPE_NAMES[type];
-      document.getElementById('invNameInput').placeholder = TYPE_PH[type];
-    }
-
-    function saveIntervention() {
+    function saveInv() {
       const name = document.getElementById('invNameInput').value.trim();
-      const date = document.getElementById('invDateInput').value;
+      const date = document.getElementById('invStartDateInput').value;
       const memo = document.getElementById('invMemoInput').value.trim();
       if (!date) { alert('開始日を入力してください'); return; }
-
-      let list = loadInterventions();
-      if (editingId !== null) {
-        // 編集
-        const idx = list.findIndex(i => i.id === editingId);
-        if (idx >= 0) {
-          list[idx] = { ...list[idx], type: selectedType, name, startDate: date, memo };
-        }
+      let list = migrate(load());
+      if (editingInvId !== null) {
+        const i = list.findIndex(x => x.id === editingInvId);
+        if (i >= 0) list[i] = { ...list[i], type: invType, name, memo };
       } else {
-        // 新規
-        list.push({ id: Date.now(), type: selectedType, name, startDate: date, memo });
+        const newId = Date.now();
+        list.push({ id: newId, type: invType, name, startDate: date, memo,
+          events: [{ id: newId+1, date, eventType: 'start', note: '' }] });
       }
-      saveInterventions(list);
-      closeModal();
+      save(list);
+      closeInvModal();
       renderList();
     }
 
+    // ── 介入削除 ──
+    function deleteInv(id) {
+      const iv = load().find(i => i.id === id);
+      if (!confirm(`「${iv ? (iv.name||'介入記録') : '介入記録'}」を削除しますか？`)) return;
+      save(load().filter(i => i.id !== id));
+      renderList();
+    }
+
+    // ── イベントモーダル ──
+    function openEvtModal(invId) {
+      evtTargetInvId = invId;
+      selectEvtType('increase');
+      document.getElementById('evtDateInput').value = todayStr();
+      document.getElementById('evtNoteInput').value = '';
+      document.getElementById('evtOverlay').classList.add('open');
+    }
+    function closeEvtModal() { document.getElementById('evtOverlay').classList.remove('open'); evtTargetInvId = null; }
+    function selectEvtType(t) {
+      evtType = t;
+      ['increase','decrease','stop','restart'].forEach(k =>
+        document.getElementById('evtbtn-'+k).classList.toggle('active', k===t));
+    }
+    function saveEvt() {
+      const date = document.getElementById('evtDateInput').value;
+      const note = document.getElementById('evtNoteInput').value.trim();
+      if (!date) { alert('日付を入力してください'); return; }
+      const list = migrate(load());
+      const iv = list.find(i => i.id === evtTargetInvId);
+      if (!iv) return;
+      iv.events.push({ id: Date.now(), date, eventType: evtType, note });
+      save(list);
+      closeEvtModal();
+      renderList();
+    }
+
+    // ── イベント削除 ──
+    function deleteEvt(invId, evtId) {
+      if (!confirm('このイベントを削除しますか？')) return;
+      const list = migrate(load());
+      const iv = list.find(i => i.id === invId);
+      if (!iv) return;
+      iv.events = iv.events.filter(e => e.id !== evtId);
+      save(list);
+      renderList();
+    }
+
+    // ── ユーティリティ ──
     function todayStr() {
       const d = new Date();
-      return d.getFullYear() + '-' +
-        String(d.getMonth()+1).padStart(2,'0') + '-' +
-        String(d.getDate()).padStart(2,'0');
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function goBack() { if (document.referrer) history.back(); else window.location.href='index.html'; }
 
-    function escapeHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    function goBack() {
-      if (document.referrer) history.back();
-      else window.location.href = 'index.html';
-    }
-
-    document.getElementById('addOverlay').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
+    // オーバーレイ外タップで閉じる
+    ['invOverlay','evtOverlay'].forEach(id =>
+      document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) this.classList.remove('open'); })
+    );
 
     renderList();
   </script>
