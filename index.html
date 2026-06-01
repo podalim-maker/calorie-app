@@ -793,7 +793,10 @@
         </div>
         <div id="calChart"></div>
       </div>
-      <div class="section-label">体重の推移</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;">
+        <div class="section-label" style="margin-bottom:0;">体重の推移</div>
+        <a href="weight-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">体重の変動について ›</a>
+      </div>
       <div class="chart-wrap">
         <div class="chart-toggle-bar">
           <button class="chart-toggle active" id="wt-month" onclick="toggleWeightChart('month')">1ヶ月</button>
@@ -807,9 +810,6 @@
           <button class="chart-nav-btn" id="wt-next" onclick="weightChartNext()">›</button>
         </div>
         <div id="weightChart"></div>
-        <div style="text-align:right;margin-top:6px;">
-          <a href="weight-info.html" style="font-size: 13px;color:#1B2A8A;text-decoration:underline;">体重の変動について ›</a>
-        </div>
         <!-- 治療介入タイムライン -->
         <div id="interventionSection" style="margin-top:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -1177,7 +1177,7 @@ document.addEventListener('visibilitychange', () => {
 });
 // bfcache（戻るボタン）でページが復元された際に介入タイムラインを再描画
 window.addEventListener('pageshow', (e) => {
-  if (e.persisted) renderInterventionTimeline();
+  if (e.persisted) renderWeightChartCurrent();
 });
 
 function refreshUI() {
@@ -2232,8 +2232,7 @@ function renderHistoryListWeek() {
 function renderHistory() {
   renderCumulative();
   renderCalChartCurrent();
-  renderWeightChartCurrent();
-  renderInterventionTimeline();
+  renderWeightChartCurrent(); // 内部でrenderInterventionTimelineも呼ぶ
   hlWeekSunday = getThisWeekSunday();
   renderHistoryListWeek();
 }
@@ -2248,24 +2247,56 @@ function renderInterventionTimeline() {
   }
   const TYPE_COLORS = { medication: '#1B2A8A', training: '#27AE60' };
   const TYPE_LABELS = { medication: '薬剤', training: 'PT' };
-  const todayMs = new Date().setHours(0,0,0,0);
-  const startMsArr = interventions.map(iv => new Date(iv.startDate).setHours(0,0,0,0));
-  const minMs = Math.min(...startMsArr);
-  const totalMs = Math.max(1, todayMs - minMs);
+
+  // グラフの表示期間（なければ全期間）
+  const todayMs = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
+  let rangeStart, rangeEnd;
+  if (_currentChartRange) {
+    rangeStart = _currentChartRange.startMs;
+    rangeEnd   = Math.min(_currentChartRange.endMs, todayMs);
+  } else {
+    // フォールバック：全介入期間
+    const sArr = interventions.map(iv => new Date(iv.startDate + 'T00:00:00').getTime());
+    rangeStart = Math.min(...sArr);
+    rangeEnd   = todayMs;
+  }
+  const totalMs = Math.max(1, rangeEnd - rangeStart);
+
   let html = '';
   interventions.forEach((iv, idx) => {
-    const sMs = new Date(iv.startDate).setHours(0,0,0,0);
-    const leftPct = ((sMs - minMs) / totalMs) * 100;
-    const widthPct = ((todayMs - sMs) / totalMs) * 100;
+    const ivStartMs = new Date(iv.startDate + 'T00:00:00').getTime();
     const color = TYPE_COLORS[iv.type] || '#888';
     const typeLabel = TYPE_LABELS[iv.type] || '';
+
+    // この介入がグラフ範囲外（未来）なら薄く表示
+    if (ivStartMs > rangeEnd) {
+      html += `
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;opacity:0.3;">
+          <div style="width:16px;text-align:right;font-size:11px;font-weight:700;color:#999;flex-shrink:0;">${idx+1}</div>
+          <div style="flex:1;position:relative;height:14px;">
+            <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#eee;transform:translateY(-50%);"></div>
+          </div>
+          <div style="font-size:11px;color:${color};font-weight:600;flex-shrink:0;min-width:28px;">${typeLabel}</div>
+        </div>`;
+      return;
+    }
+
+    // バー開始位置（レンジ開始より前に始まった場合は左端=0%）
+    const barStartMs = Math.max(ivStartMs, rangeStart);
+    const barEndMs   = rangeEnd;
+    const leftPct  = ((barStartMs - rangeStart) / totalMs) * 100;
+    const widthPct = Math.max(((barEndMs - barStartMs) / totalMs) * 100, 2);
+
+    // ●マーカーの位置（介入の実際の開始日。レンジ外に出る場合はクランプ）
+    const dotLeftPct = Math.max(0, Math.min(100, ((ivStartMs - rangeStart) / totalMs) * 100));
+
     html += `
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
         <div style="width:16px;text-align:right;font-size:11px;font-weight:700;color:#999;flex-shrink:0;">${idx+1}</div>
-        <div style="flex:1;position:relative;height:18px;">
-          <div style="position:absolute;left:0;right:0;top:50%;height:2px;background:#eee;transform:translateY(-50%);border-radius:1px;"></div>
-          <div style="position:absolute;left:${leftPct.toFixed(1)}%;width:${Math.max(widthPct,4).toFixed(1)}%;height:10px;top:50%;transform:translateY(-50%);background:${color};border-radius:5px;opacity:0.75;"></div>
-          <div style="position:absolute;left:calc(${leftPct.toFixed(1)}% - 5px);top:50%;transform:translateY(-50%);width:10px;height:10px;background:${color};border-radius:50%;"></div>
+        <div style="flex:1;position:relative;height:14px;">
+          <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:#e8e8e8;transform:translateY(-50%);"></div>
+          <div style="position:absolute;left:${leftPct.toFixed(1)}%;width:${widthPct.toFixed(1)}%;height:6px;top:50%;transform:translateY(-50%);background:${color};border-radius:3px;opacity:0.6;"></div>
+          <div style="position:absolute;left:calc(${dotLeftPct.toFixed(1)}% - 4px);top:50%;transform:translateY(-50%);width:8px;height:8px;background:${color};border-radius:50%;opacity:0.85;"></div>
         </div>
         <div style="font-size:11px;color:${color};font-weight:600;flex-shrink:0;min-width:28px;">${typeLabel}</div>
       </div>`;
@@ -2475,6 +2506,7 @@ let wcMonthOffset    = 0;  // 30日単位のオフセット（0=今日終わり�
 let wcHalfOffset     = 0;  // 6ヶ月単位のオフセット（0=今月終わり）
 let wcYearOffset     = 0;  // 12ヶ月単位のオフセット（0=今月終わり）
 let wcFiveYearOffset = 0;  // 3年単位のオフセット
+let _currentChartRange = null; // {startMs, endMs} 現在グラフに表示中の期間
 
 function toggleWeightChart(mode) {
   weightChartMode = mode;
@@ -2534,7 +2566,12 @@ function renderWeightChartCurrent() {
     const em = endDate.getMonth()+1,   ed = endDate.getDate();
     if (label) label.textContent = `${sm}/${sd}〜${em}/${ed}`;
     if (nextBtn) nextBtn.disabled = (wcMonthOffset >= 0);
+    _currentChartRange = {
+      startMs: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime(),
+      endMs:   new Date(endDate.getFullYear(),   endDate.getMonth(),   endDate.getDate()).getTime()
+    };
     renderWeightChart(data, 'month');
+    renderInterventionTimeline();
 
   } else if (weightChartMode === 'halfyear') {
     // 直近6ヶ月（右端=今月+offset、左端=6ヶ月前）
@@ -2559,7 +2596,12 @@ function renderWeightChartCurrent() {
     const startDate = new Date(endDate); startDate.setMonth(startDate.getMonth() - 5);
     if (label) label.textContent = `${startDate.getFullYear()}年${startDate.getMonth()+1}月〜${endDate.getFullYear()}年${endDate.getMonth()+1}月`;
     if (nextBtn) nextBtn.disabled = (wcHalfOffset >= 0);
+    _currentChartRange = {
+      startMs: new Date(startDate.getFullYear(), startDate.getMonth(), 1).getTime(),
+      endMs:   new Date(endDate.getFullYear(),   endDate.getMonth()+1, 0).getTime()
+    };
     renderWeightChart(data, 'year');
+    renderInterventionTimeline();
 
   } else if (weightChartMode === 'year') {
     // 直近12ヶ月（右端=今月+offset、左端=12ヶ月前）
@@ -2584,7 +2626,12 @@ function renderWeightChartCurrent() {
     const startDate = new Date(endDate); startDate.setMonth(startDate.getMonth() - 11);
     if (label) label.textContent = `${startDate.getFullYear()}年${startDate.getMonth()+1}月〜${endDate.getFullYear()}年${endDate.getMonth()+1}月`;
     if (nextBtn) nextBtn.disabled = (wcYearOffset >= 0);
+    _currentChartRange = {
+      startMs: new Date(startDate.getFullYear(), startDate.getMonth(), 1).getTime(),
+      endMs:   new Date(endDate.getFullYear(),   endDate.getMonth()+1, 0).getTime()
+    };
     renderWeightChart(data, 'year');
+    renderInterventionTimeline();
 
   } else {
     // 3年（カレンダー年）
@@ -2609,7 +2656,12 @@ function renderWeightChartCurrent() {
     }
     if (label) label.textContent = `${startYear}〜${endYear}年（3年）`;
     if (nextBtn) nextBtn.disabled = isCurrentPeriod;
+    _currentChartRange = {
+      startMs: new Date(startYear, 0, 1).getTime(),
+      endMs:   new Date(endYear,  11, 31).getTime()
+    };
     renderWeightChart(result, '5year');
+    renderInterventionTimeline();
   }
 }
 function renderWeightChart(data, mode='month') {
