@@ -24,23 +24,27 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 13px; font-weight: 700; color: #1B2A8A; flex-shrink: 0; margin-top: 2px;
     }
-    .inv-body { flex: 1; }
+    .inv-body { flex: 1; min-width: 0; }
     .inv-type-badge {
       display: inline-block; border-radius: 6px; padding: 2px 8px;
       font-size: 11px; font-weight: 700; margin-bottom: 6px;
     }
-    .inv-name { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 4px; }
+    .inv-name { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 4px; word-break: break-all; }
     .inv-date { font-size: 12px; color: #888; }
+    .inv-actions { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+    .inv-edit-btn {
+      background: none; border: none; color: #9BA4C7; cursor: pointer;
+      padding: 4px; line-height: 1;
+    }
+    .inv-edit-btn:hover { color: #1B2A8A; }
     .inv-delete-btn {
       background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer;
-      padding: 4px; flex-shrink: 0; line-height: 1;
+      padding: 4px; line-height: 1;
     }
     .inv-delete-btn:hover { color: #E53935; }
 
     /* 空状態 */
-    .empty-state {
-      text-align: center; padding: 40px 20px; color: #CCC; font-size: 14px;
-    }
+    .empty-state { text-align: center; padding: 40px 20px; color: #CCC; font-size: 14px; }
 
     /* 追加ボタン */
     .add-btn {
@@ -84,6 +88,7 @@
       -webkit-appearance: none;
     }
     .form-input:focus { border-color: #1B2A8A; }
+    textarea.form-input { resize: vertical; min-height: 72px; font-family: inherit; line-height: 1.6; }
 
     .save-btn {
       width: 100%; padding: 14px; background: #1B2A8A; color: white; border: none;
@@ -124,17 +129,17 @@
     <div id="invList"></div>
 
     <!-- 追加ボタン -->
-    <button class="add-btn" onclick="openModal()">
+    <button class="add-btn" onclick="openModal(null)">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       介入を追加
     </button>
 
   </div>
 
-  <!-- ━━━ 追加モーダル ━━━ -->
+  <!-- ━━━ 追加 / 編集モーダル ━━━ -->
   <div class="overlay" id="addOverlay">
     <div class="sheet">
-      <div class="sheet-title">介入を追加</div>
+      <div class="sheet-title" id="modalTitle">介入を追加</div>
 
       <!-- タイプ選択 -->
       <div class="form-group">
@@ -167,6 +172,12 @@
         <input type="date" class="form-input" id="invDateInput">
       </div>
 
+      <!-- 備考 -->
+      <div class="form-group">
+        <label class="form-label">備考（任意）</label>
+        <textarea class="form-input" id="invMemoInput" placeholder="用量、担当者名など"></textarea>
+      </div>
+
       <button class="save-btn" onclick="saveIntervention()">保存</button>
       <button class="cancel-btn" onclick="closeModal()">キャンセル</button>
     </div>
@@ -176,8 +187,9 @@
     const TYPE_COLORS = { medication: '#1B2A8A', training: '#27AE60' };
     const TYPE_LABELS = { medication: '薬剤', training: 'パーソナルトレーニング' };
     const TYPE_NAMES  = { medication: '薬剤名', training: 'トレーナー名 / 施設名' };
-    const TYPE_PLACEHOLDER = { medication: '例：リラグルチド', training: '例：〇〇ジム' };
+    const TYPE_PH     = { medication: '例：リラグルチド', training: '例：〇〇ジム' };
     let selectedType = 'medication';
+    let editingId = null;   // null=新規, number=編集中のid
 
     function loadInterventions() {
       return JSON.parse(localStorage.getItem('interventions') || '[]');
@@ -198,6 +210,8 @@
         const typeLabel = TYPE_LABELS[iv.type] || iv.type;
         const d = iv.startDate.replace(/-/g, '/');
         const bg = iv.type === 'medication' ? '#EEF1FF' : '#E8F5E9';
+        const memoHtml = iv.memo
+          ? `<div style="font-size:12px;color:#888;margin-top:4px;white-space:pre-wrap;">${escapeHtml(iv.memo)}</div>` : '';
         return `
           <div class="inv-card">
             <div class="inv-num">${idx+1}</div>
@@ -205,8 +219,17 @@
               <span class="inv-type-badge" style="background:${bg};color:${color};">${typeLabel}</span>
               <div class="inv-name">${escapeHtml(iv.name || '（名称未設定）')}</div>
               <div class="inv-date">開始：${d}</div>
+              ${memoHtml}
             </div>
-            <button class="inv-delete-btn" onclick="deleteIntervention(${iv.id})" title="削除">×</button>
+            <div class="inv-actions">
+              <button class="inv-edit-btn" onclick="openModal(${iv.id})" title="編集">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="inv-delete-btn" onclick="deleteIntervention(${iv.id})" title="削除">×</button>
+            </div>
           </div>`;
       }).join('');
     }
@@ -219,18 +242,30 @@
       renderList();
     }
 
-    function openModal() {
-      selectedType = 'medication';
-      document.getElementById('type-medication').classList.add('active');
-      document.getElementById('type-training').classList.remove('active');
-      document.getElementById('nameLabel').textContent = TYPE_NAMES['medication'];
-      document.getElementById('invNameInput').placeholder = TYPE_PLACEHOLDER['medication'];
-      document.getElementById('invNameInput').value = '';
-      document.getElementById('invDateInput').value = todayStr();
+    function openModal(id) {
+      editingId = id;
+      const isEdit = id !== null;
+      document.getElementById('modalTitle').textContent = isEdit ? '介入を編集' : '介入を追加';
+
+      if (isEdit) {
+        const iv = loadInterventions().find(i => i.id === id);
+        if (!iv) return;
+        selectType(iv.type);
+        document.getElementById('invNameInput').value = iv.name || '';
+        document.getElementById('invDateInput').value = iv.startDate;
+        document.getElementById('invMemoInput').value = iv.memo || '';
+      } else {
+        selectType('medication');
+        document.getElementById('invNameInput').value = '';
+        document.getElementById('invDateInput').value = todayStr();
+        document.getElementById('invMemoInput').value = '';
+      }
       document.getElementById('addOverlay').classList.add('open');
     }
+
     function closeModal() {
       document.getElementById('addOverlay').classList.remove('open');
+      editingId = null;
     }
 
     function selectType(type) {
@@ -239,15 +274,26 @@
         document.getElementById('type-' + t).classList.toggle('active', t === type);
       });
       document.getElementById('nameLabel').textContent = TYPE_NAMES[type];
-      document.getElementById('invNameInput').placeholder = TYPE_PLACEHOLDER[type];
+      document.getElementById('invNameInput').placeholder = TYPE_PH[type];
     }
 
     function saveIntervention() {
       const name = document.getElementById('invNameInput').value.trim();
       const date = document.getElementById('invDateInput').value;
+      const memo = document.getElementById('invMemoInput').value.trim();
       if (!date) { alert('開始日を入力してください'); return; }
-      const list = loadInterventions();
-      list.push({ id: Date.now(), type: selectedType, name: name, startDate: date });
+
+      let list = loadInterventions();
+      if (editingId !== null) {
+        // 編集
+        const idx = list.findIndex(i => i.id === editingId);
+        if (idx >= 0) {
+          list[idx] = { ...list[idx], type: selectedType, name, startDate: date, memo };
+        }
+      } else {
+        // 新規
+        list.push({ id: Date.now(), type: selectedType, name, startDate: date, memo });
+      }
       saveInterventions(list);
       closeModal();
       renderList();
@@ -261,7 +307,7 @@
     }
 
     function escapeHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     function goBack() {
@@ -269,7 +315,6 @@
       else window.location.href = 'index.html';
     }
 
-    // オーバーレイ外タップで閉じる
     document.getElementById('addOverlay').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });

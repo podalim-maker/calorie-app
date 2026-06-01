@@ -1175,6 +1175,10 @@ function checkDateRollover() {
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && cfg) checkDateRollover();
 });
+// bfcache（戻るボタン）でページが復元された際に介入タイムラインを再描画
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) renderInterventionTimeline();
+});
 
 function refreshUI() {
   _inRefreshUI = true;
