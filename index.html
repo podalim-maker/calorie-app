@@ -645,7 +645,10 @@
     <!-- Weight input -->
     <div class="weight-card" id="weightCard">
       <div>
-        <span class="weight-label">今日の体重</span>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="weight-label">今日の体重</span>
+          <a href="bmi-info.html" style="font-size:12px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+        </div>
         <div id="todayBMI" style="font-size:15px;color:#888;margin-top:3px;display:none;"></div>
       </div>
       <div class="weight-input-row">
@@ -658,7 +661,10 @@
     <!-- Activity / Steps combined card -->
     <div class="activity-today-card">
       <div class="activity-today-header">
-        <span class="activity-today-label">消費カロリーの計算</span>
+        <div style="display:flex;align-items:baseline;gap:6px;">
+          <span class="activity-today-label">消費カロリーの計算</span>
+          <a id="today-act-ref" href="activity-info.html" style="font-size:12px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+        </div>
         <span id="todayTdeeLabel" style="font-size: 14px;color:#AAA;">消費 -- kcal</span>
       </div>
       <!-- Tab bar -->
@@ -673,9 +679,6 @@
           <button class="act-today-btn" id="at-mid" onclick="setTodayActivity('mid')">やや活動</button>
           <button class="act-today-btn" id="at-high" onclick="setTodayActivity('high')">活動的</button>
         </div>
-        <div style="text-align:right;margin-top:8px;">
-          <a href="activity-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
-        </div>
       </div>
       <!-- Steps panel -->
       <div id="today-panel-steps" style="display:none;">
@@ -686,9 +689,6 @@
           <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
         </div>
         <div id="todayStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
-        <div style="text-align:right;margin-top:8px;">
-          <a href="steps-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
-        </div>
       </div>
     </div>
 
@@ -734,7 +734,10 @@
       <!-- Activity / Steps combined card (edit day) -->
       <div class="activity-today-card" style="margin-bottom:12px;">
         <div class="activity-today-header">
-          <span class="activity-today-label">消費カロリーの計算</span>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span class="activity-today-label">消費カロリーの計算</span>
+            <a id="edit-act-ref" href="activity-info.html" style="font-size:12px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+          </div>
           <span id="edTdeeLabel" style="font-size: 14px;color:#AAA;"></span>
         </div>
         <!-- Tab bar -->
@@ -749,9 +752,6 @@
             <button class="act-today-btn" id="ed-mid"  onclick="setEditDayActivity('mid')">やや活動</button>
             <button class="act-today-btn" id="ed-high" onclick="setEditDayActivity('high')">活動的</button>
           </div>
-          <div style="text-align:right;margin-top:8px;">
-            <a href="activity-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
-          </div>
         </div>
         <!-- Steps panel -->
         <div id="edit-panel-steps" style="display:none;">
@@ -762,9 +762,6 @@
             <button class="steps-clear-btn" id="edStepsClear" onclick="clearEditDaySteps()">×</button>
           </div>
           <div id="edStepsCalLabel" style="font-size:13px;color:#888;margin-top:6px;display:none;"></div>
-          <div style="text-align:right;margin-top:8px;">
-            <a href="steps-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
-          </div>
         </div>
       </div>
       <!-- Add meal button -->
@@ -1762,6 +1759,8 @@ function switchTodayTab(tab) {
   document.getElementById('today-tab-steps').classList.toggle('active', isSteps);
   document.getElementById('today-panel-act').style.display = isSteps ? 'none' : '';
   document.getElementById('today-panel-steps').style.display = isSteps ? '' : 'none';
+  const ref = document.getElementById('today-act-ref');
+  if (ref) ref.href = isSteps ? 'steps-info.html' : 'activity-info.html';
   if (!isSteps) {
     // 活動度タブに切り替え→歩数データを削除
     localStorage.removeItem('steps_' + today());
@@ -1852,7 +1851,7 @@ function updateTodayBMI(w) {
   else if (bmi < 30.0) { cat = '肥満1度';   color = '#FF9800'; }
   else if (bmi < 35.0) { cat = '肥満2度';   color = '#FF5722'; }
   else                  { cat = '肥満3度以上'; color = '#C62828'; }
-  el.innerHTML = `BMI <b>${bmi.toFixed(1)}</b>　<span style="color:${color};font-weight:600;">${cat}</span><br><a href="bmi-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>`;
+  el.innerHTML = `BMI <b>${bmi.toFixed(1)}</b>　<span style="color:${color};font-weight:600;">${cat}</span>`;
   el.style.display = '';
 }
 
@@ -1918,6 +1917,8 @@ function switchEditTab(tab) {
   document.getElementById('edit-tab-steps').classList.toggle('active', isSteps);
   document.getElementById('edit-panel-act').style.display = isSteps ? 'none' : '';
   document.getElementById('edit-panel-steps').style.display = isSteps ? '' : 'none';
+  const ref = document.getElementById('edit-act-ref');
+  if (ref) ref.href = isSteps ? 'steps-info.html' : 'activity-info.html';
   if (!isSteps) {
     localStorage.removeItem('steps_' + editingDate);
     const inp = document.getElementById('edStepsInput');
