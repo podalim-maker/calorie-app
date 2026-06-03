@@ -160,6 +160,15 @@
       stroke-dashoffset: 502.65;
       transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
     }
+    .ring-over {
+      fill: none;
+      stroke: #7B241C;
+      stroke-width: 13;
+      stroke-linecap: round;
+      stroke-dasharray: 502.65;
+      stroke-dashoffset: 502.65;
+      transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
+    }
     .ring-center {
       position: absolute; top: 54%; left: 50%;
       transform: translate(-50%,-50%);
@@ -646,6 +655,7 @@
           </defs>
           <circle class="ring-bg" cx="100" cy="100" r="80"/>
           <circle class="ring-progress" id="ringArc" cx="100" cy="100" r="80"/>
+          <circle class="ring-over" id="ringOverArc" cx="100" cy="100" r="80"/>
         </svg>
         <div class="ring-center">
           <div class="kcal-num" id="totalKcal">0</div>
@@ -1212,7 +1222,19 @@ function refreshUI() {
   const remain = Math.abs(target - total);
 
   // Ring
-  document.getElementById('ringArc').style.strokeDashoffset = CIRC * (1 - pct);
+  const overArc = document.getElementById('ringOverArc');
+  if (over) {
+    // メインアーク: グラデーションで全周表示（目標=100%）
+    document.getElementById('ringArc').style.strokeDashoffset = 0;
+    document.getElementById('ringArc').style.stroke = 'url(#ringGrad)';
+    // 超過アーク: 超過分だけ濃い赤で上に重ねる
+    const overFraction = Math.min((total - target) / target, 1);
+    overArc.style.strokeDashoffset = CIRC * (1 - overFraction);
+  } else {
+    document.getElementById('ringArc').style.strokeDashoffset = CIRC * (1 - pct);
+    document.getElementById('ringArc').style.stroke = 'url(#ringGrad)';
+    overArc.style.strokeDashoffset = CIRC; // 非表示
+  }
   document.getElementById('totalKcal').textContent = total.toLocaleString();
   document.getElementById('bmrVal').textContent = `${target.toLocaleString()} kcal`;
   document.getElementById('remainVal').textContent = remain.toLocaleString();
@@ -1223,9 +1245,6 @@ function refreshUI() {
   // Bar
   document.getElementById('miniBar').style.width = `${Math.min(pct*100, 100)}%`;
   document.getElementById('pctText').textContent = `${Math.round(pct*100)}%`;
-
-  // Over target — change ring colour
-  document.getElementById('ringArc').style.stroke = total >= target ? '#C0392B' : 'url(#ringGrad)';
 
   // Banner
   document.getElementById('doneBanner').style.display = total >= target ? 'block' : 'none';
