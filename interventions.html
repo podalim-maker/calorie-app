@@ -260,7 +260,7 @@
         return `
           <div class="inv-card" id="inv-${iv.id}">
             <div class="inv-card-header">
-              <div class="inv-num">${idx+1}</div>
+              <div class="inv-num" style="background:${bg};color:${color};">${idx+1}</div>
               <div class="inv-header-body">
                 <span class="inv-type-badge" style="background:${bg};color:${color};">${tlabel}</span>
                 <div class="inv-name">${esc(iv.name||'（名称未設定）')}</div>
