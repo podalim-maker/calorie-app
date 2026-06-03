@@ -148,7 +148,7 @@
       box-shadow: 0 2px 14px rgba(0,0,0,.06);
       margin-bottom: 14px;
     }
-    .ring-wrap { position: relative; width: 170px; height: 170px; flex-shrink: 0; }
+    .ring-wrap { position: relative; width: 200px; height: 200px; flex-shrink: 0; }
     .ring-svg { transform: rotate(-90deg); }
     .ring-bg { fill: none; stroke: #F0F0F0; stroke-width: 13; }
     .ring-progress {
@@ -156,14 +156,14 @@
       stroke: url(#ringGrad);
       stroke-width: 13;
       stroke-linecap: round;
-      stroke-dasharray: 427.26;
-      stroke-dashoffset: 427.26;
+      stroke-dasharray: 502.65;
+      stroke-dashoffset: 502.65;
       transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1);
     }
     .ring-center {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      text-align: center; width: 115px;
+      text-align: center; width: 140px;
     }
     .ring-center .kcal-num { font-size: 36px; font-weight: 900; line-height: 1; }
     .ring-center .kcal-unit { font-size: 11px; color: var(--sub); line-height: 1.4; }
@@ -616,15 +616,15 @@
     <div class="ring-card">
       <div style="width:100%;font-size:20px;font-weight:700;color:#555;margin-bottom:-4px;">本日の総摂取カロリー</div>
       <div class="ring-wrap">
-        <svg class="ring-svg" width="170" height="170" viewBox="0 0 170 170">
+        <svg class="ring-svg" width="200" height="200" viewBox="0 0 200 200">
           <defs>
             <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="#1B2A8A"/>
               <stop offset="100%" stop-color="#C0392B"/>
             </linearGradient>
           </defs>
-          <circle class="ring-bg" cx="85" cy="85" r="68"/>
-          <circle class="ring-progress" id="ringArc" cx="85" cy="85" r="68"/>
+          <circle class="ring-bg" cx="100" cy="100" r="80"/>
+          <circle class="ring-progress" id="ringArc" cx="100" cy="100" r="80"/>
         </svg>
         <div class="ring-center">
           <div class="kcal-num" id="totalKcal">0</div>
@@ -1088,7 +1088,7 @@ const ACTIVITY_FACTORS = { low: 1.2, mid: 1.375, high: 1.55 };
 const GOAL_DEFICITS = { maintain: 0, '05': 120, '1': 240, '2': 480, '3': 720, '4plus': 960 };
 let stGender = 'male';
 let pendingPhoto = null; // {base64, mediaType}
-const CIRC = 2 * Math.PI * 68; // 427.26
+const CIRC = 2 * Math.PI * 80; // 502.65
 
 // ── Boot ──
 function init() {
