@@ -1762,10 +1762,7 @@ function switchTodayTab(tab) {
   const ref = document.getElementById('today-act-ref');
   if (ref) ref.href = isSteps ? 'steps-info.html' : 'activity-info.html';
   if (!isSteps) {
-    // 活動度タブに切り替え→歩数データを削除
-    localStorage.removeItem('steps_' + today());
-    const inp = document.getElementById('todayStepsInput');
-    if (inp) inp.value = '';
+    // 活動度タブに切り替え（歩数データは削除しない。活動度を選択したときだけ削除する）
     document.getElementById('todayStepsCalLabel').style.display = 'none';
     document.getElementById('todayStepsClear').style.display = 'none';
     loadTodayActivity();
@@ -2234,11 +2231,18 @@ function renderHistoryListWeek() {
   renderHistoryList(listData);
 }
 function renderHistory() {
+  // 重い処理を requestAnimationFrame で分割し、メインスレッドのブロックを防ぐ
   renderCumulative();
-  renderCalChartCurrent();
-  renderWeightChartCurrent(); // 内部でrenderInterventionTimelineも呼ぶ
-  hlWeekSunday = getThisWeekSunday();
-  renderHistoryListWeek();
+  requestAnimationFrame(() => {
+    renderCalChartCurrent();
+    requestAnimationFrame(() => {
+      renderWeightChartCurrent(); // 内部でrenderInterventionTimelineも呼ぶ
+      requestAnimationFrame(() => {
+        hlWeekSunday = getThisWeekSunday();
+        renderHistoryListWeek();
+      });
+    });
+  });
 }
 
 // 介入イベントからセグメントとマーカーを計算する
