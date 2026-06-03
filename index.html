@@ -296,7 +296,7 @@
     }
     .goal-btn.active { border-color: #1B2A8A; background: #e8ecf8; }
     .goal-btn.warning { border-color: #FF6B6B; }
-    .goal-btn.warning.active { border-color: #FF3B30; background: #fff0f0; }
+    .goal-btn.warning.active { border-color: #C0392B; background: #fff0f0; }
     .goal-deficit { font-size: 14px; color: var(--sub); }
     .goal-btn.active .goal-deficit { color: #1B2A8A; }
     .goal-btn.warning .goal-deficit { color: #FF6B6B; }
@@ -1194,15 +1194,15 @@ function refreshUI() {
   document.getElementById('bmrVal').textContent = `${target.toLocaleString()} kcal`;
   document.getElementById('remainVal').textContent = remain.toLocaleString();
   const rlEl = document.getElementById('remainLabel');
-  if (rlEl) { rlEl.textContent = over ? '超過' : '残り'; rlEl.style.color = over ? '#FF3B30' : '#AAA'; }
-  document.getElementById('remainVal').style.color = over ? '#FF3B30' : '';
+  if (rlEl) { rlEl.textContent = over ? '超過' : '残り'; rlEl.style.color = over ? '#C0392B' : '#AAA'; }
+  document.getElementById('remainVal').style.color = over ? '#C0392B' : '';
 
   // Bar
   document.getElementById('miniBar').style.width = `${Math.min(pct*100, 100)}%`;
   document.getElementById('pctText').textContent = `${Math.round(pct*100)}%`;
 
   // Over target — change ring colour
-  document.getElementById('ringArc').style.stroke = total >= target ? '#FF3B30' : 'url(#ringGrad)';
+  document.getElementById('ringArc').style.stroke = total >= target ? '#C0392B' : 'url(#ringGrad)';
 
   // Banner
   document.getElementById('doneBanner').style.display = total >= target ? 'block' : 'none';
@@ -1999,7 +1999,7 @@ function refreshEditDay() {
   document.getElementById('edTarget').textContent = target.toLocaleString() + ' kcal';
   document.getElementById('edBar').style.width = pct + '%';
   document.getElementById('edBar').style.background = total > target
-    ? '#FF3B30' : 'linear-gradient(90deg,#1B2A8A,#C0392B)';
+    ? '#C0392B' : 'linear-gradient(90deg,#1B2A8A,#C0392B)';
   document.getElementById('edRemain').textContent = remain >= 0
     ? `残り ${remain.toLocaleString()} kcal`
     : `${Math.abs(remain).toLocaleString()} kcal 超過`;
