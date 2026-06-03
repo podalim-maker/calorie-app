@@ -69,7 +69,7 @@
     /* イベント種別ボタン群 */
     .event-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
     .evt-btn { padding: 10px 4px; border-radius: 10px; border: 2px solid #E0E0E0; background: white; cursor: pointer; text-align: center; transition: all .15s; font-size: 16px; font-weight: 700; color: #666; }
-    .evt-btn.active { border-color: #1B2A8A; background: #EEF1FF; color: #1B2A8A; }
+    .evt-btn.active { border-color: var(--evt-color,#1B2A8A); background: var(--evt-bg,#EEF1FF); color: var(--evt-color,#1B2A8A); }
     .evt-btn .evt-sym { font-size: 18px; display: block; margin-bottom: 3px; }
 
     /* フォーム */
@@ -177,7 +177,7 @@
       <!-- 開始イベント編集時の固定ラベル -->
       <div id="evtStartLabel" style="display:none;margin-bottom:16px;">
         <span style="font-size:16px;font-weight:700;color:#888;letter-spacing:.04em;">イベントの種類</span>
-        <div style="margin-top:6px;font-size:17px;font-weight:700;color:#1B2A8A;">● 開始（変更不可）</div>
+        <div id="evtStartFixed" style="margin-top:6px;font-size:17px;font-weight:700;color:#1B2A8A;">● 開始（変更不可）</div>
       </div>
       <div class="form-group">
         <label class="form-label">日付</label>
@@ -201,12 +201,17 @@
     const EVT_LABEL   = { start:'開始', increase:'増量', decrease:'減量', stop:'中止', restart:'再開' };
     const EVT_SYM     = { start:'●', increase:'▲', decrease:'▼', stop:'×', restart:'↩' };
     const EVT_COLOR   = { start:null, increase:null, decrease:null, stop:'#9E9E9E', restart:null };
+    const EVT_NOTE_PH = {
+      medication: { start:'例：0.9mg → 1.8mg', increase:'例：2.5mg → 5mg', decrease:'例：5mg → 2.5mg', stop:'例：副作用のため', restart:'例：症状改善のため再開' },
+      training:   { start:'例：週3回 30分', increase:'例：週3回 → 週5回', decrease:'例：週5回 → 週3回', stop:'例：膝の痛みのため', restart:'例：体調回復のため再開' }
+    };
 
     let invType = 'medication';
     let editingInvId = null;
     let evtTargetInvId = null;
     let editingEvtId = null;   // null=新規, number=編集中イベントid
     let evtType = 'increase';
+    let evtInvType = 'medication'; // 親介入の種別（色・placeholder制御用）
 
     // ── データ管理 ──
     function load() { return JSON.parse(localStorage.getItem('interventions') || '[]'); }
@@ -357,9 +362,15 @@
       editingEvtId   = evtId;
       const isEdit   = evtId !== null;
 
+      // 親介入の種別を取得して色・placeholder制御
+      const list = migrate(load());
+      const parentIv = list.find(i => i.id === invId);
+      evtInvType = parentIv ? (parentIv.type || 'medication') : 'medication';
+      applyEvtModalColors(evtInvType);
+
       if (isEdit) {
         // 既存イベントの編集
-        const iv  = migrate(load()).find(i => i.id === invId);
+        const iv  = list.find(i => i.id === invId);
         const ev  = iv ? iv.events.find(e => e.id === evtId) : null;
         if (!ev) return;
         const isStart = ev.eventType === 'start';
@@ -369,7 +380,12 @@
         document.getElementById('evtTypeGroup').style.display  = isStart ? 'none' : '';
         document.getElementById('evtStartLabel').style.display = isStart ? '' : 'none';
 
-        if (!isStart) selectEvtType(ev.eventType);
+        if (isStart) {
+          const phs = EVT_NOTE_PH[evtInvType] || EVT_NOTE_PH.medication;
+          document.getElementById('evtNoteInput').placeholder = phs.start || '';
+        } else {
+          selectEvtType(ev.eventType);
+        }
         document.getElementById('evtDateInput').value = ev.date;
         document.getElementById('evtNoteInput').value = ev.note || '';
       } else {
@@ -389,10 +405,22 @@
       evtTargetInvId = null;
       editingEvtId   = null;
     }
+    function applyEvtModalColors(type) {
+      const color = TYPE_COLORS[type] || '#1B2A8A';
+      const bg    = type === 'training' ? '#E8F5E9' : '#EEF1FF';
+      const sheet = document.querySelector('#evtOverlay .sheet');
+      sheet.style.setProperty('--evt-color', color);
+      sheet.style.setProperty('--evt-bg', bg);
+      document.getElementById('evtSaveBtn').style.background = color;
+      const fixed = document.getElementById('evtStartFixed');
+      if (fixed) fixed.style.color = color;
+    }
     function selectEvtType(t) {
       evtType = t;
       ['increase','decrease','stop','restart'].forEach(k =>
         document.getElementById('evtbtn-'+k).classList.toggle('active', k===t));
+      const phs = EVT_NOTE_PH[evtInvType] || EVT_NOTE_PH.medication;
+      document.getElementById('evtNoteInput').placeholder = phs[t] || '';
     }
     function saveEvt() {
       const date = document.getElementById('evtDateInput').value;
