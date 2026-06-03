@@ -644,21 +644,6 @@
       </div>
     </div>
 
-    <!-- Weight input -->
-    <div class="weight-card" id="weightCard">
-      <div>
-        <div style="display:flex;align-items:baseline;gap:8px;">
-          <span class="weight-label">今日の体重</span>
-        </div>
-        <div id="todayBMI" style="font-size:15px;color:#888;margin-top:3px;display:none;"></div>
-      </div>
-      <div class="weight-input-row">
-        <input type="number" id="weightInput" class="weight-input" step="0.1" min="30" max="300" placeholder="--">
-        <span class="weight-unit">kg</span>
-        <button class="weight-btn" onclick="saveWeight()">記録</button>
-      </div>
-    </div>
-
     <!-- Activity / Steps combined card -->
     <div class="activity-today-card">
       <div class="activity-today-header">
@@ -690,6 +675,21 @@
           <button class="steps-clear-btn" id="todayStepsClear" onclick="clearTodaySteps()">×</button>
         </div>
         <div id="todayStepsCalLabel" style="font-size:15px;color:#888;margin-top:6px;display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Weight input -->
+    <div class="weight-card" id="weightCard">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="weight-label">今日の体重</span>
+        </div>
+        <div id="todayBMI" style="font-size:15px;color:#888;margin-top:3px;display:none;"></div>
+      </div>
+      <div class="weight-input-row">
+        <input type="number" id="weightInput" class="weight-input" step="0.1" min="30" max="300" placeholder="--">
+        <span class="weight-unit">kg</span>
+        <button class="weight-btn" onclick="saveWeight()">記録</button>
       </div>
     </div>
 
