@@ -1656,37 +1656,43 @@ function addSwipeToClose(modalId, closeFn) {
   const modal = document.getElementById(modalId);
   const sheet = modal.querySelector('.sheet');
   if (!sheet) return;
-  let startY = 0, currentY = 0, dragging = false;
+  let startY = 0, currentY = 0, dragging = false, swipeMode = false;
   sheet.addEventListener('touchstart', e => {
     startY = e.touches[0].clientY;
     currentY = startY;
     dragging = true;
+    swipeMode = false;
     sheet.style.transition = 'none';
   }, { passive: true });
   sheet.addEventListener('touchmove', e => {
     if (!dragging) return;
     currentY = e.touches[0].clientY;
     const dy = currentY - startY;
-    if (dy > 0) {
-      e.preventDefault(); // プルリフレッシュ・ページ再読み込みを防ぐ
+    // シートが一番上までスクロールされている時だけ閉じる動作
+    if (dy > 0 && sheet.scrollTop === 0) {
+      swipeMode = true;
+      e.preventDefault();
       sheet.style.transform = `translateY(${dy}px)`;
+    } else if (swipeMode) {
+      // 一度swipeModeに入ったらそのまま追従
+      e.preventDefault();
+      sheet.style.transform = `translateY(${Math.max(0, dy)}px)`;
     }
-  }, { passive: false }); // passive:false で preventDefault() を有効化
+  }, { passive: false });
   sheet.addEventListener('touchend', () => {
     if (!dragging) return;
     dragging = false;
     const dy = currentY - startY;
-    if (dy > 80) {
-      // 即座にリセットして閉じる（アニメーション中の横ズレを防ぐ）
+    if (swipeMode && dy > 80) {
       sheet.style.transition = '';
       sheet.style.transform = '';
       closeFn();
     } else {
-      // 元の位置に戻るアニメーション
       sheet.style.transition = 'transform .25s ease';
       sheet.style.transform = '';
       setTimeout(() => { sheet.style.transition = ''; }, 260);
     }
+    swipeMode = false;
   });
 }
 addSwipeToClose('settingsModal', closeSettings);
