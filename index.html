@@ -1215,9 +1215,9 @@ function refreshUI() {
   // Ring
   const overArc = document.getElementById('ringOverArc');
   if (over) {
-    // メインアーク: グラデーションで全周表示（目標=100%）
+    // メインアーク: 赤単色で全周表示（目標=100%）
     document.getElementById('ringArc').style.strokeDashoffset = 0;
-    document.getElementById('ringArc').style.stroke = 'url(#ringGrad)';
+    document.getElementById('ringArc').style.stroke = '#C0392B';
     // 超過アーク: 超過分だけ濃い赤で上に重ねる
     const overFraction = Math.min((total - target) / target, 1);
     overArc.style.strokeDashoffset = CIRC * (1 - overFraction);
