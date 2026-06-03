@@ -234,7 +234,7 @@
           </button>`;
           const delBtn = ev.eventType !== 'start'
             ? `<button class="event-del-btn" onclick="deleteEvt(${iv.id},${ev.id})">×</button>`
-            : '<div style="width:24px;"></div>';
+            : '<button class="event-del-btn" style="visibility:hidden;" disabled>×</button>';
           return `
             <div class="event-row">
               <span class="event-sym" style="color:${ec};">${EVT_SYM[ev.eventType]||'●'}</span>
