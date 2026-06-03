@@ -2417,7 +2417,7 @@ function getTodayMinus6() {
   const d = new Date(); d.setDate(d.getDate() - 6); return dateStr(d);
 }
 let calChartMode = 'week';
-let ccWeek  = { sundayDate: getTodayMinus6() };
+let ccWeek  = { sundayDate: getThisWeekSunday() };
 let ccMonth = { year: new Date().getFullYear(), month: new Date().getMonth() };
 let ccYear  = { year: new Date().getFullYear() };
 
@@ -2427,7 +2427,7 @@ function toggleCalChart(mode) {
     document.getElementById('cc-'+m).classList.toggle('active', m===mode)
   );
   const now = new Date();
-  if (mode === 'week')  ccWeek  = { sundayDate: getTodayMinus6() };
+  if (mode === 'week')  ccWeek  = { sundayDate: getThisWeekSunday() };
   if (mode === 'month') ccMonth = { year: now.getFullYear(), month: now.getMonth() };
   if (mode === 'year')  ccYear  = { year: now.getFullYear() };
   renderCalChartCurrent();
@@ -2467,17 +2467,18 @@ function renderCalChartCurrent() {
   let data = [];
 
   if (calChartMode === 'week') {
-    const start = new Date(ccWeek.sundayDate);
-    const end = new Date(start); end.setDate(start.getDate() + 6);
-    const isCurrentPeriod = (dateStr(end) === todayStr);
+    const sunday = new Date(ccWeek.sundayDate);
+    const saturday = new Date(sunday); saturday.setDate(sunday.getDate() + 6);
+    const isCurrentWeek = (ccWeek.sundayDate === getThisWeekSunday());
+    const dayLabels = ['日','月','火','水','木','金','土'];
     for (let i = 0; i < 7; i++) {
-      const d = new Date(start); d.setDate(start.getDate() + i);
+      const d = new Date(sunday); d.setDate(sunday.getDate() + i);
       const ds = dateStr(d);
       const ms = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
       data.push({ d, total: ms.reduce((s,m) => s+m.calories, 0), label: `${d.getMonth()+1}/${d.getDate()}`, target: getDayTarget(ds) });
     }
-    if (label) label.textContent = `${start.getMonth()+1}/${start.getDate()} 〜 ${end.getMonth()+1}/${end.getDate()}`;
-    if (nextBtn) nextBtn.disabled = isCurrentPeriod;
+    if (label) label.textContent = `${sunday.getMonth()+1}/${sunday.getDate()}（日）〜${saturday.getMonth()+1}/${saturday.getDate()}（土）`;
+    if (nextBtn) nextBtn.disabled = isCurrentWeek;
 
   } else if (calChartMode === 'month') {
     const { year, month } = ccMonth;
