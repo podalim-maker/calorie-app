@@ -2237,7 +2237,7 @@ function renderHistoryListWeek() {
     const ds = dateStr(d);
     if (ds > todayStr) break; // 未来の日付は表示しない
     const ms = JSON.parse(localStorage.getItem('meals_' + ds) || '[]');
-    listData.push({ d, total: ms.reduce((s,m) => s+m.calories, 0), meals: ms });
+    listData.push({ d, total: ms.reduce((s,m) => s+m.calories, 0) }); // 写真データは渡さない
   }
   renderHistoryList(listData);
 }
@@ -2785,12 +2785,6 @@ function renderHistoryList(data) {
     const dd=d.d;
     const ds=dateStr(dd);
     const lbl=`${dd.getFullYear()}年${dd.getMonth()+1}月${dd.getDate()}日（${wdays[dd.getDay()]}）`;
-    const mealRows = d.meals.map(m=>`
-      <div class="hist-meal-row">
-        ${m.photo?`<img class="hist-meal-thumb" src="${m.photo}">`:`<div class="hist-meal-ph">🍽️</div>`}
-        <span class="hist-meal-name">${esc(m.name)}</span>
-        <span class="hist-meal-kcal">${m.calories} kcal</span>
-      </div>`).join('');
     const summary = d.total===0 ? '記録なし' : `${d.total.toLocaleString()} kcal`;
     return `<div class="hist-day">
       <div class="hist-day-header" onclick="openEditDay('${ds}')">
