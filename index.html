@@ -663,11 +663,11 @@
     <!-- Activity / Steps combined card -->
     <div class="activity-today-card">
       <div class="activity-today-header">
-        <div style="display:flex;align-items:baseline;gap:6px;">
-          <span class="activity-today-label">消費カロリーの計算</span>
-          <a id="today-act-ref" href="activity-info.html" style="font-size:12px;color:#1B2A8A;text-decoration:underline;">算出根拠 ›</a>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="activity-today-label">本日の消費カロリー</span>
+          <span id="todayTdeeLabel" style="font-size:24px;font-weight:800;color:#333;">-- kcal</span>
         </div>
-        <span id="todayTdeeLabel" style="font-size: 24px;font-weight:800;color:#333;">消費 -- kcal</span>
+        <a id="today-act-ref" href="activity-info.html" style="font-size:13px;color:#1B2A8A;text-decoration:underline;white-space:nowrap;">算出根拠 ›</a>
       </div>
       <!-- Tab bar -->
       <div class="act-mode-tabs">
@@ -1780,7 +1780,7 @@ function switchTodayTab(tab) {
       if (btn) { btn.classList.toggle('active', k===a); btn.classList.remove('steps-mode'); }
     });
     const tdeeEl = document.getElementById('todayTdeeLabel');
-    if (tdeeEl && cfg) tdeeEl.textContent = `消費 ${getTodayTdee().toLocaleString()} kcal`;
+    if (tdeeEl && cfg) tdeeEl.textContent = `${getTodayTdee().toLocaleString()} kcal`;
     refreshUI();
   }
 }
@@ -1810,7 +1810,7 @@ function loadTodayActivity() {
     }
   });
   const tdeeEl = document.getElementById('todayTdeeLabel');
-  if (tdeeEl && cfg) tdeeEl.textContent = `消費 ${getTodayTdee().toLocaleString()} kcal`;
+  if (tdeeEl && cfg) tdeeEl.textContent = `${getTodayTdee().toLocaleString()} kcal`;
   loadTodaySteps();
 }
 function loadTodaySteps() {
