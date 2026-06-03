@@ -1760,11 +1760,23 @@ function switchTodayTab(tab) {
   document.getElementById('today-panel-steps').style.display = isSteps ? '' : 'none';
   const ref = document.getElementById('today-act-ref');
   if (ref) ref.href = isSteps ? 'steps-info.html' : 'activity-info.html';
-  if (!isSteps) {
-    // 活動度タブに切り替え（歩数データは削除しない。活動度を選択したときだけ削除する）
+  if (isSteps) {
+    // 歩数タブに切り替え→保存済みの歩数を再表示
+    loadTodaySteps();
+  } else {
+    // 活動度タブに切り替え
+    // ※歩数データは削除しない（活動度ボタンを実際に押したときだけ削除する）
+    // ※loadTodayActivity()は「歩数があれば歩数タブへ戻す」処理があるので呼ばない
     document.getElementById('todayStepsCalLabel').style.display = 'none';
     document.getElementById('todayStepsClear').style.display = 'none';
-    loadTodayActivity();
+    // 活動度ボタンのハイライトとTDEEラベルだけ更新
+    const a = getTodayActivity();
+    ['low','mid','high'].forEach(k => {
+      const btn = document.getElementById('at-'+k);
+      if (btn) { btn.classList.toggle('active', k===a); btn.classList.remove('steps-mode'); }
+    });
+    const tdeeEl = document.getElementById('todayTdeeLabel');
+    if (tdeeEl && cfg) tdeeEl.textContent = `消費 ${getTodayTdee().toLocaleString()} kcal`;
     refreshUI();
   }
 }
