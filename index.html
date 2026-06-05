@@ -1845,7 +1845,7 @@ function getDayTdee(ds) {
 }
 function getDayTarget(ds) {
   if (!cfg) return 2000;
-  return Math.max(getDayTdee(ds) - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
+  return Math.max(getDayTdee(ds) + getDayExerciseKcal(ds) - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
 }
 function getTodayTdee() { return getDayTdee(today()); }
 
@@ -1957,10 +1957,7 @@ function getWeightForExercise() {
   if (last && last.value > 0) return last.value;
   return (cfg && cfg.weight) ? cfg.weight : 60;
 }
-function getTodayTarget() {
-  if (!cfg) return 2000;
-  return Math.max(getTodayTdee() + getTodayExerciseKcal() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
-}
+function getTodayTarget() { return getDayTarget(today()); }
 
 let selectedSportId = null;
 function openExerciseModal() {
