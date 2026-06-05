@@ -1990,9 +1990,12 @@ function updateExercisePreview() {
   }
   const sport = SPORTS.find(s => s.id === selectedSportId);
   if (!sport) return;
-  let w = cfg?.weight || 60;
-  const lastW = getLastWeight(today());
-  if (lastW && lastW.value > 0) w = lastW.value;
+  const ds = today();
+  let w = parseFloat(localStorage.getItem('weight_' + ds));
+  if (isNaN(w) || w < 1) {
+    const lastW = getLastWeight(ds);
+    w = (lastW && lastW.value > 0) ? lastW.value : (cfg?.weight || 60);
+  }
   const kcal = Math.round(sport.met * w * (dur / 60));
   document.getElementById('exercisePreviewKcal').textContent = kcal.toLocaleString() + ' kcal';
   document.getElementById('exercisePreview').style.display = 'block';
@@ -2003,11 +2006,13 @@ function saveExercise() {
   if (!selectedSportId || dur <= 0) return;
   const sport = SPORTS.find(s => s.id === selectedSportId);
   if (!sport) return;
-  let w = cfg?.weight || 60;
-  const lastW = getLastWeight(today());
-  if (lastW && lastW.value > 0) w = lastW.value;
-  const kcal = Math.round(sport.met * w * (dur / 60));
   const ds = today();
+  let w = parseFloat(localStorage.getItem('weight_' + ds));
+  if (isNaN(w) || w < 1) {
+    const lastW = getLastWeight(ds);
+    w = (lastW && lastW.value > 0) ? lastW.value : (cfg?.weight || 60);
+  }
+  const kcal = Math.round(sport.met * w * (dur / 60));
   const list = getExerciseData(ds);
   list.push({ id: Date.now(), sportId: sport.id, name: sport.name, icon: sport.icon, met: sport.met, duration: dur, calories: kcal });
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
