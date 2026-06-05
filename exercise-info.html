@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運動消費カロリーの算出根拠</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f5f6fa; color: #333; padding-bottom: 40px; }
+    .header { background: linear-gradient(135deg, #1a7a40 0%, #145c2e 100%); color: white; padding: 20px 20px 24px; }
+    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .header h1 { font-size: 20px; font-weight: 700; }
+    .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+    .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .card-title { font-size: 14px; font-weight: 700; color: #1a7a40; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 14px; line-height: 1.75; color: #444; }
+    .formula-box { background: #E8F5E9; border-radius: 12px; padding: 16px; text-align: center; margin: 14px 0; }
+    .formula { font-size: 16px; font-weight: 700; color: #1a7a40; line-height: 1.8; }
+    .formula span { font-size: 13px; font-weight: 400; color: #555; display: block; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th { background: #E8F5E9; color: #1a7a40; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 12px; }
+    th.right { text-align: right; }
+    td { padding: 9px 10px; border-bottom: 1px solid #f0f0f0; color: #444; vertical-align: middle; }
+    td.met { text-align: right; font-weight: 700; color: #1a7a40; }
+    td.note { font-size: 11px; color: #999; }
+    tr:last-child td { border-bottom: none; }
+    tr.hiit td { color: #999; }
+    .met-bar-wrap { display: flex; align-items: center; gap: 6px; }
+    .met-bar { height: 6px; background: #27AE60; border-radius: 3px; flex-shrink: 0; }
+    .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.7; color: #555; }
+    .badge-row { display: flex; gap: 8px; margin-top: 12px; }
+    .badge { flex: 1; background: #E8F5E9; border-radius: 10px; padding: 12px 6px; text-align: center; font-size: 12px; color: #444; line-height: 1.6; }
+    .badge .val { font-size: 20px; font-weight: 800; color: #1a7a40; display: block; }
+    .ref { font-size: 11px; color: #AAA; text-align: center; margin-top: 8px; line-height: 1.8; }
+    .warn-note { font-size: 11px; color: #999; background: #fafafa; border-radius: 8px; padding: 10px 12px; margin-top: 10px; line-height: 1.7; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="history.back()">
+    ‹ 戻る
+  </button>
+  <h1>運動消費カロリーの算出根拠</h1>
+  <p>MET法（メッツ法）による推定</p>
+</div>
+
+<div class="content">
+
+  <!-- 計算式 -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      計算式
+    </div>
+    <div class="formula-box">
+      <div class="formula">
+        消費kcal = MET × 体重(kg) × 時間(h)
+        <span>例：ジョギング（MET 7.0）× 60 kg × 0.5 h = 210 kcal</span>
+      </div>
+    </div>
+    <p>MET（Metabolic Equivalent of Task）は、安静時の代謝量を1としたときの活動強度の倍率です。値が高いほど激しい運動を意味します。</p>
+    <div class="tip">
+      💡 体重が重いほど同じ運動でも消費カロリーが大きくなります。アプリは登録体重（または直近の体重記録）を自動的に使用します。
+    </div>
+  </div>
+
+  <!-- 各種目のMET値 -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      各種目のMET値一覧
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>種目</th>
+          <th class="right">MET</th>
+          <th>強度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ストレッチ</td>
+          <td class="met">2.5</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:15px;opacity:.4;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ヨガ</td>
+          <td class="met">3.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:18px;opacity:.5;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ウォーキング</td>
+          <td class="met">3.5</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:21px;opacity:.55;"></div></div></td>
+        </tr>
+        <tr>
+          <td>卓球</td>
+          <td class="met">4.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:24px;opacity:.6;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ゴルフ</td>
+          <td class="met">4.8</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:29px;opacity:.65;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ダンス</td>
+          <td class="met">4.8</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:29px;opacity:.65;"></div></div></td>
+        </tr>
+        <tr>
+          <td>筋トレ</td>
+          <td class="met">5.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:30px;opacity:.7;"></div></div></td>
+        </tr>
+        <tr>
+          <td>バドミントン</td>
+          <td class="met">5.5</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:33px;opacity:.7;"></div></div></td>
+        </tr>
+        <tr>
+          <td>水泳</td>
+          <td class="met">6.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:36px;opacity:.75;"></div></div></td>
+        </tr>
+        <tr>
+          <td>登山・ハイク</td>
+          <td class="met">6.3</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:38px;opacity:.75;"></div></div></td>
+        </tr>
+        <tr>
+          <td>サイクリング</td>
+          <td class="met">6.8</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:41px;opacity:.8;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ジョギング</td>
+          <td class="met">7.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:42px;opacity:.8;"></div></div></td>
+        </tr>
+        <tr>
+          <td>サッカー</td>
+          <td class="met">7.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:42px;opacity:.8;"></div></div></td>
+        </tr>
+        <tr>
+          <td>テニス（シングルス）</td>
+          <td class="met">7.3</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:44px;opacity:.82;"></div></div></td>
+        </tr>
+        <tr>
+          <td>バスケットボール</td>
+          <td class="met">8.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:48px;opacity:.85;"></div></div></td>
+        </tr>
+        <tr class="hiit">
+          <td>HIIT <span style="font-size:10px;">※</span></td>
+          <td class="met" style="color:#999;">8.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:48px;opacity:.85;background:#999;"></div></div></td>
+        </tr>
+        <tr>
+          <td>ランニング（10 km/h）</td>
+          <td class="met">9.8</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:59px;opacity:.9;"></div></div></td>
+        </tr>
+        <tr>
+          <td>縄跳び</td>
+          <td class="met">10.0</td>
+          <td><div class="met-bar-wrap"><div class="met-bar" style="width:60px;"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warn-note">
+      ※ HIIT（高強度インターバルトレーニング）は2011年版Compendiumに収録がないため、後続研究（Batacan et al. Br J Sports Med. 2017）の平均値から推定。論文使用の際は注釈が必要です。
+    </div>
+  </div>
+
+  <!-- 参考文献 -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      参考文献
+    </div>
+    <p style="font-size:13px;line-height:1.9;color:#555;">
+      <b>主要文献（MET値）</b><br>
+      Ainsworth BE, et al. "2011 Compendium of Physical Activities: a second update of codes and MET values."
+      <i>Med Sci Sports Exerc.</i> 2011;43(8 Suppl 1):S1–S56.<br><br>
+      <b>初版・改訂版</b><br>
+      Ainsworth BE, et al. "Compendium of Physical Activities."
+      <i>Med Sci Sports Exerc.</i> 1993;25(1):71–80.<br><br>
+      Ainsworth BE, et al. "Compendium of Physical Activities: An update."
+      <i>Med Sci Sports Exerc.</i> 2000;32(9 Suppl):S498–504.<br><br>
+      <b>HIIT（参考）</b><br>
+      Batacan RB, et al. "Effects of high-intensity interval training on cardiometabolic health."
+      <i>Br J Sports Med.</i> 2017;51(6):494–503.
+    </p>
+    <div class="ref" style="margin-top:12px;">
+      MET値は個人差（体力・フォーム・強度）により実際の消費カロリーと異なる場合があります。<br>
+      本アプリの推定値はあくまで目安としてご使用ください。
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
