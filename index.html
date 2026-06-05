@@ -127,25 +127,26 @@
     .done-banner {
       background: linear-gradient(135deg, #C0392B, #922B21);
       border-radius: 18px;
-      padding: 14px 16px;
+      padding: 16px 20px;
       color: white;
+      text-align: center;
       margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      position: relative;
     }
-    .done-banner .b-emoji { flex-shrink: 0; }
-    .done-banner .done-text { flex: 1; }
-    .done-banner h3 { font-size: 15px; font-weight: 700; }
-    .done-banner p { font-size: 13px; opacity: .85; margin-top: 2px; }
+    .done-banner .b-emoji { font-size: 28px; }
+    .done-banner h3 { font-size: 16px; font-weight: 700; margin-top: 4px; }
+    .done-banner p { font-size: 14px; opacity: .9; margin-top: 2px; }
     .done-banner .intervention-btn {
-      flex-shrink: 0;
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
       background: rgba(255,255,255,.2);
       border: 1.5px solid rgba(255,255,255,.7);
       color: white;
       border-radius: 20px;
-      padding: 8px 12px;
-      font-size: 13px;
+      padding: 7px 11px;
+      font-size: 12px;
       font-weight: 700;
       text-decoration: none;
       white-space: nowrap;
@@ -660,10 +661,8 @@
         <img src="data:image/png;base64,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"
           style="width:44px;height:44px;"/>
       </div>
-      <div class="done-text">
-        <h3>推奨カロリーを超えました</h3>
-        <p>本日の推奨上限を超えています。</p>
-      </div>
+      <h3>推奨カロリーを超えました</h3>
+      <p>本日の推奨上限を超えています。食事の追加はお控えください。</p>
       <a class="intervention-btn" href="https://ssc10.doctorqube.com/kisarazucvc/index.html?stamp=180818" target="_blank">治療介入</a>
     </div>
 
