@@ -1315,26 +1315,29 @@ function refreshUI() {
   // Banner
   document.getElementById('doneBanner').style.display = total >= target ? 'block' : 'none';
 
-  // List
-  const list = document.getElementById('mealList');
-  if (!meals.length) {
-    list.innerHTML = `<div class="empty"><div class="e-emoji">🍽️</div><p>まだ記録がありません</p><small>食事写真を撮って記録しましょう</small></div>`;
-    return;
-  }
-  list.innerHTML = meals.map((m, i) => `
-    <div class="meal-item" style="cursor:pointer;" onclick="openEditMeal(${i})">
-      ${m.photo
-        ? `<img class="meal-thumb" src="${m.photo}" alt="">`
-        : `<div class="meal-thumb-ph">🍽️</div>`}
-      <div class="meal-info">
-        <div class="meal-name">${esc(m.name)}</div>
-        <div class="meal-time">${m.time}</div>
-      </div>
-      <div class="meal-right">
-        <div class="meal-kcal">${m.calories.toLocaleString()}<span> kcal</span></div>
-        <button class="del-btn" onclick="deleteMeal(${i})">×</button>
-      </div>
-    </div>`).join('');
+  // 食事リストは次フレームで描画（base64写真のデコードをメインスレッドから分離）
+  requestAnimationFrame(() => {
+    const list = document.getElementById('mealList');
+    if (!list) return;
+    if (!meals.length) {
+      list.innerHTML = `<div class="empty"><div class="e-emoji">🍽️</div><p>まだ記録がありません</p><small>食事写真を撮って記録しましょう</small></div>`;
+      return;
+    }
+    list.innerHTML = meals.map((m, i) => `
+      <div class="meal-item" style="cursor:pointer;" onclick="openEditMeal(${i})">
+        ${m.photo
+          ? `<img class="meal-thumb" src="${m.photo}" alt="" loading="lazy">`
+          : `<div class="meal-thumb-ph">🍽️</div>`}
+        <div class="meal-info">
+          <div class="meal-name">${esc(m.name)}</div>
+          <div class="meal-time">${m.time}</div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-kcal">${m.calories.toLocaleString()}<span> kcal</span></div>
+          <button class="del-btn" onclick="deleteMeal(${i})">×</button>
+        </div>
+      </div>`).join('');
+  });
 }
 
 function esc(s) {
@@ -1809,6 +1812,8 @@ addSwipeToClose('exerciseModal', closeExerciseModal);
 document.getElementById('exerciseModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeExerciseModal(); });
 
 init();
+// 起動時にキャッシュをウォームアップ（初回の重さを分散）
+requestAnimationFrame(() => { buildWeightTimeline(); });
 
 // ── Today activity ──
 function getTodayActivity() {
