@@ -487,11 +487,13 @@
     .exercise-item-del { background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; }
     /* ── Sport grid ── */
     .sport-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
-    .sport-btn { border: 2px solid #E0E0E0; background: white; border-radius: 12px; padding: 10px 4px 8px; text-align: center; cursor: pointer; transition: all .15s; }
-    .sport-btn.active { border-color: #27AE60; background: #E8F5E9; }
-    .sport-btn .sport-icon { font-size: 24px; display: block; margin-bottom: 4px; line-height: 1; }
-    .sport-btn .sport-name { font-size: 11px; font-weight: 600; color: #666; line-height: 1.2; }
-    .sport-btn.active .sport-name { color: #27AE60; }
+    .sport-btn { border: 2px solid #E0E0E0; background: white; border-radius: 12px; padding: 8px 4px 7px; text-align: center; cursor: pointer; transition: all .15s; color: #666; }
+    .sport-btn.active { border-color: #27AE60; background: #E8F5E9; color: #27AE60; }
+    .sport-btn .sport-icon { display: flex; align-items: center; justify-content: center; height: 26px; margin-bottom: 3px; }
+    .sport-btn .sport-icon svg { width: 22px; height: 22px; }
+    .sport-btn .sport-name { font-size: 10px; font-weight: 600; line-height: 1.2; display: block; }
+    .sport-btn .sport-met { font-size: 9px; font-weight: 700; color: #AAA; display: block; margin-top: 2px; }
+    .sport-btn.active .sport-met { color: #4CAF50; }
     .exercise-preview { background: #E8F5E9; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 10px; display: none; }
     .exercise-preview-kcal { font-size: 26px; font-weight: 900; color: #27AE60; }
     .exercise-preview-label { font-size: 13px; color: #4CAF50; margin-top: 2px; }
@@ -1848,25 +1850,97 @@ function getTodayTdee() { return getDayTdee(today()); }
 // 根拠: Ainsworth BE, et al. "2011 Compendium of Physical Activities"
 //       Med Sci Sports Exerc. 2011;43(8 Suppl 1):S1-S56.
 // 計算式: 消費kcal = MET × 体重(kg) × 時間(h)
+const S = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const SPORTS = [
-  { id:'walking',    name:'ウォーキング', icon:'🚶', met:3.5 },
-  { id:'jogging',    name:'ジョギング',   icon:'🏃', met:7.0 },
-  { id:'running',    name:'ランニング',   icon:'🏃', met:9.8 },
-  { id:'cycling',    name:'サイクリング', icon:'🚴', met:6.8 },
-  { id:'swimming',   name:'水泳',         icon:'🏊', met:6.0 },
-  { id:'yoga',       name:'ヨガ',         icon:'🧘', met:3.0 },
-  { id:'gym',        name:'筋トレ',       icon:'💪', met:5.0 },
-  { id:'tennis',     name:'テニス',       icon:'🎾', met:7.3 },
-  { id:'golf',       name:'ゴルフ',       icon:'⛳', met:4.8 },
-  { id:'badminton',  name:'バドミントン', icon:'🏸', met:5.5 },
-  { id:'dance',      name:'ダンス',       icon:'💃', met:4.8 },
-  { id:'hiit',       name:'HIIT',         icon:'🔥', met:8.0 },
-  { id:'jumprope',   name:'縄跳び',       icon:'〇', met:10.0 },
-  { id:'stretch',    name:'ストレッチ',   icon:'🤸', met:2.5 },
-  { id:'soccer',     name:'サッカー',     icon:'⚽', met:7.0 },
-  { id:'basketball', name:'バスケ',       icon:'🏀', met:8.0 },
-  { id:'hiking',     name:'登山・ハイク', icon:'🏔', met:6.3 },
-  { id:'pingpong',   name:'卓球',         icon:'🏓', met:4.0 },
+  { id:'walking',    name:'ウォーキング', met:3.5, svg: S(
+    `<circle cx="12" cy="3.5" r="2" fill="currentColor" stroke="none"/>
+     <path d="M12 6 L11 14 L8 21"/><path d="M11 14 L15 21"/>
+     <path d="M12 9 L7 12"/><path d="M12 9 L17 11"/>`) },
+  { id:'jogging',    name:'ジョギング',   met:7.0, svg: S(
+    `<circle cx="14" cy="3.5" r="2" fill="currentColor" stroke="none"/>
+     <path d="M14 6 L13 13 L9 21"/><path d="M13 13 L18 20"/>
+     <path d="M13 9 L7 11"/><path d="M13 9 L19 12"/>`) },
+  { id:'running',    name:'ランニング',   met:9.8, svg: S(
+    `<circle cx="15" cy="3" r="2" fill="currentColor" stroke="none"/>
+     <path d="M15 5 L14 12 L10 21"/><path d="M14 12 L20 19"/>
+     <path d="M14 8 L6 10"/><path d="M14 8 L21 10"/>
+     <path d="M2 14 L5 14" stroke-dasharray="2 1.5"/><path d="M2 17 L5 17" stroke-dasharray="2 1.5"/>`) },
+  { id:'cycling',    name:'サイクリング', met:6.8, svg: S(
+    `<circle cx="5" cy="18" r="4"/><circle cx="19" cy="18" r="4"/>
+     <path d="M12 8 L19 18"/><path d="M12 8 L5 18"/>
+     <line x1="9" y1="8" x2="15" y2="8"/>
+     <circle cx="12" cy="5" r="2" fill="currentColor" stroke="none"/>`) },
+  { id:'swimming',   name:'水泳',         met:6.0, svg: S(
+    `<circle cx="19" cy="6" r="2" fill="currentColor" stroke="none"/>
+     <path d="M19 8 L5 13"/><path d="M5 13 L11 19"/><path d="M19 11 L21 16"/>
+     <path d="M2 20 Q5 17 8 20 Q11 23 14 20 Q17 17 20 20" stroke-width="1.5"/>`) },
+  { id:'yoga',       name:'ヨガ',         met:3.0, svg: S(
+    `<circle cx="12" cy="3.5" r="2" fill="currentColor" stroke="none"/>
+     <path d="M12 6 L12 13"/>
+     <path d="M7 17 L12 13 L17 17"/>
+     <path d="M7 17 Q5 20 7 22"/><path d="M17 17 Q19 20 17 22"/>
+     <path d="M12 9 L7 12"/><path d="M12 9 L17 12"/>`) },
+  { id:'gym',        name:'筋トレ',       met:5.0, svg: S(
+    `<rect x="1" y="10" width="3" height="4" rx="1" fill="currentColor" stroke="none"/>
+     <rect x="20" y="10" width="3" height="4" rx="1" fill="currentColor" stroke="none"/>
+     <rect x="4" y="9" width="3" height="6" rx="1"/>
+     <rect x="17" y="9" width="3" height="6" rx="1"/>
+     <line x1="7" y1="12" x2="17" y2="12" stroke-width="2.5"/>`) },
+  { id:'tennis',     name:'テニス',       met:7.3, svg: S(
+    `<circle cx="10" cy="10" r="7"/>
+     <line x1="10" y1="3" x2="10" y2="17"/>
+     <path d="M3 10 Q6.5 6.5 10 10 Q13.5 13.5 17 10"/>
+     <line x1="15" y1="16" x2="22" y2="23"/>`) },
+  { id:'golf',       name:'ゴルフ',       met:4.8, svg: S(
+    `<line x1="10" y1="2" x2="10" y2="21"/>
+     <path d="M10 2 L19 6 L10 10"/>
+     <circle cx="6" cy="20" r="2.5" fill="currentColor" stroke="none"/>`) },
+  { id:'badminton',  name:'バドミントン', met:5.5, svg: S(
+    `<circle cx="12" cy="19" r="3.5"/>
+     <line x1="12" y1="15.5" x2="12" y2="8"/>
+     <path d="M12 8 L6 11"/><path d="M12 8 L18 11"/>
+     <path d="M12 10 L7 12.5"/><path d="M12 10 L17 12.5"/>`) },
+  { id:'dance',      name:'ダンス',       met:4.8, svg: S(
+    `<circle cx="12" cy="3.5" r="2" fill="currentColor" stroke="none"/>
+     <path d="M12 6 L10 14 L7 21"/>
+     <path d="M10 14 L14 20"/>
+     <path d="M11 9 L6 6"/><path d="M11 9 L18 7"/>`) },
+  { id:'hiit',       name:'HIIT',         met:8.0, svg: S(
+    `<path d="M14 2 L7 13 L13 13 L9 22 L21 11 L15 11 Z" fill="currentColor" stroke="none"/>`) },
+  { id:'jumprope',   name:'縄跳び',       met:10.0, svg: S(
+    `<circle cx="12" cy="5" r="2" fill="currentColor" stroke="none"/>
+     <line x1="12" y1="7" x2="12" y2="15"/>
+     <path d="M12 15 L9 21"/><path d="M12 15 L15 21"/>
+     <line x1="10" y1="11" x2="8" y2="13"/>
+     <line x1="14" y1="11" x2="16" y2="13"/>
+     <path d="M7 14 Q12 4 17 14"/>`) },
+  { id:'stretch',    name:'ストレッチ',   met:2.5, svg: S(
+    `<circle cx="9" cy="3.5" r="2" fill="currentColor" stroke="none"/>
+     <path d="M9 6 Q8 12 6 18 L14 18"/><line x1="6" y1="18" x2="6" y2="22"/>
+     <line x1="14" y1="18" x2="14" y2="22"/>
+     <path d="M9 10 L20 13"/>`) },
+  { id:'soccer',     name:'サッカー',     met:7.0, svg: S(
+    `<circle cx="12" cy="12" r="9"/>
+     <polygon points="12,6 15.5,9 14,13.5 10,13.5 8.5,9" fill="currentColor" stroke="none"/>
+     <line x1="12" y1="6" x2="12" y2="3"/><line x1="15.5" y1="9" x2="20" y2="7"/>
+     <line x1="14" y1="13.5" x2="17.5" y2="17.5"/>
+     <line x1="10" y1="13.5" x2="6.5" y2="17.5"/>
+     <line x1="8.5" y1="9" x2="4" y2="7"/>`) },
+  { id:'basketball', name:'バスケ',       met:8.0, svg: S(
+    `<circle cx="12" cy="12" r="9"/>
+     <line x1="12" y1="3" x2="12" y2="21"/>
+     <path d="M3 12 Q7 6.5 12 9 Q17 11.5 21 12"/>
+     <path d="M3 12 Q7 17.5 12 15 Q17 12.5 21 12"/>`) },
+  { id:'hiking',     name:'登山・ハイク', met:6.3, svg: S(
+    `<path d="M2 22 L10 5 L22 22"/>
+     <path d="M8 10 L13 10 L10 5 Z" fill="currentColor" stroke="none"/>
+     <circle cx="18" cy="9" r="1.5" fill="currentColor" stroke="none"/>
+     <path d="M18 11 L16 18"/><path d="M18 11 L20 16"/>
+     <path d="M18 13 L15 12"/>`) },
+  { id:'pingpong',   name:'卓球',         met:4.0, svg: S(
+    `<path d="M4 5 Q2 12 4 17 Q7 21 13 18 Q18 15 18 9 Q16 3 10 3 Q6 3 4 5 Z"/>
+     <line x1="14" y1="17" x2="21" y2="24"/>
+     <circle cx="21" cy="8" r="2.5"/>`) },
 ];
 function getExerciseData(ds) {
   return JSON.parse(localStorage.getItem('exercise_' + ds) || '[]');
@@ -1890,8 +1964,9 @@ function openExerciseModal() {
   const grid = document.getElementById('sportGrid');
   grid.innerHTML = SPORTS.map(s =>
     `<button class="sport-btn" id="sp-${s.id}" onclick="selectSportItem('${s.id}')">
-      <span class="sport-icon">${s.icon}</span>
+      <span class="sport-icon">${s.svg}</span>
       <span class="sport-name">${s.name}</span>
+      <span class="sport-met">MET ${s.met}</span>
     </button>`
   ).join('');
   document.getElementById('exerciseModal').classList.add('show');
