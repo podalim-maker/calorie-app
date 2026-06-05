@@ -509,7 +509,9 @@
     .sport-btn .sport-icon { display: flex; align-items: center; justify-content: center; height: 26px; margin-bottom: 3px; }
     .sport-btn .sport-icon svg { width: 22px; height: 22px; }
     .sport-btn .sport-name { font-size: 12px; font-weight: 600; line-height: 1.2; display: block; }
-    .sport-btn .sport-met { font-size: 11px; font-weight: 700; color: #AAA; display: block; margin-top: 2px; }
+    .sport-btn .sport-sub { font-size: 9px; color: #BBB; display: block; line-height: 1.3; }
+    .sport-btn.active .sport-sub { color: #88CC88; }
+    .sport-btn .sport-met { font-size: 11px; font-weight: 700; color: #AAA; display: block; margin-top: 1px; }
     .sport-btn.active .sport-met { color: #4CAF50; }
     .exercise-preview { background: #E8F5E9; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 10px; display: none; }
     .exercise-preview-kcal { font-size: 26px; font-weight: 900; color: #27AE60; }
@@ -1878,11 +1880,11 @@ function getTodayTdee() { return getDayTdee(today()); }
 // 計算式: 消費kcal = MET × 体重(kg) × 時間(h)
 const S = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const SPORTS = [
-  { id:'jogging',    name:'ジョギング',   met:7.0, svg: S(
+  { id:'jogging',    name:'ジョギング',   sub:'〜8 km/h', met:7.0, svg: S(
     `<circle cx="14" cy="3.5" r="2" fill="currentColor" stroke="none"/>
      <path d="M14 6 L13 13 L9 21"/><path d="M13 13 L18 20"/>
      <path d="M13 9 L7 11"/><path d="M13 9 L19 12"/>`) },
-  { id:'running',    name:'ランニング',   met:9.8, svg: S(
+  { id:'running',    name:'ランニング',   sub:'10km/h〜', met:9.8, svg: S(
     `<circle cx="15" cy="3" r="2" fill="currentColor" stroke="none"/>
      <path d="M15 5 L14 12 L10 21"/><path d="M14 12 L20 19"/>
      <path d="M14 8 L6 10"/><path d="M14 8 L21 10"/>
@@ -1998,6 +2000,7 @@ function openExerciseModal() {
     `<button class="sport-btn" id="sp-${s.id}" onclick="selectSportItem('${s.id}')">
       <span class="sport-icon">${s.svg}</span>
       <span class="sport-name">${s.name}</span>
+      ${s.sub ? `<span class="sport-sub">${s.sub}</span>` : ''}
       <span class="sport-met">MET ${s.met}</span>
     </button>`
   ).join('');
