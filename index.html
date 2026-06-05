@@ -1959,8 +1959,12 @@ const SPORTS = [
      <line x1="14" y1="17" x2="21" y2="24"/>
      <circle cx="21" cy="8" r="2.5"/>`) },
 ];
+let _exerciseCache = new Map();
 function getExerciseData(ds) {
-  return JSON.parse(localStorage.getItem('exercise_' + ds) || '[]');
+  if (_exerciseCache.has(ds)) return _exerciseCache.get(ds);
+  const data = JSON.parse(localStorage.getItem('exercise_' + ds) || '[]');
+  _exerciseCache.set(ds, data);
+  return data;
 }
 function getDayExerciseKcal(ds) {
   return getExerciseData(ds).reduce((s, e) => s + (e.calories || 0), 0);
@@ -2028,6 +2032,7 @@ function saveExercise() {
   const kcal = Math.round(sport.met * getWeightForExercise() * (dur / 60));
   const list = getExerciseData(ds);
   list.push({ id: Date.now(), sportId: sport.id, name: sport.name, met: sport.met, duration: dur, calories: kcal });
+  _exerciseCache.delete(ds);
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
   closeExerciseModal();
   loadTodayExercise();
@@ -2040,6 +2045,7 @@ function deleteExercise(id) {
   const entry = getExerciseData(ds).find(e => e.id === id);
   if (!confirm(`「${entry ? entry.name : '運動記録'}」を削除しますか？`)) return;
   const list = getExerciseData(ds).filter(e => e.id !== id);
+  _exerciseCache.delete(ds);
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
   loadTodayExercise();
   refreshUI();
@@ -2184,28 +2190,48 @@ function updateTodayBMI(w) {
 function saveWeight() {
   const w = parseFloat(document.getElementById('weightInput').value);
   if (!w || w < 30 || w > 300) { alert('体重を入力してください（30〜300kg）'); return; }
-  _lastWeightCache.clear();
+  invalidateWeightCache();
   localStorage.setItem('weight_' + today(), String(w));
   document.getElementById('weightInput').value = w;
   updateTodayBMI(w);
   const btn = document.querySelector('.weight-btn');
   btn.textContent = '✓'; setTimeout(() => { btn.textContent = '記録'; }, 1500);
 }
-// 指定日より前の直近記録体重を返す（最大90日遡る）
+// 体重タイムライン（全weight_*キーを1回だけスキャンして構築）
+let _weightTimeline = null;      // { 'YYYY-MM-DD': value } ソート済み日付配列
+let _weightDates = null;         // ソート済み日付文字列の配列（降順）
 let _lastWeightCache = new Map();
+
+function buildWeightTimeline() {
+  if (_weightTimeline !== null) return;
+  _weightTimeline = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('weight_')) {
+      const ds = key.slice(7);
+      const v = parseFloat(localStorage.getItem(key));
+      if (!isNaN(v) && v > 0) _weightTimeline[ds] = v;
+    }
+  }
+  _weightDates = Object.keys(_weightTimeline).sort().reverse(); // 新しい日付順
+}
+
+function invalidateWeightCache() {
+  _weightTimeline = null;
+  _weightDates = null;
+  _lastWeightCache.clear();
+  _exerciseCache.clear();
+}
+
+// 指定日より前の直近記録体重を返す
 function getLastWeight(beforeDs) {
   if (_lastWeightCache.has(beforeDs)) return _lastWeightCache.get(beforeDs);
-  const base = new Date(beforeDs + 'T00:00:00');
-  for (let i = 1; i <= 365; i++) {
-    const d = new Date(base); d.setDate(d.getDate() - i);
-    const raw = localStorage.getItem('weight_' + dateStr(d));
-    if (raw !== null) {
-      const v = parseFloat(raw);
-      if (!isNaN(v) && v > 0) {
-        const result = { value: v, daysAgo: i };
-        _lastWeightCache.set(beforeDs, result);
-        return result;
-      }
+  buildWeightTimeline();
+  for (const d of _weightDates) {
+    if (d < beforeDs) {
+      const result = { value: _weightTimeline[d], daysAgo: 0 };
+      _lastWeightCache.set(beforeDs, result);
+      return result;
     }
   }
   _lastWeightCache.set(beforeDs, null);
@@ -2574,8 +2600,6 @@ function renderHistoryListWeek() {
 }
 function renderHistory() {
   // 重い処理を requestAnimationFrame で分割し、メインスレッドのブロックを防ぐ
-  // キャッシュをクリアして最新データで描画
-  _lastWeightCache.clear();
   requestAnimationFrame(() => {
     renderCumulative();
     requestAnimationFrame(() => {
