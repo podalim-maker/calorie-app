@@ -474,6 +474,28 @@
     .act-mode-tab.active { background: white; color: #1B2A8A; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
     /* ── Cumulative card ── */
     .cumulative-card { background: white; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+    /* ── Exercise card ── */
+    .exercise-card { background: white; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+    .exercise-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .exercise-add-btn { font-size: 13px; background: none; border: 1.5px solid #27AE60; color: #27AE60; border-radius: 20px; padding: 5px 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .exercise-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid #F5F5F5; }
+    .exercise-item:last-child { border-bottom: none; }
+    .exercise-item-icon { font-size: 20px; width: 26px; text-align: center; }
+    .exercise-item-name { flex: 1; font-size: 15px; font-weight: 600; color: #333; }
+    .exercise-item-detail { font-size: 13px; color: #AAA; }
+    .exercise-item-cal { font-size: 15px; font-weight: 700; color: #27AE60; min-width: 58px; text-align: right; }
+    .exercise-item-del { background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; }
+    /* ── Sport grid ── */
+    .sport-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    .sport-btn { border: 2px solid #E0E0E0; background: white; border-radius: 12px; padding: 10px 4px 8px; text-align: center; cursor: pointer; transition: all .15s; }
+    .sport-btn.active { border-color: #27AE60; background: #E8F5E9; }
+    .sport-btn .sport-icon { font-size: 24px; display: block; margin-bottom: 4px; line-height: 1; }
+    .sport-btn .sport-name { font-size: 11px; font-weight: 600; color: #666; line-height: 1.2; }
+    .sport-btn.active .sport-name { color: #27AE60; }
+    .exercise-preview { background: #E8F5E9; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 10px; display: none; }
+    .exercise-preview-kcal { font-size: 26px; font-weight: 900; color: #27AE60; }
+    .exercise-preview-label { font-size: 13px; color: #4CAF50; margin-top: 2px; }
+    .exercise-evidence { font-size: 11px; color: #BBB; text-align: center; line-height: 1.6; margin-bottom: 14px; }
   </style>
 </head>
 <body>
@@ -689,6 +711,18 @@
         </div>
         <div id="todayStepsCalLabel" style="font-size:15px;color:#888;margin-top:6px;display:none;"></div>
       </div>
+    </div>
+
+    <!-- Exercise card -->
+    <div class="exercise-card">
+      <div class="exercise-header">
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="font-size:16px;font-weight:700;color:#555;">本日の運動</span>
+          <span id="todayExerciseTotalKcal" style="font-size:18px;font-weight:800;color:#27AE60;display:none;"></span>
+        </div>
+        <button class="exercise-add-btn" onclick="openExerciseModal()">＋ 追加</button>
+      </div>
+      <div id="exerciseList"><div style="font-size:14px;color:#CCC;padding:2px 0;">記録なし</div></div>
     </div>
 
     <!-- Weight input -->
@@ -958,6 +992,32 @@
   </div>
 </div>
 
+<!-- ━━━ EXERCISE MODAL ━━━ -->
+<div class="overlay" id="exerciseModal">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sheet-title">運動を記録</div>
+    <div class="form-group">
+      <label class="fl">種目を選ぶ</label>
+      <div class="sport-grid" id="sportGrid"></div>
+    </div>
+    <div class="form-group">
+      <label class="fl">時間（分）</label>
+      <input type="number" class="fi" id="exerciseDuration" placeholder="例：30" min="1" max="480" inputmode="numeric" oninput="updateExercisePreview()">
+    </div>
+    <div class="exercise-preview" id="exercisePreview">
+      <div class="exercise-preview-kcal" id="exercisePreviewKcal">-- kcal</div>
+      <div class="exercise-preview-label">消費カロリー（推定）</div>
+    </div>
+    <div class="exercise-evidence">
+      MET法（Ainsworth et al. Med Sci Sports Exerc. 2011）<br>
+      消費kcal ＝ MET × 体重(kg) × 時間(h)
+    </div>
+    <button class="btn-main" id="exerciseSaveBtn" onclick="saveExercise()" style="background:#27AE60;" disabled>記録する</button>
+    <button class="btn-sub" onclick="closeExerciseModal()">キャンセル</button>
+  </div>
+</div>
+
 <!-- ━━━ API KEY MODAL ━━━ -->
 <div class="overlay" id="apiKeyModal">
   <div class="sheet">
@@ -1128,6 +1188,7 @@ function enterApp() {
       refreshDate();
       loadTodayWeight();
       loadTodayActivity();
+      loadTodayExercise();
       switchTab('home');
     }
   }, 400);
@@ -1717,10 +1778,12 @@ function addSwipeToClose(modalId, closeFn) {
     swipeMode = false;
   });
 }
-addSwipeToClose('settingsModal', closeSettings);
-addSwipeToClose('apiKeyModal',  closeApiKeyModal);
-addSwipeToClose('addModal',     closeAdd);
-addSwipeToClose('editModal',    closeEditMeal);
+addSwipeToClose('settingsModal',  closeSettings);
+addSwipeToClose('apiKeyModal',   closeApiKeyModal);
+addSwipeToClose('addModal',      closeAdd);
+addSwipeToClose('editModal',     closeEditMeal);
+addSwipeToClose('exerciseModal', closeExerciseModal);
+document.getElementById('exerciseModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeExerciseModal(); });
 
 init();
 
@@ -1780,9 +1843,137 @@ function getDayTarget(ds) {
   return Math.max(getDayTdee(ds) - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
 }
 function getTodayTdee() { return getDayTdee(today()); }
+
+// ── 運動カロリー ──
+// 根拠: Ainsworth BE, et al. "2011 Compendium of Physical Activities"
+//       Med Sci Sports Exerc. 2011;43(8 Suppl 1):S1-S56.
+// 計算式: 消費kcal = MET × 体重(kg) × 時間(h)
+const SPORTS = [
+  { id:'walking',    name:'ウォーキング', icon:'🚶', met:3.5 },
+  { id:'jogging',    name:'ジョギング',   icon:'🏃', met:7.0 },
+  { id:'running',    name:'ランニング',   icon:'🏃', met:9.8 },
+  { id:'cycling',    name:'サイクリング', icon:'🚴', met:6.8 },
+  { id:'swimming',   name:'水泳',         icon:'🏊', met:6.0 },
+  { id:'yoga',       name:'ヨガ',         icon:'🧘', met:3.0 },
+  { id:'gym',        name:'筋トレ',       icon:'💪', met:5.0 },
+  { id:'tennis',     name:'テニス',       icon:'🎾', met:7.3 },
+  { id:'golf',       name:'ゴルフ',       icon:'⛳', met:4.8 },
+  { id:'badminton',  name:'バドミントン', icon:'🏸', met:5.5 },
+  { id:'dance',      name:'ダンス',       icon:'💃', met:4.8 },
+  { id:'hiit',       name:'HIIT',         icon:'🔥', met:8.0 },
+  { id:'jumprope',   name:'縄跳び',       icon:'〇', met:10.0 },
+  { id:'stretch',    name:'ストレッチ',   icon:'🤸', met:2.5 },
+  { id:'soccer',     name:'サッカー',     icon:'⚽', met:7.0 },
+  { id:'basketball', name:'バスケ',       icon:'🏀', met:8.0 },
+  { id:'hiking',     name:'登山・ハイク', icon:'🏔', met:6.3 },
+  { id:'pingpong',   name:'卓球',         icon:'🏓', met:4.0 },
+];
+function getExerciseData(ds) {
+  return JSON.parse(localStorage.getItem('exercise_' + ds) || '[]');
+}
+function getDayExerciseKcal(ds) {
+  return getExerciseData(ds).reduce((s, e) => s + (e.calories || 0), 0);
+}
+function getTodayExerciseKcal() { return getDayExerciseKcal(today()); }
 function getTodayTarget() {
   if (!cfg) return 2000;
-  return Math.max(getTodayTdee() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
+  return Math.max(getTodayTdee() + getTodayExerciseKcal() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
+}
+
+let selectedSportId = null;
+function openExerciseModal() {
+  selectedSportId = null;
+  document.getElementById('exerciseDuration').value = '';
+  document.getElementById('exercisePreview').style.display = 'none';
+  document.getElementById('exerciseSaveBtn').disabled = true;
+  // スポーツグリッドを生成
+  const grid = document.getElementById('sportGrid');
+  grid.innerHTML = SPORTS.map(s =>
+    `<button class="sport-btn" id="sp-${s.id}" onclick="selectSportItem('${s.id}')">
+      <span class="sport-icon">${s.icon}</span>
+      <span class="sport-name">${s.name}</span>
+    </button>`
+  ).join('');
+  document.getElementById('exerciseModal').classList.add('show');
+}
+function closeExerciseModal() {
+  document.getElementById('exerciseModal').classList.remove('show');
+}
+function selectSportItem(id) {
+  selectedSportId = id;
+  document.querySelectorAll('.sport-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('sp-' + id);
+  if (btn) btn.classList.add('active');
+  updateExercisePreview();
+}
+function updateExercisePreview() {
+  const dur = parseInt(document.getElementById('exerciseDuration').value || '0');
+  const saveBtn = document.getElementById('exerciseSaveBtn');
+  if (!selectedSportId || dur <= 0) {
+    document.getElementById('exercisePreview').style.display = 'none';
+    saveBtn.disabled = true;
+    return;
+  }
+  const sport = SPORTS.find(s => s.id === selectedSportId);
+  if (!sport) return;
+  let w = cfg?.weight || 60;
+  const lastW = getLastWeight(today());
+  if (lastW && lastW.value > 0) w = lastW.value;
+  const kcal = Math.round(sport.met * w * (dur / 60));
+  document.getElementById('exercisePreviewKcal').textContent = kcal.toLocaleString() + ' kcal';
+  document.getElementById('exercisePreview').style.display = 'block';
+  saveBtn.disabled = false;
+}
+function saveExercise() {
+  const dur = parseInt(document.getElementById('exerciseDuration').value || '0');
+  if (!selectedSportId || dur <= 0) return;
+  const sport = SPORTS.find(s => s.id === selectedSportId);
+  if (!sport) return;
+  let w = cfg?.weight || 60;
+  const lastW = getLastWeight(today());
+  if (lastW && lastW.value > 0) w = lastW.value;
+  const kcal = Math.round(sport.met * w * (dur / 60));
+  const ds = today();
+  const list = getExerciseData(ds);
+  list.push({ id: Date.now(), sportId: sport.id, name: sport.name, icon: sport.icon, met: sport.met, duration: dur, calories: kcal });
+  localStorage.setItem('exercise_' + ds, JSON.stringify(list));
+  closeExerciseModal();
+  loadTodayExercise();
+  refreshUI();
+  const tdeeEl = document.getElementById('todayTdeeLabel');
+  if (tdeeEl && cfg) tdeeEl.textContent = `${(getTodayTdee() + getTodayExerciseKcal()).toLocaleString()} kcal`;
+}
+function deleteExercise(id) {
+  const ds = today();
+  const list = getExerciseData(ds).filter(e => e.id !== id);
+  localStorage.setItem('exercise_' + ds, JSON.stringify(list));
+  loadTodayExercise();
+  refreshUI();
+  const tdeeEl = document.getElementById('todayTdeeLabel');
+  if (tdeeEl && cfg) tdeeEl.textContent = `${(getTodayTdee() + getTodayExerciseKcal()).toLocaleString()} kcal`;
+}
+function loadTodayExercise() {
+  const ds = today();
+  const list = getExerciseData(ds);
+  const el = document.getElementById('exerciseList');
+  const totalEl = document.getElementById('todayExerciseTotalKcal');
+  if (!el) return;
+  if (list.length === 0) {
+    el.innerHTML = '<div style="font-size:14px;color:#CCC;padding:2px 0;">記録なし</div>';
+    if (totalEl) totalEl.style.display = 'none';
+    return;
+  }
+  const total = list.reduce((s, e) => s + e.calories, 0);
+  if (totalEl) { totalEl.textContent = total.toLocaleString() + ' kcal'; totalEl.style.display = ''; }
+  el.innerHTML = list.map(e =>
+    `<div class="exercise-item">
+      <span class="exercise-item-icon">${e.icon}</span>
+      <span class="exercise-item-name">${e.name}</span>
+      <span class="exercise-item-detail">${e.duration}分</span>
+      <span class="exercise-item-cal">+${e.calories.toLocaleString()} kcal</span>
+      <button class="exercise-item-del" onclick="deleteExercise(${e.id})">×</button>
+    </div>`
+  ).join('');
 }
 // タブ切り替え（今日）
 function switchTodayTab(tab) {
@@ -1809,7 +2000,7 @@ function switchTodayTab(tab) {
       if (btn) { btn.classList.toggle('active', k===a); btn.classList.remove('steps-mode'); }
     });
     const tdeeEl = document.getElementById('todayTdeeLabel');
-    if (tdeeEl && cfg) tdeeEl.textContent = `${getTodayTdee().toLocaleString()} kcal`;
+    if (tdeeEl && cfg) tdeeEl.textContent = `${(getTodayTdee()+getTodayExerciseKcal()).toLocaleString()} kcal`;
     refreshUI();
   }
 }
@@ -1839,7 +2030,7 @@ function loadTodayActivity() {
     }
   });
   const tdeeEl = document.getElementById('todayTdeeLabel');
-  if (tdeeEl && cfg) tdeeEl.textContent = `${getTodayTdee().toLocaleString()} kcal`;
+  if (tdeeEl && cfg) tdeeEl.textContent = `${(getTodayTdee()+getTodayExerciseKcal()).toLocaleString()} kcal`;
   loadTodaySteps();
 }
 function loadTodaySteps() {
@@ -2131,6 +2322,7 @@ function switchTab(tab) {
   document.getElementById('historyScreen').style.display     = tab === 'history' ? 'flex'  : 'none';
   const hl = document.getElementById('homeLogo'); if (hl) hl.style.display = tab === 'home' ? 'block' : 'none';
   if (tab === 'home')    renderHome();
+  if (tab === 'today')   loadTodayExercise();
   if (tab === 'history') renderHistory();
 }
 function renderHome() {
