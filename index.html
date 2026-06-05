@@ -2037,6 +2037,8 @@ function saveExercise() {
 }
 function deleteExercise(id) {
   const ds = today();
+  const entry = getExerciseData(ds).find(e => e.id === id);
+  if (!confirm(`「${entry ? entry.name : '運動記録'}」を削除しますか？`)) return;
   const list = getExerciseData(ds).filter(e => e.id !== id);
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
   loadTodayExercise();
