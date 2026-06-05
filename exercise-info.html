@@ -8,18 +8,18 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f5f6fa; color: #333; padding-bottom: 40px; }
     .header { background: linear-gradient(135deg, #1a7a40 0%, #145c2e 100%); color: white; padding: 20px 20px 24px; }
-    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 16px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
     .header h1 { font-size: 20px; font-weight: 700; }
-    .header p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .header p  { font-size: 15px; color: rgba(255,255,255,.65); margin-top: 4px; }
     .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
     .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-    .card-title { font-size: 14px; font-weight: 700; color: #1a7a40; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    p { font-size: 14px; line-height: 1.75; color: #444; }
+    .card-title { font-size: 16px; font-weight: 700; color: #1a7a40; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    p { font-size: 16px; line-height: 1.75; color: #444; }
     .formula-box { background: #E8F5E9; border-radius: 12px; padding: 16px; text-align: center; margin: 14px 0; }
     .formula { font-size: 16px; font-weight: 700; color: #1a7a40; line-height: 1.8; }
-    .formula span { font-size: 13px; font-weight: 400; color: #555; display: block; margin-top: 4px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    th { background: #E8F5E9; color: #1a7a40; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 12px; }
+    .formula span { font-size: 15px; font-weight: 400; color: #555; display: block; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15px; }
+    th { background: #E8F5E9; color: #1a7a40; font-weight: 700; padding: 8px 10px; text-align: left; font-size: 14px; }
     th.right { text-align: right; }
     td { padding: 9px 10px; border-bottom: 1px solid #f0f0f0; color: #444; vertical-align: middle; }
     td.met { text-align: right; font-weight: 700; color: #1a7a40; }
@@ -28,12 +28,12 @@
     tr.hiit td { color: #999; }
     .met-bar-wrap { display: flex; align-items: center; gap: 6px; }
     .met-bar { height: 6px; background: #27AE60; border-radius: 3px; flex-shrink: 0; }
-    .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 13px; line-height: 1.7; color: #555; }
+    .tip { background: #FFF8E1; border-left: 3px solid #F5A623; border-radius: 0 10px 10px 0; padding: 12px 14px; margin-top: 12px; font-size: 15px; line-height: 1.7; color: #555; }
     .badge-row { display: flex; gap: 8px; margin-top: 12px; }
-    .badge { flex: 1; background: #E8F5E9; border-radius: 10px; padding: 12px 6px; text-align: center; font-size: 12px; color: #444; line-height: 1.6; }
+    .badge { flex: 1; background: #E8F5E9; border-radius: 10px; padding: 12px 6px; text-align: center; font-size: 14px; color: #444; line-height: 1.6; }
     .badge .val { font-size: 20px; font-weight: 800; color: #1a7a40; display: block; }
-    .ref { font-size: 11px; color: #AAA; text-align: center; margin-top: 8px; line-height: 1.8; }
-    .warn-note { font-size: 11px; color: #999; background: #fafafa; border-radius: 8px; padding: 10px 12px; margin-top: 10px; line-height: 1.7; }
+    .ref { font-size: 13px; color: #AAA; text-align: center; margin-top: 8px; line-height: 1.8; }
+    .warn-note { font-size: 13px; color: #999; background: #fafafa; border-radius: 8px; padding: 10px 12px; margin-top: 10px; line-height: 1.7; }
   </style>
 </head>
 <body>
@@ -157,7 +157,7 @@
           <td><div class="met-bar-wrap"><div class="met-bar" style="width:48px;opacity:.85;"></div></div></td>
         </tr>
         <tr class="hiit">
-          <td>HIIT <span style="font-size:10px;">※</span></td>
+          <td>HIIT <span style="font-size:12px;">※</span></td>
           <td class="met" style="color:#999;">8.0</td>
           <td><div class="met-bar-wrap"><div class="met-bar" style="width:48px;opacity:.85;background:#999;"></div></div></td>
         </tr>
@@ -184,7 +184,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       参考文献
     </div>
-    <p style="font-size:13px;line-height:1.9;color:#555;">
+    <p style="font-size:15px;line-height:1.9;color:#555;">
       <b>主要文献（MET値）</b><br>
       Ainsworth BE, et al. "2011 Compendium of Physical Activities: a second update of codes and MET values."
       <i>Med Sci Sports Exerc.</i> 2011;43(8 Suppl 1):S1–S56.<br><br>
