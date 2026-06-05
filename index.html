@@ -1880,11 +1880,11 @@ function getTodayTdee() { return getDayTdee(today()); }
 // 計算式: 消費kcal = MET × 体重(kg) × 時間(h)
 const S = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const SPORTS = [
-  { id:'jogging',    name:'ジョギング',   sub:'〜8 km/h', met:7.0, svg: S(
+  { id:'jogging',    name:'ジョギング',   sub:'6〜8 km/h', met:7.0, svg: S(
     `<circle cx="14" cy="3.5" r="2" fill="currentColor" stroke="none"/>
      <path d="M14 6 L13 13 L9 21"/><path d="M13 13 L18 20"/>
      <path d="M13 9 L7 11"/><path d="M13 9 L19 12"/>`) },
-  { id:'running',    name:'ランニング',   sub:'10km/h〜', met:9.8, svg: S(
+  { id:'running',    name:'ランニング',   sub:'8 km/h〜', met:9.8, svg: S(
     `<circle cx="15" cy="3" r="2" fill="currentColor" stroke="none"/>
      <path d="M15 5 L14 12 L10 21"/><path d="M14 12 L20 19"/>
      <path d="M14 8 L6 10"/><path d="M14 8 L21 10"/>
