@@ -1948,6 +1948,15 @@ function getDayExerciseKcal(ds) {
   return getExerciseData(ds).reduce((s, e) => s + (e.calories || 0), 0);
 }
 function getTodayExerciseKcal() { return getDayExerciseKcal(today()); }
+// 運動カロリー計算用の体重（今日の記録 → 直近記録 → 設定値 の順で優先）
+function getWeightForExercise() {
+  const ds = today();
+  const todayW = parseFloat(localStorage.getItem('weight_' + ds));
+  if (!isNaN(todayW) && todayW > 0) return todayW;
+  const last = getLastWeight(ds);
+  if (last && last.value > 0) return last.value;
+  return (cfg && cfg.weight) ? cfg.weight : 60;
+}
 function getTodayTarget() {
   if (!cfg) return 2000;
   return Math.max(getTodayTdee() + getTodayExerciseKcal() - GOAL_DEFICITS[cfg.goal || 'maintain'], 800);
@@ -1990,13 +1999,7 @@ function updateExercisePreview() {
   }
   const sport = SPORTS.find(s => s.id === selectedSportId);
   if (!sport) return;
-  const ds = today();
-  let w = parseFloat(localStorage.getItem('weight_' + ds));
-  if (isNaN(w) || w < 1) {
-    const lastW = getLastWeight(ds);
-    w = (lastW && lastW.value > 0) ? lastW.value : (cfg?.weight || 60);
-  }
-  const kcal = Math.round(sport.met * w * (dur / 60));
+  const kcal = Math.round(sport.met * getWeightForExercise() * (dur / 60));
   document.getElementById('exercisePreviewKcal').textContent = kcal.toLocaleString() + ' kcal';
   document.getElementById('exercisePreview').style.display = 'block';
   saveBtn.disabled = false;
@@ -2007,12 +2010,7 @@ function saveExercise() {
   const sport = SPORTS.find(s => s.id === selectedSportId);
   if (!sport) return;
   const ds = today();
-  let w = parseFloat(localStorage.getItem('weight_' + ds));
-  if (isNaN(w) || w < 1) {
-    const lastW = getLastWeight(ds);
-    w = (lastW && lastW.value > 0) ? lastW.value : (cfg?.weight || 60);
-  }
-  const kcal = Math.round(sport.met * w * (dur / 60));
+  const kcal = Math.round(sport.met * getWeightForExercise() * (dur / 60));
   const list = getExerciseData(ds);
   list.push({ id: Date.now(), sportId: sport.id, name: sport.name, icon: sport.icon, met: sport.met, duration: dur, calories: kcal });
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
