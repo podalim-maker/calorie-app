@@ -2012,7 +2012,7 @@ function saveExercise() {
   const ds = today();
   const kcal = Math.round(sport.met * getWeightForExercise() * (dur / 60));
   const list = getExerciseData(ds);
-  list.push({ id: Date.now(), sportId: sport.id, name: sport.name, icon: sport.icon, met: sport.met, duration: dur, calories: kcal });
+  list.push({ id: Date.now(), sportId: sport.id, name: sport.name, met: sport.met, duration: dur, calories: kcal });
   localStorage.setItem('exercise_' + ds, JSON.stringify(list));
   closeExerciseModal();
   loadTodayExercise();
@@ -2044,7 +2044,7 @@ function loadTodayExercise() {
   if (totalEl) { totalEl.textContent = total.toLocaleString() + ' kcal'; totalEl.style.display = ''; }
   el.innerHTML = list.map(e =>
     `<div class="exercise-item">
-      <span class="exercise-item-icon">${e.icon}</span>
+      <span class="exercise-item-icon">${(SPORTS.find(s=>s.id===e.sportId)||{}).svg||''}</span>
       <span class="exercise-item-name">${e.name}</span>
       <span class="exercise-item-detail">${e.duration}分</span>
       <span class="exercise-item-cal">+${e.calories.toLocaleString()} kcal</span>
