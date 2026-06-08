@@ -39,11 +39,9 @@
     /* ── Splash ── */
     #splashScreen {
       position: fixed; inset: 0; z-index: 9999;
-      background: linear-gradient(160deg, #1a2f8a 0%, #0d1a5e 45%, #16306e 100%);
-      background-image:
-        radial-gradient(ellipse 90% 60% at 50% 15%, rgba(80,130,255,.45) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 40% at 85% 85%, rgba(30,60,180,.35) 0%, transparent 60%),
-        linear-gradient(160deg, #1a2f8a 0%, #0d1a5e 45%, #16306e 100%);
+      background:
+        radial-gradient(ellipse 48% 38% at 50% 32%, rgba(160,200,255,.72) 0%, rgba(60,100,220,.18) 48%, transparent 66%),
+        linear-gradient(180deg, #050b22 0%, #030918 100%);
       display: flex; flex-direction: column;
       align-items: center;
       transition: opacity .5s ease;
@@ -53,24 +51,20 @@
       flex: 1; display: flex; align-items: center; justify-content: center;
     }
     .splash-logo {
-      width: 80vw; max-width: 320px;
+      width: 72vw; max-width: 290px;
       height: auto; aspect-ratio: 1 / 1;
       object-fit: contain;
       filter: brightness(0) invert(1);
-      opacity: .88;
-      drop-shadow: 0 4px 24px rgba(80,130,255,.4);
+      opacity: .95;
     }
     .splash-bottom {
       width: 100%; padding: 0 28px calc(44px + env(safe-area-inset-bottom));
       display: flex; flex-direction: column; align-items: center; gap: 6px;
     }
     .splash-app-name {
-      font-size: 48px; font-weight: 900; letter-spacing: -1.5px;
-      background: linear-gradient(135deg, #ffffff 30%, #a8c4ff 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 46px; font-weight: 200; letter-spacing: 4px;
+      color: rgba(255,255,255,.92);
       line-height: 1.1; margin-bottom: 4px;
-      filter: drop-shadow(0 2px 16px rgba(120,160,255,.5));
     }
     .splash-title {
       font-size: 14px; font-weight: 600; color: rgba(255,255,255,.65);
