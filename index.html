@@ -40,8 +40,9 @@
     #splashScreen {
       position: fixed; inset: 0; z-index: 9999;
       background:
-        radial-gradient(ellipse 48% 38% at 50% 32%, rgba(160,200,255,.72) 0%, rgba(60,100,220,.18) 48%, transparent 66%),
-        linear-gradient(180deg, #050b22 0%, #030918 100%);
+        radial-gradient(ellipse 70% 58% at 50% 36%, rgba(255,255,255,.28) 0%, rgba(255,255,255,.06) 50%, transparent 70%),
+        radial-gradient(ellipse 110% 45% at 50% 100%, rgba(15,40,120,.32) 0%, transparent 65%),
+        linear-gradient(168deg, #4a80e8 0%, #2d60d4 38%, #2050c8 100%);
       display: flex; flex-direction: column;
       align-items: center;
       transition: opacity .5s ease;
@@ -54,8 +55,8 @@
       width: 72vw; max-width: 290px;
       height: auto; aspect-ratio: 1 / 1;
       object-fit: contain;
-      filter: brightness(0) invert(1);
-      opacity: .95;
+      filter: brightness(0) invert(1) drop-shadow(0 4px 28px rgba(255,255,255,.3));
+      opacity: .96;
     }
     .splash-bottom {
       width: 100%; padding: 0 28px calc(44px + env(safe-area-inset-bottom));
@@ -67,11 +68,11 @@
       line-height: 1.1; margin-bottom: 4px;
     }
     .splash-title {
-      font-size: 14px; font-weight: 600; color: rgba(255,255,255,.65);
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,.80);
       text-align: center; line-height: 1.5; letter-spacing: .04em;
     }
     .splash-clinic {
-      font-size: 14px; font-weight: 700; color: rgba(255,255,255,.75);
+      font-size: 14px; font-weight: 600; color: rgba(255,255,255,.88);
       letter-spacing: .06em; margin-top: 2px; margin-bottom: 14px;
     }
     .splash-start-btn {
