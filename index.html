@@ -39,10 +39,11 @@
     /* ── Splash ── */
     #splashScreen {
       position: fixed; inset: 0; z-index: 9999;
-      background: #04091e;
+      background: linear-gradient(160deg, #1a2f8a 0%, #0d1a5e 45%, #16306e 100%);
       background-image:
-        radial-gradient(ellipse 80% 55% at 50% 20%, rgba(30,55,180,.55) 0%, transparent 70%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(10,20,90,.4) 0%, transparent 60%);
+        radial-gradient(ellipse 90% 60% at 50% 15%, rgba(80,130,255,.45) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 85% 85%, rgba(30,60,180,.35) 0%, transparent 60%),
+        linear-gradient(160deg, #1a2f8a 0%, #0d1a5e 45%, #16306e 100%);
       display: flex; flex-direction: column;
       align-items: center;
       transition: opacity .5s ease;
@@ -52,32 +53,40 @@
       flex: 1; display: flex; align-items: center; justify-content: center;
     }
     .splash-logo {
-      width: 88vw; max-width: 380px;
+      width: 80vw; max-width: 320px;
       height: auto; aspect-ratio: 1 / 1;
       object-fit: contain;
       filter: brightness(0) invert(1);
-      opacity: .70;
+      opacity: .88;
+      drop-shadow: 0 4px 24px rgba(80,130,255,.4);
     }
     .splash-bottom {
-      width: 100%; padding: 0 32px calc(52px + env(safe-area-inset-bottom));
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      width: 100%; padding: 0 28px calc(44px + env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .splash-app-name {
+      font-size: 48px; font-weight: 900; letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #a8c4ff 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1; margin-bottom: 4px;
+      filter: drop-shadow(0 2px 16px rgba(120,160,255,.5));
     }
     .splash-title {
-      font-size: 22px; font-weight: 800; color: white;
-      text-align: center; line-height: 1.35;
-      text-shadow: 0 2px 20px rgba(80,120,255,.3);
+      font-size: 14px; font-weight: 600; color: rgba(255,255,255,.65);
+      text-align: center; line-height: 1.5; letter-spacing: .04em;
     }
     .splash-clinic {
-      font-size: 13px; color: rgba(255,255,255,.35); letter-spacing: .08em;
-      margin-bottom: 8px;
+      font-size: 14px; font-weight: 700; color: rgba(255,255,255,.75);
+      letter-spacing: .06em; margin-top: 2px; margin-bottom: 14px;
     }
     .splash-start-btn {
       width: 100%;
       background: rgba(255,255,255,.95); color: #0d1650;
       border: none; border-radius: 14px;
-      padding: 16px 0; font-size: 16px; font-weight: 800;
+      padding: 16px 0; font-size: 17px; font-weight: 800;
       cursor: pointer; letter-spacing: .05em;
-      box-shadow: 0 4px 32px rgba(80,120,255,.35), 0 1px 4px rgba(0,0,0,.3);
+      box-shadow: 0 4px 32px rgba(80,120,255,.4), 0 1px 4px rgba(0,0,0,.25);
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: transform .1s, box-shadow .1s;
     }
@@ -527,7 +536,8 @@
     <img class="splash-logo" src="logo_transparent.png" alt="CVC">
   </div>
   <div class="splash-bottom">
-    <div class="splash-title">体重・カロリーを<br>記録する</div>
+    <div class="splash-app-name">Futer me</div>
+    <div class="splash-title">体重・カロリーを記録する</div>
     <div class="splash-clinic">木更津心臓血管クリニック</div>
     <button class="splash-start-btn" onclick="enterApp()">
       始める
