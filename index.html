@@ -945,6 +945,13 @@
         </button>
       </div>
 
+      <div id="analyzeHint" style="display:none;margin-bottom:8px;">
+        <label style="font-size:12px;font-weight:700;color:#888;display:block;margin-bottom:5px;letter-spacing:.04em;">補足情報（任意）</label>
+        <input type="text" id="analyzeNote" class="fi"
+          placeholder="例：牛丼大盛り・コンビニおにぎり2個・揚げ物少なめ"
+          style="font-size:14px;border-radius:10px;padding:10px 12px;width:100%;border:1.5px solid #E0E0E0;outline:none;box-sizing:border-box;">
+        <div style="font-size:11px;color:#AAA;margin-top:4px;">料理名・個数・量・調理法など追加するほど精度↑</div>
+      </div>
       <button class="btn-main" id="analyzeBtn" style="display:none;" onclick="doAnalyze()">
         🤖 AIでカロリーを推定する
       </button>
@@ -1509,6 +1516,8 @@ function clearToday() {
 function openAdd() {
   pendingPhoto = null;
   document.getElementById('analyzeBtn').style.display = 'none';
+  document.getElementById('analyzeHint').style.display = 'none';
+  document.getElementById('analyzeNote').value = '';
   document.getElementById('manualName').value = '';
   document.getElementById('manualKcal').value = '';
   document.getElementById('addModalTitle').textContent = addingForDate ? (() => {
@@ -1593,6 +1602,7 @@ function onPhoto(e) {
       (canSave ? `<button onclick="savePhotoToLibrary()" style="background:none;border:none;color:#1B2A8A;font-size:13px;text-decoration:underline;cursor:pointer;padding:2px 0;display:block;">↓ ライブラリに保存</button>` : '');
     const pb = document.getElementById('photoPickerBtns');
     if (pb) pb.style.display = 'none';
+    document.getElementById('analyzeHint').style.display = 'block';
     document.getElementById('analyzeBtn').style.display = 'block';
     document.getElementById('manualBtn').style.display = 'block';
   };
@@ -1633,7 +1643,11 @@ async function doAnalyze() {
               },
               {
                 type: 'text',
-                text: 'この食事写真のカロリーを推定してください。他のテキストは一切不要で、必ず次のJSONのみ返してください:\n{"name":"料理名","calories":数値,"description":"推定根拠（30文字以内）"}'
+                text: (() => {
+                  const note = (document.getElementById('analyzeNote')?.value || '').trim();
+                  const extra = note ? `\n\nユーザーからの補足情報：「${note}」\nこの情報を優先して料理名・カロリーを推定してください。` : '';
+                  return `この食事写真のカロリーを推定してください。${extra}\n他のテキストは一切不要で、必ず次のJSONのみ返してください:\n{"name":"料理名","calories":数値,"description":"推定根拠（30文字以内）"}`;
+                })()
               }
             ]
           }]
