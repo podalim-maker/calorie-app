@@ -1,4 +1,4 @@
-const CACHE = 'futer-me-v2';
+const CACHE = 'futer-me-v3';
 const ASSETS = [
   '/calorie-app/',
   '/calorie-app/index.html',
@@ -17,7 +17,8 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
+    // skipWaiting しない → ユーザーがボタンを押すまで待機
   );
 });
 
@@ -33,4 +34,11 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );
+});
+
+// アプリから「アップデートして」と言われたら即座に切り替える
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
