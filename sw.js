@@ -1,4 +1,4 @@
-const CACHE = 'futer-me-v6';
+const CACHE = 'futer-me-v7';
 const ASSETS = [
   '/calorie-app/',
   '/calorie-app/index.html',
