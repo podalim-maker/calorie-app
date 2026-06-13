@@ -436,7 +436,7 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .bottom-nav { display: flex; background: linear-gradient(180deg, rgba(200,205,215,0.55) 0%, rgba(160,165,175,0.65) 100%); -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.1); backdrop-filter: blur(24px) saturate(150%) brightness(1.1); border-top: 1px solid rgba(255,255,255,0.55); box-shadow: 0 -2px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7); flex-shrink: 0; }
+    .bottom-nav { display: flex; background: linear-gradient(180deg, #dde0e8 0%, #c8ccd6 100%); border-top: 1px solid rgba(255,255,255,0.55); box-shadow: 0 -2px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7); flex-shrink: 0; }
     .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 calc(18px + env(safe-area-inset-bottom)); background: none; border: none; cursor: pointer; color: #AAA; gap: 4px; }
     .nav-btn.active { color: var(--primary); }
     .nav-icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -1373,7 +1373,7 @@ function refreshUI() {
   // Banner
   document.getElementById('doneBanner').style.display = total >= target ? 'block' : 'none';
 
-  // 食事リストは次フレームで描画（base64写真のデコードをメインスレッドから分離）
+  // 食事リスト: 1フレーム目でHTML骨格（写真なし）を描画、2フレーム目で写真srcをセット
   requestAnimationFrame(() => {
     const list = document.getElementById('mealList');
     if (!list) return;
@@ -1381,10 +1381,11 @@ function refreshUI() {
       list.innerHTML = `<div class="empty"><div class="e-emoji">🍽️</div><p>まだ記録がありません</p><small>食事写真を撮って記録しましょう</small></div>`;
       return;
     }
+    // base64データをHTMLに直接埋め込まずインデックスだけ持たせる
     list.innerHTML = meals.map((m, i) => `
       <div class="meal-item" style="cursor:pointer;" onclick="openEditMeal(${i})">
         ${m.photo
-          ? `<img class="meal-thumb" src="${m.photo}" alt="" loading="lazy">`
+          ? `<img class="meal-thumb" data-mi="${i}" alt="" loading="lazy">`
           : `<div class="meal-thumb-ph">🍽️</div>`}
         <div class="meal-info">
           <div class="meal-name">${esc(m.name)}</div>
@@ -1395,6 +1396,13 @@ function refreshUI() {
           <button class="del-btn" onclick="deleteMeal(${i})">×</button>
         </div>
       </div>`).join('');
+    // 写真srcは次フレームで非同期にセット（メインスレッドのブロックを防ぐ）
+    requestAnimationFrame(() => {
+      list.querySelectorAll('img[data-mi]').forEach(img => {
+        const m = meals[+img.dataset.mi];
+        if (m && m.photo) img.src = m.photo;
+      });
+    });
   });
 }
 
