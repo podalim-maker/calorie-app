@@ -601,6 +601,9 @@
   <div class="fg">
     <label class="fl">月の目標</label>
     <div class="goal-list">
+      <button class="goal-btn" id="goal-gain1" onclick="setGoal('gain1')">
+        <span>月1.0kg増</span><span class="goal-deficit">+240 kcal/日</span>
+      </button>
       <button class="goal-btn active" id="goal-maintain" onclick="setGoal('maintain')">
         <span>現状維持</span><span class="goal-deficit">±0 kcal/日</span>
       </button>
@@ -1141,6 +1144,9 @@
     <div class="fg">
       <label class="fl">月の目標</label>
       <div class="goal-list">
+        <button class="goal-btn" id="st-goal-gain1" onclick="setStGoal('gain1')">
+          <span>月1.0kg増</span><span class="goal-deficit">+240 kcal/日</span>
+        </button>
         <button class="goal-btn" id="st-goal-maintain" onclick="setStGoal('maintain')">
           <span>現状維持</span><span class="goal-deficit">±0 kcal/日</span>
         </button>
@@ -1201,7 +1207,7 @@ let stActivity = 'low';
 let stGoal = 'maintain';
 
 const ACTIVITY_FACTORS = { low: 1.2, mid: 1.375, high: 1.55 };
-const GOAL_DEFICITS = { maintain: 0, '05': 120, '1': 240, '2': 480, '3': 720, '4plus': 960 };
+const GOAL_DEFICITS = { 'gain1': -240, maintain: 0, '05': 120, '1': 240, '2': 480, '3': 720, '4plus': 960 };
 let stGender = 'male';
 let pendingPhoto = null; // {base64, mediaType}
 const CIRC = 2 * Math.PI * 80; // 502.65
@@ -1377,7 +1383,7 @@ function setActivity(a) {
 }
 function setGoal(g) {
   setupGoal = g;
-  ['maintain','05','1','2','3','4plus'].forEach(k => document.getElementById('goal-'+k).classList.toggle('active', k===g));
+  ['gain1','maintain','05','1','2','3','4plus'].forEach(k => document.getElementById('goal-'+k).classList.toggle('active', k===g));
   document.getElementById('warnBox').style.display = g==='4plus' ? 'block' : 'none';
 }
 function setStActivity(a) {
@@ -1386,7 +1392,7 @@ function setStActivity(a) {
 }
 function setStGoal(g) {
   stGoal = g;
-  ['maintain','05','1','2','3','4plus'].forEach(k => document.getElementById('st-goal-'+k).classList.toggle('active', k===g));
+  ['gain1','maintain','05','1','2','3','4plus'].forEach(k => document.getElementById('st-goal-'+k).classList.toggle('active', k===g));
 }
 
 // ── Gender toggle ──
