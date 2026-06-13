@@ -114,8 +114,7 @@
     .header {
       background: white;
       padding: 0;
-      padding-top: env(safe-area-inset-top);
-      height: calc(72px + env(safe-area-inset-top));
+      height: 72px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -401,7 +400,7 @@
     .bmr-chip { background: #FFF3E0; border-radius: 10px; padding: 10px 14px; font-size: 15px; color: #E65100; margin-bottom: 14px; }
 
     /* ── Bottom nav ── */
-    #mainApp { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; touch-action: pan-y; }
+    #mainApp { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; touch-action: pan-y; padding-top: env(safe-area-inset-top); }
     #mainApp .content { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 8px; }
     .bottom-nav { display: flex; background: linear-gradient(180deg, rgba(200,205,215,0.55) 0%, rgba(160,165,175,0.65) 100%); -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.1); backdrop-filter: blur(24px) saturate(150%) brightness(1.1); border-top: 1px solid rgba(255,255,255,0.55); box-shadow: 0 -2px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7); flex-shrink: 0; }
     .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 calc(18px + env(safe-area-inset-bottom)); background: none; border: none; cursor: pointer; color: #AAA; gap: 4px; }
@@ -449,7 +448,7 @@
     /* ── Home screen ── */
     #homeScreen { flex: 1; overflow-y: auto; overflow-x: hidden; background: linear-gradient(155deg, #1a2980 0%, #0d1650 42%, #8B1A1A 100%); min-height: 0; position: relative; }
     #homeScreen .content { background: transparent; padding-top: 0; }
-    .home-topbar { display: flex; justify-content: center; align-items: center; padding: 16px 0 12px; padding-top: calc(16px + env(safe-area-inset-top)); position: relative; }
+    .home-topbar { display: flex; justify-content: center; align-items: center; padding: 16px 0 12px; position: relative; }
     .home-topbar-date { font-size: 22px; color: rgba(255,255,255,.95); font-weight: 700; letter-spacing: 0.02em; }
     .home-topbar-gear { background: rgba(255,255,255,.12); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: absolute; right: 0; }
     /* Glass cards */
