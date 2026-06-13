@@ -1,4 +1,4 @@
-const CACHE = 'futer-me-v4';
+const CACHE = 'futer-me-v5';
 const ASSETS = [
   '/calorie-app/',
   '/calorie-app/index.html',
@@ -17,8 +17,7 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
-    // skipWaiting しない → ユーザーがボタンを押すまで待機
+    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
   );
 });
 
