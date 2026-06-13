@@ -1337,7 +1337,7 @@ function refreshUI() {
   document.getElementById('pctText').textContent = `${Math.round(pct*100)}%`;
 
   // Banner
-  document.getElementById('doneBanner').style.display = total >= target ? 'block' : 'none';
+  document.getElementById('doneBanner').style.display = (total >= target && cfg?.goal !== 'gain1') ? 'block' : 'none';
 
   // 食事リスト: 1フレーム目でHTML骨格（写真なし）を描画、2フレーム目で写真srcをセット
   requestAnimationFrame(() => {
