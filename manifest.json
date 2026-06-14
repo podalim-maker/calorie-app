@@ -1,6 +1,6 @@
 {
-  "name": "Futer me",
-  "short_name": "Futer me",
+  "name": "Future me",
+  "short_name": "Future me",
   "description": "カロリー管理・体重記録アプリ - 木更津心臓血管クリニック",
   "start_url": "/calorie-app/",
   "scope": "/calorie-app/",
