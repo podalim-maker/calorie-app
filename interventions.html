@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>治療介入</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #f5f6fa; color: #333; padding-bottom: 100px; }
+    .header { background: linear-gradient(135deg, #1a2980 0%, #0d1650 100%); color: white; padding: 20px 20px 24px; }
+    .back-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 17px; cursor: pointer; padding: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+    .header h1 { font-size: 24px; font-weight: 700; }
+    .header p  { font-size: 16px; color: rgba(255,255,255,.65); margin-top: 4px; }
+    .content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+    /* カード */
+    .inv-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .inv-card-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .inv-num { width: 28px; height: 28px; border-radius: 50%; background: #f0f3ff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #1B2A8A; flex-shrink: 0; margin-top: 2px; }
+    .inv-header-body { flex: 1; min-width: 0; }
+    .inv-type-badge { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .inv-name { font-size: 18px; font-weight: 700; color: #222; word-break: break-all; }
+    .inv-memo { font-size: 16px; color: #888; margin-top: 3px; white-space: pre-wrap; }
+    .inv-header-actions { display: flex; gap: 2px; flex-shrink: 0; }
+    .icon-btn { background: none; border: none; padding: 5px; cursor: pointer; line-height: 1; border-radius: 8px; }
+    .icon-btn:hover { background: #f5f5f5; }
+
+    /* イベントリスト */
+    .event-list { border-top: 1px solid #f0f0f0; padding-top: 10px; }
+    .event-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f8f8f8; }
+    .event-row:last-of-type { border-bottom: none; }
+    .event-sym { font-size: 16px; width: 18px; text-align: center; flex-shrink: 0; }
+    .event-label { font-size: 16px; font-weight: 700; width: 38px; flex-shrink: 0; }
+    .event-date { font-size: 16px; color: #888; width: 92px; flex-shrink: 0; }
+    .event-note { font-size: 16px; color: #555; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .event-del-btn { background: none; border: none; color: #CCC; font-size: 18px; cursor: pointer; padding: 2px 4px; flex-shrink: 0; line-height: 1; }
+    .event-del-btn:hover { color: #E53935; }
+
+    /* イベント追加ボタン */
+    .add-event-btn { width: 100%; padding: 10px; border: 1.5px dashed #C5CAE9; border-radius: 10px; background: none; color: #7986CB; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; }
+    .add-event-btn:active { background: #f0f3ff; }
+
+    /* 空状態 */
+    .empty-state { text-align: center; padding: 40px 20px; color: #CCC; font-size: 16px; }
+
+    /* 新規介入追加ボタン */
+    .add-btn { width: 100%; padding: 14px; border: 2px dashed #C5CAE9; border-radius: 14px; background: none; color: #7986CB; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+    .add-btn:active { background: #f0f3ff; }
+
+    /* 凡例 */
+    .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 20px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 16px; color: #666; }
+
+    /* ━━━ モーダル共通 ━━━ */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; align-items: flex-end; justify-content: center; }
+    .overlay.open { display: flex; }
+    .sheet { background: white; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding: 24px 20px 40px; animation: slideUp .25s ease; }
+    @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .sheet-title { font-size: 19px; font-weight: 700; margin-bottom: 20px; color: #222; }
+
+    /* タイプ選択（介入種別） */
+    .type-selector { display: flex; gap: 10px; margin-bottom: 18px; }
+    .type-btn { flex: 1; padding: 12px 8px; border-radius: 12px; border: 2px solid #E0E0E0; background: white; cursor: pointer; text-align: center; transition: all .15s; }
+    .type-btn.active { border-color: var(--tc); background: var(--tbg); }
+    .type-btn .type-icon { font-size: 24px; margin-bottom: 6px; display: block; line-height: 1; }
+    .type-btn .type-name { font-size: 16px; font-weight: 700; color: #555; }
+    .type-btn.active .type-name { color: var(--tc); }
+
+    /* イベント種別ボタン群 */
+    .event-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+    .evt-btn { padding: 10px 4px; border-radius: 10px; border: 2px solid #E0E0E0; background: white; cursor: pointer; text-align: center; transition: all .15s; font-size: 16px; font-weight: 700; color: #666; }
+    .evt-btn.active { border-color: var(--evt-color,#1B2A8A); background: var(--evt-bg,#EEF1FF); color: var(--evt-color,#1B2A8A); }
+    .evt-btn .evt-sym { font-size: 18px; display: block; margin-bottom: 3px; }
+
+    /* フォーム */
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 16px; font-weight: 700; color: #888; margin-bottom: 6px; display: block; letter-spacing: .04em; }
+    .form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #E0E0E0; border-radius: 10px; font-size: 17px; color: #333; outline: none; background: white; -webkit-appearance: none; }
+    .form-input:focus { border-color: #1B2A8A; }
+    textarea.form-input { resize: vertical; min-height: 68px; font-family: inherit; line-height: 1.6; }
+    .save-btn { width: 100%; padding: 14px; background: #1B2A8A; color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    .save-btn:active { background: #0d1650; }
+    .cancel-btn { width: 100%; padding: 12px; background: none; border: none; color: #999; font-size: 16px; cursor: pointer; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="back-btn" onclick="goBack()">‹ 戻る</button>
+    <h1>治療介入</h1>
+    <p>薬剤・運動などの記録</p>
+  </div>
+
+  <div class="content">
+    <!-- 凡例 -->
+    <div class="legend">
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:16px;">●</span> 開始</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:16px;">▲</span> 増量</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:16px;">▼</span> 減量</div>
+      <div class="legend-item"><span style="color:#9E9E9E;font-size:16px;">×</span> 中止</div>
+      <div class="legend-item"><span style="color:#1B2A8A;font-size:16px;">↩</span> 再開</div>
+    </div>
+
+    <div id="invList"></div>
+
+    <button class="add-btn" onclick="openInvModal(null)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      介入を追加
+    </button>
+  </div>
+
+  <!-- ━━━ 介入追加/編集モーダル ━━━ -->
+  <div class="overlay" id="invOverlay">
+    <div class="sheet">
+      <div class="sheet-title" id="invModalTitle">介入を追加</div>
+      <div class="form-group">
+        <label class="form-label">介入の種類</label>
+        <div class="type-selector">
+          <button class="type-btn active" id="type-medication" style="--tc:#1B2A8A;--tbg:#EEF1FF;" onclick="selectInvType('medication')">
+            <span class="type-icon">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="display:block;margin:0 auto;">
+                <rect x="3" y="10" width="24" height="10" rx="5" fill="#1B2A8A" opacity="0.13"/>
+                <rect x="3" y="10" width="24" height="10" rx="5" stroke="#1B2A8A" stroke-width="2"/>
+                <line x1="15" y1="10" x2="15" y2="20" stroke="#1B2A8A" stroke-width="2"/>
+              </svg>
+            </span>
+            <span class="type-name">薬剤</span>
+          </button>
+          <button class="type-btn" id="type-training" style="--tc:#27AE60;--tbg:#E8F5E9;" onclick="selectInvType('training')">
+            <span class="type-icon">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="display:block;margin:0 auto;">
+                <polyline points="2,15 7,15 11,6 15,24 19,10 23,15 28,15" stroke="#27AE60" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="type-name">運動</span>
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="invNameLabel">薬剤名</label>
+        <input type="text" class="form-input" id="invNameInput" placeholder="例：リラグルチド">
+      </div>
+      <div class="form-group">
+        <label class="form-label">開始日</label>
+        <input type="date" class="form-input" id="invStartDateInput">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備考（任意）</label>
+        <textarea class="form-input" id="invMemoInput" placeholder="用量、用法など"></textarea>
+      </div>
+      <button class="save-btn" onclick="saveInv()">保存</button>
+      <button class="cancel-btn" onclick="closeInvModal()">キャンセル</button>
+    </div>
+  </div>
+
+  <!-- ━━━ イベント追加/編集モーダル ━━━ -->
+  <div class="overlay" id="evtOverlay">
+    <div class="sheet">
+      <div class="sheet-title" id="evtModalTitle">イベントを追加</div>
+      <!-- 種別選択（開始イベント編集時は非表示） -->
+      <div class="form-group" id="evtTypeGroup">
+        <label class="form-label">イベントの種類</label>
+        <div class="event-type-grid">
+          <button class="evt-btn" id="evtbtn-increase" onclick="selectEvtType('increase')">
+            <span class="evt-sym">▲</span>増量
+          </button>
+          <button class="evt-btn" id="evtbtn-decrease" onclick="selectEvtType('decrease')">
+            <span class="evt-sym">▼</span>減量
+          </button>
+          <button class="evt-btn" id="evtbtn-stop" onclick="selectEvtType('stop')">
+            <span class="evt-sym">×</span>中止
+          </button>
+          <button class="evt-btn" id="evtbtn-restart" onclick="selectEvtType('restart')">
+            <span class="evt-sym">↩</span>再開
+          </button>
+        </div>
+      </div>
+      <!-- 開始イベント編集時の固定ラベル -->
+      <div id="evtStartLabel" style="display:none;margin-bottom:16px;">
+        <span style="font-size:16px;font-weight:700;color:#888;letter-spacing:.04em;">イベントの種類</span>
+        <div id="evtStartFixed" style="margin-top:6px;font-size:17px;font-weight:700;color:#1B2A8A;">● 開始（変更不可）</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">日付</label>
+        <input type="date" class="form-input" id="evtDateInput">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備考（任意）</label>
+        <input type="text" class="form-input" id="evtNoteInput" placeholder="例：0.9mg → 1.8mg">
+      </div>
+      <button class="save-btn" id="evtSaveBtn" onclick="saveEvt()">追加</button>
+      <button class="cancel-btn" onclick="closeEvtModal()">キャンセル</button>
+    </div>
+  </div>
+
+  <script>
+    const TYPE_COLORS = { medication: '#1B2A8A', training: '#27AE60' };
+    const TYPE_LABELS = { medication: '薬剤', training: '運動' };
+    const TYPE_NAMES  = { medication: '薬剤名', training: '運動の種類 / 施設名' };
+    const TYPE_PH     = { medication: '例：マンジャロ', training: '例：ランニング・ヨガ・水泳' };
+    const TYPE_MEMO_PH = { medication: '用量、用法など', training: '時間、頻度（週3回）など' };
+    const EVT_LABEL   = { start:'開始', increase:'増量', decrease:'減量', stop:'中止', restart:'再開' };
+    const EVT_SYM     = { start:'●', increase:'▲', decrease:'▼', stop:'×', restart:'↩' };
+    const EVT_COLOR   = { start:null, increase:null, decrease:null, stop:'#9E9E9E', restart:null };
+    const EVT_NOTE_PH = {
+      medication: { start:'例：0.9mg → 1.8mg', increase:'例：2.5mg → 5mg', decrease:'例：5mg → 2.5mg', stop:'例：副作用のため', restart:'例：症状改善のため再開' },
+      training:   { start:'例：週3回 30分', increase:'例：週3回 → 週5回', decrease:'例：週5回 → 週3回', stop:'例：膝の痛みのため', restart:'例：体調回復のため再開' }
+    };
+
+    let invType = 'medication';
+    let editingInvId = null;
+    let evtTargetInvId = null;
+    let editingEvtId = null;   // null=新規, number=編集中イベントid
+    let evtType = 'increase';
+    let evtInvType = 'medication'; // 親介入の種別（色・placeholder制御用）
+
+    // ── データ管理 ──
+    function load() { return JSON.parse(localStorage.getItem('interventions') || '[]'); }
+    function save(list) { localStorage.setItem('interventions', JSON.stringify(list)); }
+
+    // 旧データ（eventsなし）を移行
+    function migrate(list) {
+      return list.map(iv => {
+        if (!iv.events) {
+          iv.events = [{ id: Date.now()+Math.random(), date: iv.startDate, eventType: 'start', note: '' }];
+        }
+        return iv;
+      });
+    }
+
+    // ── 描画 ──
+    function renderList() {
+      let list = migrate(load());
+      save(list); // 移行済みを保存
+      const el = document.getElementById('invList');
+      if (list.length === 0) {
+        el.innerHTML = '<div class="empty-state">まだ介入記録がありません</div>';
+        return;
+      }
+      el.innerHTML = list.map((iv, idx) => {
+        const color  = TYPE_COLORS[iv.type] || '#888';
+        const tlabel = TYPE_LABELS[iv.type] || iv.type;
+        const bg = iv.type === 'medication' ? '#EEF1FF' : '#E8F5E9';
+        const sortedEvts = [...iv.events].sort((a,b)=>a.date.localeCompare(b.date));
+
+        const evtRows = sortedEvts.map(ev => {
+          const ec = EVT_COLOR[ev.eventType] || color;
+          const editBtn = `<button class="icon-btn" onclick="openEvtModal(${iv.id},${ev.id})" title="編集" style="padding:3px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9BA4C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>`;
+          const delBtn = ev.eventType !== 'start'
+            ? `<button class="event-del-btn" onclick="deleteEvt(${iv.id},${ev.id})">×</button>`
+            : '<button class="event-del-btn" style="visibility:hidden;" disabled>×</button>';
+          return `
+            <div class="event-row">
+              <span class="event-sym" style="color:${ec};">${EVT_SYM[ev.eventType]||'●'}</span>
+              <span class="event-label" style="color:${ec};">${EVT_LABEL[ev.eventType]||ev.eventType}</span>
+              <span class="event-date">${ev.date.replace(/-/g,'/')}</span>
+              <span class="event-note">${esc(ev.note||'')}</span>
+              ${editBtn}${delBtn}
+            </div>`;
+        }).join('');
+
+        return `
+          <div class="inv-card" id="inv-${iv.id}">
+            <div class="inv-card-header">
+              <div class="inv-num" style="background:${bg};color:${color};">${idx+1}</div>
+              <div class="inv-header-body">
+                <span class="inv-type-badge" style="background:${bg};color:${color};">${tlabel}</span>
+                <div class="inv-name">${esc(iv.name||'（名称未設定）')}</div>
+                ${iv.memo ? `<div class="inv-memo">${esc(iv.memo)}</div>` : ''}
+              </div>
+              <div class="inv-header-actions">
+                <button class="icon-btn" onclick="openInvModal(${iv.id})" title="編集">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9BA4C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="icon-btn" onclick="deleteInv(${iv.id})" title="削除">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#CCC" stroke-width="2" stroke-linecap="round">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="event-list">
+              ${evtRows}
+            </div>
+            <button class="add-event-btn" onclick="openEvtModal(${iv.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              イベントを追加
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    // ── 介入モーダル ──
+    function openInvModal(id) {
+      editingInvId = id;
+      const isEdit = id !== null;
+      document.getElementById('invModalTitle').textContent = isEdit ? '介入を編集' : '介入を追加';
+      if (isEdit) {
+        const iv = load().find(i => i.id === id);
+        if (!iv) return;
+        selectInvType(iv.type);
+        document.getElementById('invNameInput').value = iv.name || '';
+        const firstEvt = iv.events ? [...iv.events].sort((a,b)=>a.date.localeCompare(b.date))[0] : null;
+        document.getElementById('invStartDateInput').value = firstEvt ? firstEvt.date : (iv.startDate||'');
+        document.getElementById('invMemoInput').value = iv.memo || '';
+        // 開始日は編集モードでは変更不可（表示のみ）
+        document.getElementById('invStartDateInput').disabled = true;
+      } else {
+        selectInvType('medication');
+        document.getElementById('invNameInput').value = '';
+        document.getElementById('invStartDateInput').value = todayStr();
+        document.getElementById('invStartDateInput').disabled = false;
+        document.getElementById('invMemoInput').value = '';
+      }
+      document.getElementById('invOverlay').classList.add('open');
+    }
+    function closeInvModal() { document.getElementById('invOverlay').classList.remove('open'); editingInvId = null; }
+    function selectInvType(t) {
+      invType = t;
+      ['medication','training'].forEach(k => document.getElementById('type-'+k).classList.toggle('active', k===t));
+      document.getElementById('invNameLabel').textContent = TYPE_NAMES[t];
+      document.getElementById('invNameInput').placeholder = TYPE_PH[t];
+      document.getElementById('invMemoInput').placeholder = TYPE_MEMO_PH[t];
+    }
+    function saveInv() {
+      const name = document.getElementById('invNameInput').value.trim();
+      const date = document.getElementById('invStartDateInput').value;
+      const memo = document.getElementById('invMemoInput').value.trim();
+      if (!date) { alert('開始日を入力してください'); return; }
+      let list = migrate(load());
+      if (editingInvId !== null) {
+        const i = list.findIndex(x => x.id === editingInvId);
+        if (i >= 0) list[i] = { ...list[i], type: invType, name, memo };
+      } else {
+        const newId = Date.now();
+        list.push({ id: newId, type: invType, name, startDate: date, memo,
+          events: [{ id: newId+1, date, eventType: 'start', note: '' }] });
+      }
+      save(list);
+      closeInvModal();
+      renderList();
+    }
+
+    // ── 介入削除 ──
+    function deleteInv(id) {
+      const iv = load().find(i => i.id === id);
+      if (!confirm(`「${iv ? (iv.name||'介入記録') : '介入記録'}」を削除しますか？`)) return;
+      save(load().filter(i => i.id !== id));
+      renderList();
+    }
+
+    // ── イベントモーダル ──
+    function openEvtModal(invId, evtId = null) {
+      evtTargetInvId = invId;
+      editingEvtId   = evtId;
+      const isEdit   = evtId !== null;
+
+      // 親介入の種別を取得して色・placeholder制御
+      const list = migrate(load());
+      const parentIv = list.find(i => i.id === invId);
+      evtInvType = parentIv ? (parentIv.type || 'medication') : 'medication';
+      applyEvtModalColors(evtInvType);
+
+      if (isEdit) {
+        // 既存イベントの編集
+        const iv  = list.find(i => i.id === invId);
+        const ev  = iv ? iv.events.find(e => e.id === evtId) : null;
+        if (!ev) return;
+        const isStart = ev.eventType === 'start';
+
+        document.getElementById('evtModalTitle').textContent = 'イベントを編集';
+        document.getElementById('evtSaveBtn').textContent    = '保存';
+        document.getElementById('evtTypeGroup').style.display  = isStart ? 'none' : '';
+        document.getElementById('evtStartLabel').style.display = isStart ? '' : 'none';
+
+        if (isStart) {
+          const phs = EVT_NOTE_PH[evtInvType] || EVT_NOTE_PH.medication;
+          document.getElementById('evtNoteInput').placeholder = phs.start || '';
+        } else {
+          selectEvtType(ev.eventType);
+        }
+        document.getElementById('evtDateInput').value = ev.date;
+        document.getElementById('evtNoteInput').value = ev.note || '';
+      } else {
+        // 新規追加
+        document.getElementById('evtModalTitle').textContent  = 'イベントを追加';
+        document.getElementById('evtSaveBtn').textContent     = '追加';
+        document.getElementById('evtTypeGroup').style.display  = '';
+        document.getElementById('evtStartLabel').style.display = 'none';
+        selectEvtType('increase');
+        document.getElementById('evtDateInput').value = todayStr();
+        document.getElementById('evtNoteInput').value = '';
+      }
+      document.getElementById('evtOverlay').classList.add('open');
+    }
+    function closeEvtModal() {
+      document.getElementById('evtOverlay').classList.remove('open');
+      evtTargetInvId = null;
+      editingEvtId   = null;
+    }
+    function applyEvtModalColors(type) {
+      const color = TYPE_COLORS[type] || '#1B2A8A';
+      const bg    = type === 'training' ? '#E8F5E9' : '#EEF1FF';
+      const sheet = document.querySelector('#evtOverlay .sheet');
+      sheet.style.setProperty('--evt-color', color);
+      sheet.style.setProperty('--evt-bg', bg);
+      document.getElementById('evtSaveBtn').style.background = color;
+      const fixed = document.getElementById('evtStartFixed');
+      if (fixed) fixed.style.color = color;
+    }
+    function selectEvtType(t) {
+      evtType = t;
+      ['increase','decrease','stop','restart'].forEach(k =>
+        document.getElementById('evtbtn-'+k).classList.toggle('active', k===t));
+      const phs = EVT_NOTE_PH[evtInvType] || EVT_NOTE_PH.medication;
+      document.getElementById('evtNoteInput').placeholder = phs[t] || '';
+    }
+    function saveEvt() {
+      const date = document.getElementById('evtDateInput').value;
+      const note = document.getElementById('evtNoteInput').value.trim();
+      if (!date) { alert('日付を入力してください'); return; }
+      const list = migrate(load());
+      const iv = list.find(i => i.id === evtTargetInvId);
+      if (!iv) return;
+
+      if (editingEvtId !== null) {
+        // 編集：既存イベントを更新
+        const ev = iv.events.find(e => e.id === editingEvtId);
+        if (ev) {
+          ev.date = date;
+          ev.note = note;
+          if (ev.eventType !== 'start') ev.eventType = evtType;
+        }
+      } else {
+        // 新規追加
+        iv.events.push({ id: Date.now(), date, eventType: evtType, note });
+      }
+      save(list);
+      closeEvtModal();
+      renderList();
+    }
+
+    // ── イベント削除 ──
+    function deleteEvt(invId, evtId) {
+      if (!confirm('このイベントを削除しますか？')) return;
+      const list = migrate(load());
+      const iv = list.find(i => i.id === invId);
+      if (!iv) return;
+      iv.events = iv.events.filter(e => e.id !== evtId);
+      save(list);
+      renderList();
+    }
+
+    // ── ユーティリティ ──
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    }
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function goBack() { if (document.referrer) history.back(); else window.location.href='index.html'; }
+
+    // オーバーレイ外タップで閉じる
+    ['invOverlay','evtOverlay'].forEach(id =>
+      document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) this.classList.remove('open'); })
+    );
+
+    renderList();
+  </script>
+</body>
+</html>
